@@ -1,0 +1,24 @@
+<form [formGroup]="leadForm" (ngSubmit)="submitLead()">
+  <label>Name*</label>
+  <input formControlName="name" type="text">
+
+  <label>Email*</label>
+  <input formControlName="email" type="email">
+
+  <label>Phone*</label>
+  <input formControlName="phone" type="text">
+
+  <label>Address*</label>
+  <input formControlName="address" type="text">
+
+  <label>Suburb*</label>
+  <select formControlName="suburb">
+    <option value="">Select suburb</option>
+    <option *ngFor="let s of suburbs" [value]="s">{{s}}</option>
+  </select>
+
+  <label>Estimated Value</label>
+  <input formControlName="estimatedValue" type="text">
+
+  <button type="submit">Submit Lead</button>
+</form>
