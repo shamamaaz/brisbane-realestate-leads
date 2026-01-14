@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LeadService } from '../../services/lead.service';
 
@@ -6,25 +6,22 @@ import { LeadService } from '../../services/lead.service';
   selector: 'app-lead-form',
   templateUrl: './lead-form.component.html',
 })
-export class LeadFormComponent implements OnInit {
+export class LeadFormComponent {
   leadForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private leadService: LeadService) {}
-
-  ngOnInit() {
+  constructor(private fb: FormBuilder, private leadService: LeadService) {
     this.leadForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
       suburb: ['', Validators.required],
-      propertyValue: [''],
+      message: [''],
     });
   }
 
   submit() {
     if (this.leadForm.valid) {
       this.leadService.createLead(this.leadForm.value).subscribe({
-        next: (res) => console.log('Lead saved', res),
+        next: (res) => alert('Lead submitted successfully!'),
         error: (err) => console.error(err),
       });
     }

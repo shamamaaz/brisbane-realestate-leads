@@ -1,24 +1,8 @@
-<form [formGroup]="leadForm" (ngSubmit)="submitLead()">
-  <label>Name*</label>
-  <input formControlName="name" type="text">
-
-  <label>Email*</label>
-  <input formControlName="email" type="email">
-
-  <label>Phone*</label>
-  <input formControlName="phone" type="text">
-
-  <label>Address*</label>
-  <input formControlName="address" type="text">
-
-  <label>Suburb*</label>
-  <select formControlName="suburb">
-    <option value="">Select suburb</option>
-    <option *ngFor="let s of suburbs" [value]="s">{{s}}</option>
-  </select>
-
-  <label>Estimated Value</label>
-  <input formControlName="estimatedValue" type="text">
-
+<form [formGroup]="leadForm" (ngSubmit)="submit()">
+  <input formControlName="name" placeholder="Name" />
+  <input formControlName="email" placeholder="Email" />
+  <input formControlName="phone" placeholder="Phone" />
+  <input formControlName="suburb" placeholder="Suburb" />
+  <input formControlName="propertyValue" placeholder="Property Value" />
   <button type="submit">Submit Lead</button>
 </form>
