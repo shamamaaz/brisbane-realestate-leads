@@ -1,2 +1,15 @@
-<h1>Welcome to Brisbane Real Estate Leads</h1>
-<p>Submit your property information to get matched with a real estate agent.</p>
+<div class="min-h-screen bg-gray-100">
+  <app-header></app-header>
+
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <app-search-bar></app-search-bar>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <app-property-card *ngFor="let property of properties" [property]="property"></app-property-card>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</div>
