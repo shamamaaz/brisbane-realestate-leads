@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Lead } from '../model/lead.model';
+import { Lead } from '../models/lead.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LeadService {
-  private apiUrl = 'http://localhost:3000/leads';
+  private apiUrl = `${environment.apiUrl}/leads`;
 
   constructor(private http: HttpClient) {}
 
@@ -17,5 +18,17 @@ export class LeadService {
 
   getLeads(): Observable<Lead[]> {
     return this.http.get<Lead[]>(this.apiUrl);
+  }
+
+  getLeadById(id: number): Observable<Lead> {
+    return this.http.get<Lead>(`${this.apiUrl}/${id}`);
+  }
+
+  updateLead(id: number, lead: Lead): Observable<Lead> {
+    return this.http.put<Lead>(`${this.apiUrl}/${id}`, lead);
+  }
+
+  deleteLead(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

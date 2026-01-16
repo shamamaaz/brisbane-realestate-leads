@@ -1,0 +1,25 @@
+<h2>Your Assigned Leads</h2>
+<table *ngIf="assignments.length > 0">
+  <thead>
+    <tr>
+      <th>Lead Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let assignment of assignments">
+      <td>{{ assignment.lead.firstName }} {{ assignment.lead.lastName }}</td>
+      <td>{{ assignment.lead.email }}</td>
+      <td>{{ assignment.lead.phone }}</td>
+      <td>{{ assignment.status }}</td>
+      <td>
+        <button>Contact</button>
+        <button>Mark as Qualified</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p *ngIf="assignments.length === 0">No assigned leads yet.</p>
