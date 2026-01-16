@@ -2,26 +2,32 @@ import { IsEmail, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 
 export class CreateLeadDto {
   @IsString()
-  firstName: string;
-
-  @IsString()
-  lastName: string;
+  homeownerName: string;
 
   @IsEmail()
-  email: string;
+  homeownerEmail: string;
 
-  @IsPhoneNumber()
-  phone: string;
+  @IsPhoneNumber('AU')
+  homeownerPhone: string;
+
+  @IsString()
+  propertyAddress: string;
+
+  @IsString()
+  @IsOptional()
+  propertyType?: string; // house, apartment, unit, etc.
+
+  @IsString()
+  @IsOptional()
+  preferredAgency?: string;
+
+  @IsString()
+  @IsOptional()
+  preferredContactTime?: string; // e.g., "Evenings 5-8pm"
 
   @IsOptional()
-  @IsString()
-  address?: string;
-
-  @IsOptional()
-  @IsString()
   territoryId?: number;
 
   @IsOptional()
-  @IsString()
   agencyId?: number;
 }

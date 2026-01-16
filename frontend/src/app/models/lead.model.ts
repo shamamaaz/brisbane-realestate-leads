@@ -1,10 +1,13 @@
 export interface Lead {
   id?: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address?: string;
+  homeownerName: string;
+  homeownerEmail: string;
+  homeownerPhone: string;
+  propertyAddress: string;
+  propertyType?: string; // house, apartment, unit, etc.
+  preferredAgency?: string;
+  preferredContactTime?: string;
+  status?: string; // New, Contacted, Scheduled, Closed
   territoryId?: number;
   agencyId?: number;
   createdAt?: Date;

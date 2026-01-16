@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Agency } from '../../agencies/entities/agency.entity';
 import { Territory } from '../../territories/entities/territory.entity';
 
@@ -13,17 +13,26 @@ export class Lead {
   @Column()
   homeownerEmail: string;
 
-  @Column({ nullable: true })
+  @Column()
   homeownerPhone: string;
 
   @Column()
   propertyAddress: string;
 
-  @Column({ type: 'decimal', nullable: true })
-  estimatedValue: number;
+  @Column({ nullable: true })
+  propertyType: string; // house, apartment, unit, etc.
+
+  @Column({ nullable: true })
+  preferredAgency?: string;
 
   @Column({ nullable: true })
   preferredContactTime: string; // e.g., "Evenings 5-8pm"
+
+  @Column({ default: 'New' })
+  status: string; // New, Contacted, Scheduled, Closed
+
+  @Column({ type: 'decimal', nullable: true })
+  estimatedValue: number;
 
   @ManyToOne(() => Territory, (territory) => territory.id, { nullable: true })
   territory: Territory;
@@ -32,5 +41,8 @@ export class Lead {
   agency: Agency;
 
   @CreateDateColumn()
-  submittedAt: Date;
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
