@@ -1,0 +1,7 @@
+<form [formGroup]="leadForm" (ngSubmit)="submit()">
+  <input formControlName="name" placeholder="Name" required />
+  <input formControlName="email" placeholder="Email" type="email" required />
+  <input formControlName="suburb" placeholder="Suburb" required />
+  <textarea formControlName="message" placeholder="Message"></textarea>
+  <button type="submit">Submit Lead</button>
+</form>
