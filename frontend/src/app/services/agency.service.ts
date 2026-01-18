@@ -8,7 +8,7 @@ import { Agency } from '../models/agency.model';
   providedIn: 'root',
 })
 export class AgencyService {
-  private apiUrl = `${environment.apiUrl}/agencies`;
+  private apiUrl = `${environment.apiUrl}/api/agencies`;
 
   constructor(private http: HttpClient) {}
 
@@ -25,6 +25,5 @@ export class AgencyService {
    */
   lookupByPostcode(postcode: string) {
     return this.http.get<any>(`${this.apiUrl}/lookup?postcode=${postcode}`);
-  }
   }
 }

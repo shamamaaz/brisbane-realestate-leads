@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AgencyService } from '../../services/agency.service';
+import { AuthService } from '../../services/auth.service';
 import { LeadService } from '../../services/lead.service';
 
 @Component({
@@ -21,7 +22,8 @@ export class LeadFormComponent {
   constructor(
     private fb: FormBuilder,
     private leadService: LeadService,
-    private agencyService: AgencyService
+    private agencyService: AgencyService,
+    private authService: AuthService
   ) {
     this.leadForm = this.fb.group({
       homeownerName: ['', Validators.required],
@@ -89,23 +91,70 @@ export class LeadFormComponent {
     this.submitError = '';
     this.submitMessage = '';
 
-    this.leadService.createLead(this.leadForm.value).subscribe({
-      next: (res) => {
-        this.submitMessage = 'Thank you! Your lead has been submitted successfully.';
-        this.submitLeadEvent.emit(res);
-        this.leadForm.reset();
-        this.suggestedAgencies = [];
-        this.isSubmitting = false;
-        
-        // Clear message after 3 seconds
-        setTimeout(() => {
-          this.submitMessage = '';
-        }, 3000);
+    // Auto-register/login with homeowner email and a generated password
+    const email = this.leadForm.get('homeownerEmail')?.value;
+    const name = this.leadForm.get('homeownerName')?.value;
+    const generatedPassword = 'Lead_' + Math.random().toString(36).slice(-8);
+
+    this.authService.register(email, generatedPassword, name, 'homeowner').subscribe({
+      next: () => {
+        // Now submit the lead with the token
+        this.leadService.createLead(this.leadForm.value).subscribe({
+          next: (res) => {
+            this.submitMessage = 'Thank you! Your lead has been submitted successfully.';
+            this.submitLeadEvent.emit(res);
+            this.leadForm.reset();
+            this.suggestedAgencies = [];
+            this.isSubmitting = false;
+
+            // Clear message after 3 seconds
+            setTimeout(() => {
+              this.submitMessage = '';
+            }, 3000);
+          },
+          error: (err) => {
+            console.error('Error submitting lead:', err);
+            this.submitError = err.error?.message || 'Failed to submit lead. Please try again.';
+            this.isSubmitting = false;
+          }
+        });
       },
       error: (err) => {
-        console.error('Error submitting lead:', err);
-        this.submitError = err.error?.message || 'Failed to submit lead. Please try again.';
-        this.isSubmitting = false;
+        // If user already exists, try to login
+        if (err.status === 400) {
+          this.authService.login(email, generatedPassword).subscribe({
+            next: () => {
+              // Try to submit lead
+              this.leadService.createLead(this.leadForm.value).subscribe({
+                next: (res) => {
+                  this.submitMessage = 'Thank you! Your lead has been submitted successfully.';
+                  this.submitLeadEvent.emit(res);
+                  this.leadForm.reset();
+                  this.suggestedAgencies = [];
+                  this.isSubmitting = false;
+
+                  setTimeout(() => {
+                    this.submitMessage = '';
+                  }, 3000);
+                },
+                error: (leadErr) => {
+                  console.error('Error submitting lead:', leadErr);
+                  this.submitError = leadErr.error?.message || 'Failed to submit lead. Please try again.';
+                  this.isSubmitting = false;
+                }
+              });
+            },
+            error: (loginErr) => {
+              console.error('Authentication error:', loginErr);
+              this.submitError = 'Failed to authenticate. Please try again.';
+              this.isSubmitting = false;
+            }
+          });
+        } else {
+          console.error('Registration error:', err);
+          this.submitError = err.error?.message || 'Failed to process lead. Please try again.';
+          this.isSubmitting = false;
+        }
       }
     });
   }

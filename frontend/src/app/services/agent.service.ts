@@ -8,7 +8,7 @@ import { Agent } from '../models/agent.model';
   providedIn: 'root',
 })
 export class AgentService {
-  private apiUrl = `${environment.apiUrl}/agents`;
+  private apiUrl = `${environment.apiUrl}/api/agents`;
 
   constructor(private http: HttpClient) {}
 

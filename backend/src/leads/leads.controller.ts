@@ -10,9 +10,20 @@ import { LeadsService } from './leads.service';
 export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
 
+  /**
+   * Health check endpoint (no auth required)
+   */
+  @Get('health')
+  async health(): Promise<{ status: string }> {
+    return { status: 'OK' };
+  }
+
+  /**
+   * Create a new lead (public endpoint - no auth required)
+   * The frontend will auto-register/login as part of lead submission
+   */
   @Post()
-  @UseGuards(JwtAuthGuard)
-  async createLead(@Body() createLeadDto: CreateLeadDto, @Request() req: any): Promise<Lead> {
+  async createLead(@Body() createLeadDto: CreateLeadDto): Promise<Lead> {
     return this.leadsService.createLead(createLeadDto);
   }
 

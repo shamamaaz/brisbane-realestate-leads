@@ -1,0 +1,83 @@
+<div class="p-6">
+  <h2 class="text-2xl font-bold mb-6">{{ isLogin ? 'Login' : 'Register' }}</h2>
+
+  <form [formGroup]="authForm" (ngSubmit)="submit()" class="space-y-4">
+    <!-- Email -->
+    <div>
+      <label class="block text-sm font-medium mb-1">Email</label>
+      <input
+        type="email"
+        formControlName="email"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="your@email.com"
+      />
+      <span *ngIf="authForm.get('email')?.invalid && authForm.get('email')?.touched" class="text-red-500 text-sm">
+        Valid email required
+      </span>
+    </div>
+
+    <!-- Password -->
+    <div>
+      <label class="block text-sm font-medium mb-1">Password</label>
+      <input
+        type="password"
+        formControlName="password"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="Min 6 characters"
+      />
+      <span *ngIf="authForm.get('password')?.invalid && authForm.get('password')?.touched" class="text-red-500 text-sm">
+        Password must be at least 6 characters
+      </span>
+    </div>
+
+    <!-- Name (Register only) -->
+    <div *ngIf="!isLogin">
+      <label class="block text-sm font-medium mb-1">Full Name</label>
+      <input
+        type="text"
+        formControlName="name"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="John Doe"
+      />
+    </div>
+
+    <!-- Role (Register only) -->
+    <div *ngIf="!isLogin">
+      <label class="block text-sm font-medium mb-1">Account Type</label>
+      <select
+        formControlName="role"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <option value="homeowner">Homeowner (Submit Leads)</option>
+        <option value="agent">Real Estate Agent</option>
+        <option value="agency_admin">Agency Admin</option>
+      </select>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+      {{ error }}
+    </div>
+
+    <!-- Submit Button -->
+    <button
+      type="submit"
+      [disabled]="isLoading || authForm.invalid"
+      class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition"
+    >
+      {{ isLoading ? (isLogin ? 'Logging in...' : 'Registering...') : (isLogin ? 'Login' : 'Register') }}
+    </button>
+
+    <!-- Toggle Mode -->
+    <div class="text-center text-sm">
+      {{ isLogin ? "Don't have an account?" : 'Already have an account?' }}
+      <button
+        type="button"
+        (click)="toggleMode()"
+        class="text-blue-600 hover:underline font-semibold"
+      >
+        {{ isLogin ? 'Register' : 'Login' }}
+      </button>
+    </div>
+  </form>
+</div>

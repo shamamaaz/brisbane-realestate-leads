@@ -8,7 +8,7 @@ import { Lead } from '../models/lead.model';
   providedIn: 'root',
 })
 export class LeadService {
-  private apiUrl = `${environment.apiUrl}/leads`;
+  private apiUrl = `${environment.apiUrl}/api/leads`;
 
   constructor(private http: HttpClient) {}
 

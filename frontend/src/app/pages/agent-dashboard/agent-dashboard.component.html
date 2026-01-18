@@ -1,0 +1,158 @@
+<div [style.--primary-color]="agencyBranding.colors.primary" class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold" [style.color]="agencyBranding.colors.primary">Welcome Back, {{ agentName }}!</h1>
+        <p class="text-gray-600">{{ agencyName }} - Agent Portal</p>
+      </div>
+      <button (click)="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold">
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-gray-600 text-sm font-semibold">New Leads</h3>
+        <p class="text-3xl font-bold" [style.color]="agencyBranding.colors.primary">{{ newLeadsCount }}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-gray-600 text-sm font-semibold">Follow-Ups</h3>
+        <p class="text-3xl font-bold" [style.color]="agencyBranding.colors.primary">{{ followUpsCount }}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-gray-600 text-sm font-semibold">Appointments</h3>
+        <p class="text-3xl font-bold" [style.color]="agencyBranding.colors.primary">{{ appointmentsCount }}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-gray-600 text-sm font-semibold">Closed Deals</h3>
+        <p class="text-3xl font-bold" [style.color]="agencyBranding.colors.primary">{{ closedDealsCount }}</p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white p-4 rounded-lg shadow mb-6">
+      <label class="font-semibold">Filter by Status:</label>
+      <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()" class="ml-2 px-3 py-1 border rounded">
+        <option value="all">All Leads</option>
+        <option value="New">New</option>
+        <option value="Contacted">Follow-Up</option>
+        <option value="Scheduled">Appointment</option>
+        <option value="Closed">Closed Deals</option>
+      </select>
+    </div>
+
+    <!-- Leads Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <table class="w-full">
+        <thead [style.backgroundColor]="agencyBranding.colors.primary" class="text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">Lead Name</th>
+            <th class="px-4 py-3 text-left">Property Address</th>
+            <th class="px-4 py-3 text-left">Status</th>
+            <th class="px-4 py-3 text-left">Callback Time</th>
+            <th class="px-4 py-3 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let lead of filteredLeads" class="border-b hover:bg-gray-50">
+            <td class="px-4 py-3 font-semibold">{{ lead.homeownerName }}</td>
+            <td class="px-4 py-3">{{ lead.propertyAddress }}</td>
+            <td class="px-4 py-3">
+              <span [ngClass]="getStatusBadgeClass(lead.status)" class="px-3 py-1 rounded-full text-sm font-semibold">
+                {{ lead.status }}
+              </span>
+            </td>
+            <td class="px-4 py-3">{{ lead.preferredContactTime || 'Anytime' }}</td>
+            <td class="px-4 py-3">
+              <button (click)="callLead(lead.id)" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 mr-2">
+                Call
+              </button>
+              <button (click)="selectLead(lead)" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                View
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="filteredLeads.length === 0" class="text-center py-8 text-gray-600">
+        No leads found.
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead Detail Modal -->
+  <div *ngIf="isModalOpen && selectedLead" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl max-h-96 overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">{{ selectedLead.homeownerName }}</h2>
+        <button (click)="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div>
+          <p class="text-gray-600">Email</p>
+          <p class="font-semibold">{{ selectedLead.homeownerEmail }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Phone</p>
+          <p class="font-semibold">{{ selectedLead.homeownerPhone }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Property Type</p>
+          <p class="font-semibold">{{ selectedLead.propertyType }}</p>
+        </div>
+        <div>
+          <p class="text-gray-600">Estimated Value</p>
+          <p class="font-semibold">${{ selectedLead.estimatedValue || 'TBD' }}</p>
+        </div>
+      </div>
+
+      <!-- Call History -->
+      <div class="mb-6">
+        <h3 class="font-bold mb-2">Call History & Notes</h3>
+        <div class="bg-gray-100 p-3 rounded max-h-32 overflow-y-auto">
+          <div *ngFor="let note of selectedLead.callHistory" class="text-sm text-gray-700 mb-1">
+            {{ note }}
+          </div>
+          <div *ngIf="!selectedLead.callHistory || selectedLead.callHistory.length === 0" class="text-gray-500">
+            No notes yet.
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Update -->
+      <div class="mb-6">
+        <label class="font-bold">Update Status:</label>
+        <div class="flex gap-2 mt-2">
+          <button *ngFor="let status of ['New', 'Contacted', 'Scheduled', 'Closed']"
+                  (click)="updateLeadStatus(status)"
+                  [ngClass]="selectedLead.status === status ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-700'"
+                  class="px-3 py-1 rounded hover:opacity-80 font-semibold">
+            {{ status }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Schedule Follow-Up -->
+      <div class="mb-6">
+        <label class="font-bold">Schedule Follow-Up:</label>
+        <input type="datetime-local" #followUpDate class="w-full px-3 py-2 border rounded mt-2">
+        <textarea #followUpNotes placeholder="Notes for follow-up..." class="w-full px-3 py-2 border rounded mt-2 h-20"></textarea>
+        <button (click)="scheduleFollowUp(followUpDate.value, followUpNotes.value)"
+                class="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold">
+          Schedule
+        </button>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button (click)="closeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 font-semibold">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

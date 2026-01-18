@@ -18,10 +18,12 @@ export class AuthService {
 
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
     const { email, password, name, phone, role, agencyId } = registerDto;
+    console.log('📝 Register attempt:', { email, name, role });
 
     // Check if user already exists
     const existingUser = await this.userRepo.findOne({ where: { email } });
     if (existingUser) {
+      console.log('❌ Email already registered:', email);
       throw new BadRequestException('Email already registered');
     }
 
@@ -40,6 +42,7 @@ export class AuthService {
     });
 
     const savedUser = await this.userRepo.save(user);
+    console.log('✅ User registered:', { id: savedUser.id, email: savedUser.email, role: savedUser.role });
 
     // Generate token
     const accessToken = this.jwtService.sign({
@@ -47,6 +50,7 @@ export class AuthService {
       email: savedUser.email,
       role: savedUser.role,
     });
+    console.log('🔑 Token generated for user:', savedUser.id);
 
     return {
       id: savedUser.id,
@@ -59,16 +63,21 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
     const { email, password } = loginDto;
+    console.log('🔐 Login attempt:', email);
 
     // Find user
     const user = await this.userRepo.findOne({ where: { email } });
     if (!user) {
+      console.log('❌ User not found:', email);
       throw new UnauthorizedException('Invalid credentials');
     }
+    console.log('✅ User found:', { id: user.id, email, hasPassword: !!user.passwordHash });
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    console.log('🔑 Password valid:', isPasswordValid);
     if (!isPasswordValid) {
+      console.log('❌ Password mismatch for user:', email);
       throw new UnauthorizedException('Invalid credentials');
     }
 

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { LeadDetailModalComponent } from '../../components/lead-detail-modal/lead-detail-modal.component';
 import { Lead } from '../../models/lead.model';
 import { LeadService } from '../../services/lead.service';
-import { LeadDetailModalComponent } from '../../components/lead-detail-modal/lead-detail-modal.component';
 
 @Component({
   selector: 'app-agency-dashboard',
@@ -120,20 +120,6 @@ export class AgencyDashboardComponent implements OnInit {
       error: (err) => {
         console.error('Error updating status:', err);
         lead.status = previousStatus;
-        this.errorMessage = 'Failed to update lead status. Please try again.';
-      }
-    });
-  }
-}
-        
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-          this.successMessage = '';
-        }, 3000);
-      },
-      error: (err) => {
-        console.error('Error updating lead:', err);
-        lead.status = previousStatus; // Revert on error
         this.errorMessage = 'Failed to update lead status. Please try again.';
       }
     });
