@@ -2,7 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LeadAssignmentsService } from '../lead-assignments/lead-assignments.service';
+import { AddLeadNoteDto } from '../shared/dto/add-lead-note.dto';
 import { CreateLeadDto } from '../shared/dto/create-lead.dto';
+import { UpdateLeadStatusDto } from '../shared/dto/update-lead-status.dto';
 import { Lead } from './entities/lead.entity';
 
 @Injectable()
@@ -19,6 +21,7 @@ export class LeadsService {
       status: 'New', // Default status for new leads
       createdAt: new Date(),
       updatedAt: new Date(),
+      callHistory: [],
     });
 
     const savedLead = await this.leadRepo.save(lead);
@@ -73,15 +76,77 @@ export class LeadsService {
     return this.leadRepo.save(lead);
   }
 
-  async updateLeadStatus(id: number, status: string): Promise<Lead> {
+  async updateLeadStatus(
+    id: number,
+    updateStatusDto: UpdateLeadStatusDto,
+  ): Promise<Lead> {
     const validStatuses = ['New', 'Contacted', 'Scheduled', 'Closed'];
-    if (!validStatuses.includes(status)) {
+    if (!validStatuses.includes(updateStatusDto.status)) {
       throw new Error(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
     }
 
     const lead = await this.getLeadById(id);
-    lead.status = status;
+    lead.status = updateStatusDto.status;
+    lead.lastContactedDate = new Date();
     lead.updatedAt = new Date();
+
+    // Update optional fields
+    if (updateStatusDto.notes) {
+      lead.notes = updateStatusDto.notes;
+    }
+
+    if (updateStatusDto.nextFollowUpDate) {
+      lead.nextFollowUpDate = updateStatusDto.nextFollowUpDate;
+    }
+
+    if (updateStatusDto.assignedAgentName) {
+      lead.assignedAgentName = updateStatusDto.assignedAgentName;
+    }
+
+    return this.leadRepo.save(lead);
+  }
+
+  /**
+   * Add a note/comment to a lead with timestamp
+   */
+  async addNoteToLead(id: number, addNoteDto: AddLeadNoteDto): Promise<Lead> {
+    const lead = await this.getLeadById(id);
+    
+    const timestamp = new Date().toISOString();
+    const noteEntry = `[${timestamp}] ${addNoteDto.note}`;
+    
+    if (!lead.callHistory) {
+      lead.callHistory = [];
+    }
+    
+    lead.callHistory.push(noteEntry);
+    lead.updatedAt = new Date();
+    
+    return this.leadRepo.save(lead);
+  }
+
+  /**
+   * Get call history for a lead
+   */
+  async getCallHistory(id: number): Promise<string[]> {
+    const lead = await this.getLeadById(id);
+    return lead.callHistory || [];
+  }
+
+  /**
+   * Schedule follow-up for a lead
+   */
+  async scheduleFollowUp(
+    id: number,
+    followUpDate: Date,
+    notes: string,
+  ): Promise<Lead> {
+    const lead = await this.getLeadById(id);
+    lead.nextFollowUpDate = followUpDate;
+    lead.status = 'Scheduled';
+    
+    await this.addNoteToLead(id, { note: `Follow-up scheduled: ${notes}` });
+    
     return this.leadRepo.save(lead);
   }
 

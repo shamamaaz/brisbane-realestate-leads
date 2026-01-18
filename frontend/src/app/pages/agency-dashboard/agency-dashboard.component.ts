@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Lead } from '../../models/lead.model';
 import { LeadService } from '../../services/lead.service';
+import { LeadDetailModalComponent } from '../../components/lead-detail-modal/lead-detail-modal.component';
 
 @Component({
   selector: 'app-agency-dashboard',
@@ -24,7 +26,10 @@ export class AgencyDashboardComponent implements OnInit {
   statsScheduled = 0;
   statsClosed = 0;
 
-  constructor(private leadService: LeadService) {}
+  constructor(
+    private leadService: LeadService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.loadLeads();
@@ -69,14 +74,57 @@ export class AgencyDashboardComponent implements OnInit {
     this.statsClosed = this.leads.filter(l => l.status === 'Closed').length;
   }
 
+  /**
+   * Open lead detail modal for viewing and managing a lead
+   */
+  openLeadDetail(lead: Lead) {
+    const dialogRef = this.dialog.open(LeadDetailModalComponent, {
+      width: '700px',
+      maxHeight: '90vh',
+      data: { lead }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Refresh the lead in the list
+        const index = this.leads.findIndex(l => l.id === result.id);
+        if (index !== -1) {
+          this.leads[index] = result;
+          this.filterLeads();
+          this.updateStats();
+        }
+      }
+    });
+  }
+
   updateStatus(lead: Lead, newStatus: string) {
     const previousStatus = lead.status;
-    lead.status = newStatus;
+    
+    const statusUpdate = {
+      status: newStatus,
+      notes: `Status updated from ${previousStatus} to ${newStatus}`,
+      lastContactedDate: new Date()
+    };
 
-    this.leadService.updateLead(lead.id!, { ...lead, status: newStatus }).subscribe({
-      next: () => {
+    this.leadService.updateLeadStatus(lead.id!, statusUpdate).subscribe({
+      next: (updatedLead) => {
+        lead.status = newStatus;
         this.successMessage = `Lead status updated to ${newStatus}`;
         this.updateStats();
+        this.filterLeads();
+        
+        setTimeout(() => {
+          this.successMessage = '';
+        }, 3000);
+      },
+      error: (err) => {
+        console.error('Error updating status:', err);
+        lead.status = previousStatus;
+        this.errorMessage = 'Failed to update lead status. Please try again.';
+      }
+    });
+  }
+}
         
         // Clear success message after 3 seconds
         setTimeout(() => {

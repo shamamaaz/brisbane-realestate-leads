@@ -6,8 +6,12 @@ import { PropertyDetailComponent } from './pages/property-detail/property-detail
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'listings', component: HomeComponent },
+  { path: 'about', component: HomeComponent },
+  { path: 'contact', component: HomeComponent },
   { path: 'property/:id', component: PropertyDetailComponent },
   { path: 'agency-dashboard', component: AgencyDashboardComponent },
+  { path: '**', redirectTo: '' }
 ];
 
 @NgModule({

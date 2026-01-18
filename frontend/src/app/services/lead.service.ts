@@ -28,6 +28,41 @@ export class LeadService {
     return this.http.put<Lead>(`${this.apiUrl}/${id}`, lead);
   }
 
+  /**
+   * Update lead status with notes and follow-up details
+   */
+  updateLeadStatus(id: number, statusUpdate: any): Observable<Lead> {
+    return this.http.post<Lead>(`${this.apiUrl}/${id}/status`, statusUpdate);
+  }
+
+  /**
+   * Add a note/comment to a lead
+   */
+  addNoteToLead(id: number, note: string): Observable<Lead> {
+    return this.http.post<Lead>(`${this.apiUrl}/${id}/notes`, { note });
+  }
+
+  /**
+   * Get call history for a lead
+   */
+  getCallHistory(id: number): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/${id}/call-history`);
+  }
+
+  /**
+   * Schedule a follow-up for a lead
+   */
+  scheduleFollowUp(
+    id: number,
+    followUpDate: Date,
+    notes: string,
+  ): Observable<Lead> {
+    return this.http.post<Lead>(`${this.apiUrl}/${id}/schedule-followup`, {
+      followUpDate,
+      notes,
+    });
+  }
+
   deleteLead(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

@@ -1,19 +1,25 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, Request } from '@nestjs/common';
+import { AddLeadNoteDto } from '../shared/dto/add-lead-note.dto';
 import { CreateLeadDto } from '../shared/dto/create-lead.dto';
+import { UpdateLeadStatusDto } from '../shared/dto/update-lead-status.dto';
 import { Lead } from './entities/lead.entity';
 import { LeadsService } from './leads.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@Controller('leads')
+@Controller('api/leads')
 export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
 
   @Post()
-  async createLead(@Body() createLeadDto: CreateLeadDto): Promise<Lead> {
+  @UseGuards(JwtAuthGuard)
+  async createLead(@Body() createLeadDto: CreateLeadDto, @Request() req: any): Promise<Lead> {
     return this.leadsService.createLead(createLeadDto);
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getAllLeads(
+    @Request() req: any,
     @Query('status') status?: string,
     @Query('propertyType') propertyType?: string,
   ): Promise<Lead[]> {
@@ -21,11 +27,13 @@ export class LeadsController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getLeadById(@Param('id') id: number): Promise<Lead> {
     return this.leadsService.getLeadById(id);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   async updateLead(
     @Param('id') id: number,
     @Body() updateLeadDto: Partial<CreateLeadDto>,
@@ -34,14 +42,44 @@ export class LeadsController {
   }
 
   @Post(':id/status')
+  @UseGuards(JwtAuthGuard)
   async updateLeadStatus(
     @Param('id') id: number,
-    @Body() statusUpdateDto: { status: string },
+    @Body() updateStatusDto: UpdateLeadStatusDto,
   ): Promise<Lead> {
-    return this.leadsService.updateLeadStatus(id, statusUpdateDto.status);
+    return this.leadsService.updateLeadStatus(id, updateStatusDto);
+  }
+
+  @Post(':id/notes')
+  @UseGuards(JwtAuthGuard)
+  async addNoteToLead(
+    @Param('id') id: number,
+    @Body() addNoteDto: AddLeadNoteDto,
+  ): Promise<Lead> {
+    return this.leadsService.addNoteToLead(id, addNoteDto);
+  }
+
+  @Get(':id/call-history')
+  @UseGuards(JwtAuthGuard)
+  async getCallHistory(@Param('id') id: number): Promise<string[]> {
+    return this.leadsService.getCallHistory(id);
+  }
+
+  @Post(':id/schedule-followup')
+  @UseGuards(JwtAuthGuard)
+  async scheduleFollowUp(
+    @Param('id') id: number,
+    @Body() scheduleDto: { followUpDate: Date; notes: string },
+  ): Promise<Lead> {
+    return this.leadsService.scheduleFollowUp(
+      id,
+      new Date(scheduleDto.followUpDate),
+      scheduleDto.notes,
+    );
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async deleteLead(@Param('id') id: number): Promise<void> {
     return this.leadsService.deleteLead(id);
   }

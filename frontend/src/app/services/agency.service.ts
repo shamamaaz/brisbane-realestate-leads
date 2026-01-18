@@ -19,4 +19,12 @@ export class AgencyService {
   getAgencyById(id: number): Observable<Agency> {
     return this.http.get<Agency>(`${this.apiUrl}/${id}`);
   }
+
+  /**
+   * Lookup agencies by postcode
+   */
+  lookupByPostcode(postcode: string) {
+    return this.http.get<any>(`${this.apiUrl}/lookup?postcode=${postcode}`);
+  }
+  }
 }

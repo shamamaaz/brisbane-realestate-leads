@@ -34,6 +34,21 @@ export class Lead {
   @Column({ type: 'decimal', nullable: true })
   estimatedValue: number;
 
+  @Column({ type: 'text', nullable: true })
+  notes: string; // Internal notes about the lead
+
+  @Column({ type: 'simple-array', nullable: true })
+  callHistory: string[]; // Array of call timestamps and notes
+
+  @Column({ nullable: true })
+  nextFollowUpDate: Date; // Scheduled follow-up date
+
+  @Column({ nullable: true })
+  lastContactedDate: Date; // When the lead was last contacted
+
+  @Column({ nullable: true })
+  assignedAgentName: string; // Name of assigned agent
+
   @ManyToOne(() => Territory, (territory) => territory.id, { nullable: true })
   territory: Territory;
 

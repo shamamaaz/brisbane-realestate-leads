@@ -1,33 +1,31 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgenciesModule } from './agencies/agencies.module';
 import { AgentsModule } from './agents/agents.module';
+import { AuthModule } from './auth/auth.module';
 import { LeadAssignmentsModule } from './lead-assignments/lead-assignments.module';
 import { LeadScoresModule } from './lead-scores/lead-scores.module';
-import { Lead } from './leads/entities/lead.entity';
 import { LeadsModule } from './leads/leads.module';
 import { TerritoriesModule } from './territories/territories.module';
 import { UploadBatchesModule } from './upload-batches/upload-batches.module';
+import { getDatabaseConfig } from './config/database.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'brisbane_user',
-      password: 'vaseem@123',
-      database: 'brisbane_realestate_leads',
-      entities: [Lead],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
     }),
+    TypeOrmModule.forRoot(getDatabaseConfig()),
+    AuthModule,
     LeadsModule,
     AgenciesModule,
     AgentsModule,
     TerritoriesModule,
     LeadAssignmentsModule,
     UploadBatchesModule,
-    LeadScoresModule, // ✅ must import the module
+    LeadScoresModule,
   ],
 })
 export class AppModule {}

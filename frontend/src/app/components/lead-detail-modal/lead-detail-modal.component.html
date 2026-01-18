@@ -1,0 +1,120 @@
+<div class="modal-container">
+  <div class="modal-header">
+    <h2>Lead Details: {{ lead.homeownerName }}</h2>
+    <button (click)="close()" class="close-btn">✕</button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Lead Info -->
+    <div class="section">
+      <h3>Contact Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Name:</span>
+          <span class="value">{{ lead.homeownerName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Email:</span>
+          <span class="value">{{ lead.homeownerEmail }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Phone:</span>
+          <span class="value">{{ lead.homeownerPhone }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Property Address:</span>
+          <span class="value">{{ lead.propertyAddress }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Property Type:</span>
+          <span class="value">{{ lead.propertyType }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Preferred Agency:</span>
+          <span class="value">{{ lead.preferredAgency || 'Not specified' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Section -->
+    <div class="section">
+      <h3>Status Management</h3>
+      <div class="status-container">
+        <div class="current-status" [style.background-color]="getStatusColor(lead.status)">
+          Current Status: <strong>{{ lead.status }}</strong>
+        </div>
+        <div class="status-buttons">
+          <button
+            *ngFor="let status of ['New', 'Contacted', 'Scheduled', 'Closed']"
+            [disabled]="isUpdatingStatus || lead.status === status"
+            (click)="updateStatus(status)"
+            class="status-btn"
+            [style.border-color]="getStatusColor(status)"
+          >
+            {{ status }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="section">
+      <h3>Call History & Notes</h3>
+      <div class="call-history">
+        <div *ngIf="callHistory.length === 0" class="no-history">
+          No call history yet
+        </div>
+        <div *ngFor="let entry of callHistory" class="history-entry">
+          {{ entry }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Note -->
+    <div class="section">
+      <h3>Add Note</h3>
+      <form [formGroup]="noteForm" (ngSubmit)="addNote()" class="note-form">
+        <textarea
+          formControlName="note"
+          placeholder="Add notes about this lead..."
+          rows="4"
+          class="note-input"
+        ></textarea>
+        <button
+          type="submit"
+          [disabled]="isAddingNote || noteForm.invalid"
+          class="btn-add-note"
+        >
+          {{ isAddingNote ? 'Adding...' : 'Add Note' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Metadata -->
+    <div class="section">
+      <h3>Metadata</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Created:</span>
+          <span class="value">{{ lead.createdAt | date: 'short' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Last Updated:</span>
+          <span class="value">{{ lead.updatedAt | date: 'short' }}</span>
+        </div>
+        <div class="info-item" *ngIf="lead.lastContactedDate">
+          <span class="label">Last Contacted:</span>
+          <span class="value">{{ lead.lastContactedDate | date: 'short' }}</span>
+        </div>
+        <div class="info-item" *ngIf="lead.nextFollowUpDate">
+          <span class="label">Next Follow-up:</span>
+          <span class="value">{{ lead.nextFollowUpDate | date: 'short' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button (click)="close()" class="btn-close">Close</button>
+  </div>
+</div>
