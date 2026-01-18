@@ -4,12 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgenciesModule } from './agencies/agencies.module';
 import { AgentsModule } from './agents/agents.module';
 import { AuthModule } from './auth/auth.module';
+import { getDatabaseConfig } from './config/database.config';
 import { LeadAssignmentsModule } from './lead-assignments/lead-assignments.module';
 import { LeadScoresModule } from './lead-scores/lead-scores.module';
 import { LeadsModule } from './leads/leads.module';
 import { TerritoriesModule } from './territories/territories.module';
 import { UploadBatchesModule } from './upload-batches/upload-batches.module';
-import { getDatabaseConfig } from './config/database.config';
 
 @Module({
   imports: [

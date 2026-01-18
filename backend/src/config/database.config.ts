@@ -1,10 +1,10 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Agent } from '../agents/entities/agent.entity';
 import { Agency } from '../agencies/entities/agency.entity';
+import { Agent } from '../agents/entities/agent.entity';
+import { User } from '../auth/entities/user.entity';
+import { LeadAssignment } from '../lead-assignments/entities/lead-assignment.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { Territory } from '../territories/entities/territory.entity';
-import { LeadAssignment } from '../lead-assignments/entities/lead-assignment.entity';
-import { User } from '../auth/entities/user.entity';
 
 export const getDatabaseConfig = (): TypeOrmModuleOptions => {
   return {
