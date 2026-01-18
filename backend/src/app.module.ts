@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Lead } from './leads/lead.entity';
-import { LeadsModule } from './leads/leads.module';
 import { AgenciesModule } from './agencies/agencies.module';
 import { AgentsModule } from './agents/agents.module';
-import { TerritoriesModule } from './territories/territories.module';
 import { LeadAssignmentsModule } from './lead-assignments/lead-assignments.module';
-import { UploadBatchesModule } from './upload-batches/upload-batches.module';
 import { LeadScoresModule } from './lead-scores/lead-scores.module';
+import { Lead } from './leads/entities/lead.entity';
+import { LeadsModule } from './leads/leads.module';
+import { TerritoriesModule } from './territories/territories.module';
+import { UploadBatchesModule } from './upload-batches/upload-batches.module';
 
 @Module({
   imports: [
