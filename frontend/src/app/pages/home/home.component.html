@@ -1,29 +1,163 @@
-<div class="min-h-screen bg-gray-100">
-  <app-header></app-header>
-
-  <!-- Lead Submission Form Section -->
-  <div class="bg-gradient-to-r from-blue-50 to-blue-100 py-8">
-    <div class="max-w-4xl mx-auto px-4">
-      <h1 class="text-3xl font-bold text-center mb-2 text-gray-800">Get Your Property Valued</h1>
-      <p class="text-center text-gray-600 mb-6">Connect with top real estate agencies in Brisbane</p>
-      <app-lead-form (submitLeadEvent)="onLeadSubmit($event)"></app-lead-form>
+<div class="landing-page">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="header-left">
+        <div class="logo">
+          <span class="logo-icon">🏠</span>
+          <span class="logo-text">Your Leads</span>
+        </div>
+      </div>
+      <nav class="header-nav">
+        <a href="#home" class="nav-link">Home</a>
+        <a href="#agents" class="nav-link">For Agents</a>
+        <a href="/login" class="nav-link">Login</a>
+      </nav>
+      <button class="btn btn-signup">Sign Up</button>
     </div>
-  </div>
+  </header>
 
-  <!-- Search and Properties Section -->
-  <div class="max-w-6xl mx-auto px-4 py-6">
-    <app-search-bar (searchEvent)="onSearch($event)"></app-search-bar>
-  </div>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Get Your Property Appraisal</h1>
+      <p class="hero-subtitle">Connect with top local agents for a free, no-obligation property appraisal in minutes.</p>
+      
+      <!-- Lead Form -->
+      <div class="hero-form">
+        <div class="form-group">
+          <label class="form-label">
+            <span class="form-icon">🏠</span>
+            Select Property Type
+          </label>
+          <select [(ngModel)]="formData.propertyType" class="form-select">
+            <option value="">Choose property type...</option>
+            <option value="house">House</option>
+            <option value="apartment">Apartment</option>
+            <option value="unit">Unit</option>
+            <option value="townhouse">Townhouse</option>
+          </select>
+        </div>
 
-  <div class="max-w-6xl mx-auto px-4 py-6">
-    <h2 class="text-2xl font-bold mb-6">Featured Properties</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <app-property-card *ngFor="let property of properties" [property]="property"></app-property-card>
+        <div class="form-group">
+          <label class="form-label">
+            <span class="form-icon">📋</span>
+            Select Property Status
+          </label>
+          <select [(ngModel)]="formData.propertyStatus" class="form-select">
+            <option value="">Choose status...</option>
+            <option value="rent">For Rent</option>
+            <option value="sell">For Sale</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <span class="form-icon">📍</span>
+            Enter Property Address
+          </label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.propertyAddress" 
+            placeholder="123 Main Street, Brisbane"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <span class="form-icon">📱</span>
+            Enter Phone Number <span class="optional">(Optional)</span>
+          </label>
+          <input 
+            type="tel" 
+            [(ngModel)]="formData.phoneNumber" 
+            placeholder="Your phone number"
+            class="form-input"
+          />
+        </div>
+
+        <button (click)="submitLead()" class="btn btn-appraisal">Get My Appraisal</button>
+
+        <div class="form-benefits">
+          <span class="benefit">✓ Get Multiple Proposals</span>
+          <span class="benefit">/ Compare Agents</span>
+          <span class="benefit">✓ Free & No Obligation</span>
+        </div>
+      </div>
     </div>
-    <p *ngIf="properties.length === 0" class="text-center text-gray-500 mt-4">
-      No properties found for your search.
-    </p>
-  </div>
+  </section>
 
-  <app-footer></app-footer>
+  <!-- How It Works Section -->
+  <section class="how-it-works">
+    <div class="section-container">
+      <h2 class="section-title">How It Works</h2>
+      
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-icon">🏠</div>
+          <h3 class="step-title">1. Enter Your Property Details</h3>
+          <p class="step-description">Fill out your property information in a quick form</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-icon">🤝</div>
+          <h3 class="step-title">2. Get Connected with Agents</h3>
+          <p class="step-description">Receive proposals from top local agents interested in listing</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-icon">✅</div>
+          <h3 class="step-title">3. Compare and Choose</h3>
+          <p class="step-description">Compare offers from different agents and select the best one for you</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Section -->
+  <section class="why-choose-us">
+    <div class="section-container">
+      <h2 class="section-title">Why Choose Us?</h2>
+      
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">"I received three offers within 24 hours and sold my house for above asking price. Great service!"</p>
+          <p class="testimonial-author">- Emily R., Naperville, IL</p>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">"The agents were professional and quick to respond. Highly recommend for easy property appraisals!"</p>
+          <p class="testimonial-author">- Brian S., San Diego, CA</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <button class="btn btn-cta">Get Started Now</button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a href="#about">About Us</a>
+        <a href="#faq">FAQs</a>
+        <a href="#terms">Terms of Service</a>
+        <a href="#privacy">Privacy Policy</a>
+        <a href="#contact">Contact Us</a>
+      </div>
+      <div class="footer-social">
+        <a href="#facebook" class="social-icon">f</a>
+        <a href="#twitter" class="social-icon">𝕏</a>
+        <a href="#linkedin" class="social-icon">in</a>
+      </div>
+      <p class="footer-copyright">© 2024 Your Leads. All rights reserved.</p>
+    </div>
+  </footer>
 </div>

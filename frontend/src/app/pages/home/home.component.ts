@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Lead } from '../../models/lead.model';
+import { Router } from '@angular/router';
 import { LeadService } from '../../services/lead.service';
-import { PropertyService } from '../../services/property.service';
 
 @Component({
   selector: 'app-home',
@@ -9,32 +8,66 @@ import { PropertyService } from '../../services/property.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  allProperties: any[] = [];
-  properties: any[] = [];
+  formData = {
+    propertyType: '',
+    propertyStatus: '',
+    propertyAddress: '',
+    phoneNumber: ''
+  };
+
+  isLoading = false;
+  errorMessage = '';
+  successMessage = '';
 
   constructor(
-    private propertyService: PropertyService,
-    private leadService: LeadService
+    private leadService: LeadService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.allProperties = this.propertyService.getProperties();
-    this.properties = [...this.allProperties];
+    // Initialize component
   }
 
-  onSearch(filter: { location: string; type: string }) {
-    this.properties = this.allProperties.filter(p => {
-      const matchesLocation = filter.location
-        ? p.location.toLowerCase().includes(filter.location.toLowerCase())
-        : true;
-      const matchesType = filter.type ? p.type === filter.type : true;
-      return matchesLocation && matchesType;
+  submitLead() {
+    // Validate form
+    if (!this.formData.propertyType || !this.formData.propertyStatus || !this.formData.propertyAddress) {
+      this.errorMessage = 'Please fill in all required fields';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const leadData = {
+      homeownerName: 'Property Owner',
+      homeownerEmail: 'email@example.com',
+      homeownerPhone: this.formData.phoneNumber || 'Not provided',
+      propertyAddress: this.formData.propertyAddress,
+      propertyType: this.formData.propertyType,
+      preferredContactTime: 'Flexible'
+    };
+
+    this.leadService.createLead(leadData).subscribe({
+      next: (response) => {
+        this.successMessage = 'Lead submitted successfully! Redirecting...';
+        this.isLoading = false;
+        // Reset form
+        this.formData = {
+          propertyType: '',
+          propertyStatus: '',
+          propertyAddress: '',
+          phoneNumber: ''
+        };
+        // Redirect to thank you page after delay
+        setTimeout(() => {
+          this.router.navigate(['/sell/thank-you']);
+        }, 1500);
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to submit lead. Please try again.';
+        this.isLoading = false;
+        console.error('Error submitting lead:', error);
+      }
     });
-  }
-
-  onLeadSubmit(lead: Lead) {
-    console.log('Lead submitted from home component:', lead);
-    // The lead has already been submitted to the API via LeadService
-    // This method is called after successful submission
   }
 }

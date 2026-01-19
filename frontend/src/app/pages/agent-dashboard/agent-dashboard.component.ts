@@ -130,7 +130,7 @@ export class AgentDashboardComponent implements OnInit {
   updateLeadStatus() {
     if (!this.selectedLead || !this.newStatus) return;
 
-    this.leadService.updateLeadStatus(this.selectedLead.id, {
+    this.leadService.updateLeadStatus(this.selectedLead.id!, {
       status: this.newStatus,
       lastContactedDate: new Date()
     }).subscribe(
@@ -156,7 +156,7 @@ export class AgentDashboardComponent implements OnInit {
     // Convert datetime-local string to Date
     const followUpDateObj = new Date(this.followUpDate);
 
-    this.leadService.scheduleFollowUp(this.selectedLead.id, followUpDateObj, this.followUpNotes).subscribe(
+    this.leadService.scheduleFollowUp(this.selectedLead.id!, followUpDateObj, this.followUpNotes).subscribe(
       (updatedLead: Lead) => {
         const index = this.leads.findIndex(l => l.id === updatedLead.id);
         if (index !== -1) {
@@ -177,7 +177,7 @@ export class AgentDashboardComponent implements OnInit {
   addNoteToLead() {
     if (!this.selectedLead || !this.noteText.trim()) return;
 
-    this.leadService.addNoteToLead(this.selectedLead.id, { note: this.noteText }).subscribe(
+    this.leadService.addNoteToLead(this.selectedLead.id!, this.noteText).subscribe(
       (updatedLead: Lead) => {
         const index = this.leads.findIndex(l => l.id === updatedLead.id);
         if (index !== -1) {

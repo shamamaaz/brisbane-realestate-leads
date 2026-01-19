@@ -15,13 +15,16 @@ import { LeadFormComponent } from './components/lead-form/lead-form.component';
 import { PropertyCardComponent } from './components/shared/property-card/property-card.component';
 import { SearchBarComponent } from './components/shared/search-bar/search-bar.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { AgencyDashboardComponent } from './pages/agency-dashboard/agency-dashboard.component';
-import { AgentDashboardComponent } from './pages/agent-dashboard/agent-dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { PropertyDetailComponent } from './pages/property-detail/property-detail.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { ThankYouComponent } from './pages/thank-you/thank-you.component';
 
+// Feature Modules
+import { AdminModule } from './admin/admin.module';
+import { AgencyModule } from './agency/agency.module';
+import { AgentModule } from './agent/agent.module';
 
 @NgModule({
   declarations: [
@@ -35,10 +38,9 @@ import { RegisterComponent } from './pages/register/register.component';
     PropertyCardComponent,
     HomeComponent,
     PropertyDetailComponent,
-    AgencyDashboardComponent,
-    AgentDashboardComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    ThankYouComponent,
   ],
   imports: [
     BrowserModule,
@@ -47,7 +49,11 @@ import { RegisterComponent } from './pages/register/register.component';
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatDialogModule
+    MatDialogModule,
+    // Feature modules (lazy-loaded)
+    AgentModule,
+    AgencyModule,
+    AdminModule,
   ],
   providers: [
     {
@@ -56,7 +62,7 @@ import { RegisterComponent } from './pages/register/register.component';
       multi: true,
     },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
 

@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { LeadDetailModalComponent } from '../../components/lead-detail-modal/lead-detail-modal.component';
 import { Lead } from '../../models/lead.model';
 import { LeadService } from '../../services/lead.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-agency-dashboard',
@@ -12,15 +14,27 @@ import { LeadService } from '../../services/lead.service';
 export class AgencyDashboardComponent implements OnInit {
   leads: Lead[] = [];
   filteredLeads: Lead[] = [];
-  
+
+  agencyName = 'Agency';
+  totalLeads = 0;
+  activeAgents = 0;
+  monthlyRevenue = 18750;
+
+  agents = [
+    { name: 'Sarah Johnson', leadsAssigned: 32, territory: 'North Suburbs' },
+    { name: 'Mike Lee', leadsAssigned: 19, territory: 'East District' },
+    { name: 'Linda Green', leadsAssigned: 45, territory: 'South Hills' },
+    { name: 'David Wong', leadsAssigned: 14, territory: 'Central Area' }
+  ];
+
   statusFilter: string = '';
   propertyTypeFilter: string = '';
   searchText: string = '';
-  
+
   isLoading = false;
   errorMessage = '';
   successMessage = '';
-  
+
   statsNew = 0;
   statsContacted = 0;
   statsScheduled = 0;
@@ -28,20 +42,43 @@ export class AgencyDashboardComponent implements OnInit {
 
   constructor(
     private leadService: LeadService,
+    private authService: AuthService,
+    private router: Router,
     private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
+    this.checkAuth();
+    this.loadAgencyInfo();
     this.loadLeads();
+  }
+
+  checkAuth() {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/']);
+    }
+  }
+
+  loadAgencyInfo() {
+    this.authService.getCurrentUser().subscribe(
+      (user: any) => {
+        this.agencyName = user.agencyName || 'Agency';
+      },
+      (error) => {
+        console.error('Failed to load agency info:', error);
+      }
+    );
   }
 
   loadLeads() {
     this.isLoading = true;
     this.errorMessage = '';
-    
+
     this.leadService.getLeads().subscribe({
       next: (data) => {
         this.leads = data;
+        this.totalLeads = data.length;
+        this.activeAgents = this.agents.length;
         this.updateStats();
         this.filterLeads();
         this.isLoading = false;
@@ -74,27 +111,36 @@ export class AgencyDashboardComponent implements OnInit {
     this.statsClosed = this.leads.filter(l => l.status === 'Closed').length;
   }
 
-  /**
-   * Open lead detail modal for viewing and managing a lead
-   */
-  openLeadDetail(lead: Lead) {
-    const dialogRef = this.dialog.open(LeadDetailModalComponent, {
-      width: '700px',
-      maxHeight: '90vh',
-      data: { lead }
-    });
+  resetFilters() {
+    this.statusFilter = '';
+    this.propertyTypeFilter = '';
+    this.searchText = '';
+    this.filterLeads();
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        // Refresh the lead in the list
-        const index = this.leads.findIndex(l => l.id === result.id);
-        if (index !== -1) {
-          this.leads[index] = result;
-          this.filterLeads();
-          this.updateStats();
-        }
-      }
-    });
+  manageAgent(agent: any) {
+    console.log('Managing agent:', agent);
+    // Future: Open agent management modal
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
+  }
+
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'New':
+        return 'status-new';
+      case 'Contacted':
+        return 'status-contacted';
+      case 'Scheduled':
+        return 'status-scheduled';
+      case 'Closed':
+        return 'status-closed';
+      default:
+        return '';
+    }
   }
 
   updateStatus(lead: Lead, newStatus: string) {
@@ -123,27 +169,5 @@ export class AgencyDashboardComponent implements OnInit {
         this.errorMessage = 'Failed to update lead status. Please try again.';
       }
     });
-  }
-
-  getStatusBadgeClass(status: string): string {
-    switch (status) {
-      case 'New':
-        return 'bg-red-100 text-red-800';
-      case 'Contacted':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Scheduled':
-        return 'bg-blue-100 text-blue-800';
-      case 'Closed':
-        return 'bg-green-100 text-green-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  }
-
-  resetFilters() {
-    this.statusFilter = '';
-    this.propertyTypeFilter = '';
-    this.searchText = '';
-    this.filterLeads();
   }
 }
