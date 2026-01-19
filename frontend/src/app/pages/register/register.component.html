@@ -1,104 +1,124 @@
-<div class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-  <div class="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
-    <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">MyRealEstate</h1>
-    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Create Account</h2>
-
-    <form [formGroup]="registerForm" (ngSubmit)="register()" class="space-y-4">
-      <!-- Full Name Input -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
-        <input
-          type="text"
-          formControlName="name"
-          class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 transition"
-          placeholder="John Doe"
-        />
-        <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="text-red-600 text-sm mt-1">
-          Name must be at least 3 characters
-        </div>
+<div class="auth-container">
+  <div class="auth-background"></div>
+  
+  <div class="auth-content">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-icon">🏠</div>
+        <h1>Your Leads</h1>
+        <p class="auth-subtitle">Create your agency or agent account</p>
       </div>
 
-      <!-- Role Selection -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Account Type</label>
-        <select
-          formControlName="role"
-          class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 transition"
+      <form [formGroup]="registerForm" (ngSubmit)="register()" class="auth-form">
+        <!-- Error Message -->
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+
+        <!-- Full Name Field -->
+        <div class="form-group">
+          <label for="name" class="form-label">Full Name</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input
+              id="name"
+              type="text"
+              formControlName="name"
+              placeholder="Enter your full name"
+              class="form-input"
+            />
+          </div>
+          <span *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="error-text">
+            Name must be at least 3 characters
+          </span>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <div class="input-wrapper">
+            <span class="input-icon">✉️</span>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              class="form-input"
+            />
+          </div>
+          <span *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error-text">
+            Please enter a valid email
+          </span>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="Enter password (min 6 chars)"
+              class="form-input"
+            />
+          </div>
+          <span *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-text">
+            Password must be at least 6 characters
+          </span>
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              id="confirmPassword"
+              type="password"
+              formControlName="confirmPassword"
+              placeholder="Confirm your password"
+              class="form-input"
+            />
+          </div>
+          <span *ngIf="registerForm.get('confirmPassword')?.hasError('passwordMismatch')" class="error-text">
+            Passwords do not match
+          </span>
+        </div>
+
+        <!-- Role Selection -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Account Type</label>
+          <select
+            formControlName="role"
+            class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 transition"
+          >
+            <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
+          </select>
+        </div>
+
+        <!-- Create Account Button -->
+        <button
+          type="submit"
+          [disabled]="registerForm.invalid || isLoading"
+          class="auth-button primary"
         >
-          <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
-        </select>
+          <span *ngIf="!isLoading">Create Account</span>
+          <span *ngIf="isLoading">Creating account...</span>
+        </button>
+      </form>
+
+      <!-- Terms & Footer -->
+      <div class="auth-footer">
+        <p class="terms-text">
+          By creating an account, you agree to our Terms of Service and Privacy Policy
+        </p>
+        <p>
+          Already have an account?
+          <a routerLink="/login" class="auth-link">Sign In</a>
+        </p>
       </div>
-
-      <!-- Email Input -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
-        <input
-          type="email"
-          formControlName="email"
-          class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 transition"
-          placeholder="you@example.com"
-        />
-        <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-red-600 text-sm mt-1">
-          Please enter a valid email
-        </div>
-      </div>
-
-      <!-- Password Input -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-        <input
-          type="password"
-          formControlName="password"
-          class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 transition"
-          placeholder="••••••••"
-        />
-        <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-red-600 text-sm mt-1">
-          Password must be at least 6 characters
-        </div>
-      </div>
-
-      <!-- Confirm Password Input -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
-        <input
-          type="password"
-          formControlName="confirmPassword"
-          class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-600 transition"
-          placeholder="••••••••"
-        />
-        <div *ngIf="registerForm.get('confirmPassword')?.hasError('passwordMismatch')" class="text-red-600 text-sm mt-1">
-          Passwords do not match
-        </div>
-      </div>
-
-      <!-- Error Message -->
-      <div *ngIf="error" class="bg-red-50 border-l-4 border-red-600 p-4 rounded">
-        <p class="text-red-700 font-semibold">{{ error }}</p>
-      </div>
-
-      <!-- Register Button -->
-      <button
-        type="submit"
-        [disabled]="isLoading || registerForm.invalid"
-        class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-      >
-        {{ isLoading ? 'Creating account...' : 'Create Account' }}
-      </button>
-    </form>
-
-    <!-- Divider -->
-    <div class="my-6 flex items-center">
-      <div class="flex-grow border-t border-gray-300"></div>
-      <span class="px-3 text-gray-500 text-sm">OR</span>
-      <div class="flex-grow border-t border-gray-300"></div>
-    </div>
-
-    <!-- Login Link -->
-    <div class="text-center">
-      <p class="text-gray-700 mb-2">Already have an account?</p>
-      <a routerLink="/login" class="text-blue-600 font-semibold hover:underline">
-        Login here
-      </a>
     </div>
   </div>
 </div>

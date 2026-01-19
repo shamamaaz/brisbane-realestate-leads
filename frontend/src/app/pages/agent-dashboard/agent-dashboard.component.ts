@@ -31,6 +31,13 @@ export class AgentDashboardComponent implements OnInit {
   selectedLead: Lead | null = null;
   isModalOpen = false;
 
+  // Form fields for modal
+  newStatus = '';
+  noteText = '';
+  followUpDate = '';
+  followUpNotes = '';
+  showNotesPanel = false;
+
   isLoading = false;
   errorMessage = '';
 
@@ -102,18 +109,29 @@ export class AgentDashboardComponent implements OnInit {
   selectLead(lead: Lead) {
     this.selectedLead = lead;
     this.isModalOpen = true;
+    // Reset form fields
+    this.newStatus = '';
+    this.noteText = '';
+    this.followUpDate = '';
+    this.followUpNotes = '';
   }
 
   closeModal() {
     this.isModalOpen = false;
     this.selectedLead = null;
+    // Reset form fields
+    this.newStatus = '';
+    this.noteText = '';
+    this.followUpDate = '';
+    this.followUpNotes = '';
+    this.showNotesPanel = false;
   }
 
-  updateLeadStatus(newStatus: string) {
-    if (!this.selectedLead) return;
+  updateLeadStatus() {
+    if (!this.selectedLead || !this.newStatus) return;
 
     this.leadService.updateLeadStatus(this.selectedLead.id, {
-      status: newStatus,
+      status: this.newStatus,
       lastContactedDate: new Date()
     }).subscribe(
       (updatedLead: Lead) => {
@@ -124,6 +142,7 @@ export class AgentDashboardComponent implements OnInit {
         this.filterLeads();
         this.calculateStats();
         this.selectedLead = updatedLead;
+        this.newStatus = '';
       },
       (error) => {
         console.error('Failed to update lead:', error);
@@ -131,20 +150,23 @@ export class AgentDashboardComponent implements OnInit {
     );
   }
 
-  scheduleFollowUp(followUpDateString: string, notes: string) {
-    if (!this.selectedLead || !followUpDateString) return;
+  scheduleFollowUp() {
+    if (!this.selectedLead || !this.followUpDate) return;
 
     // Convert datetime-local string to Date
-    const followUpDate = new Date(followUpDateString);
+    const followUpDateObj = new Date(this.followUpDate);
 
-    this.leadService.scheduleFollowUp(this.selectedLead.id, followUpDate, notes).subscribe(
+    this.leadService.scheduleFollowUp(this.selectedLead.id, followUpDateObj, this.followUpNotes).subscribe(
       (updatedLead: Lead) => {
         const index = this.leads.findIndex(l => l.id === updatedLead.id);
         if (index !== -1) {
           this.leads[index] = updatedLead;
         }
         this.filterLeads();
+        this.calculateStats();
         this.selectedLead = updatedLead;
+        this.followUpDate = '';
+        this.followUpNotes = '';
       },
       (error) => {
         console.error('Failed to schedule follow-up:', error);
@@ -152,16 +174,17 @@ export class AgentDashboardComponent implements OnInit {
     );
   }
 
-  addNote(noteText: string) {
-    if (!this.selectedLead) return;
+  addNoteToLead() {
+    if (!this.selectedLead || !this.noteText.trim()) return;
 
-    this.leadService.addNoteToLead(this.selectedLead.id, noteText).subscribe(
+    this.leadService.addNoteToLead(this.selectedLead.id, { note: this.noteText }).subscribe(
       (updatedLead: Lead) => {
         const index = this.leads.findIndex(l => l.id === updatedLead.id);
         if (index !== -1) {
           this.leads[index] = updatedLead;
         }
         this.selectedLead = updatedLead;
+        this.noteText = '';
       },
       (error) => {
         console.error('Failed to add note:', error);
@@ -192,5 +215,24 @@ export class AgentDashboardComponent implements OnInit {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  }
+
+  formatStatus(status: string): string {
+    switch (status) {
+      case 'New':
+        return 'New';
+      case 'Contacted':
+        return 'Follow-Up';
+      case 'Scheduled':
+        return 'Appointment';
+      case 'Closed':
+        return 'Closed';
+      default:
+        return status;
+    }
+  }
+
+  toggleNotesPanel() {
+    this.showNotesPanel = !this.showNotesPanel;
   }
 }

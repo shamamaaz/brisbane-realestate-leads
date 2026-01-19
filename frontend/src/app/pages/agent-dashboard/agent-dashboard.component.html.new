@@ -1,57 +1,41 @@
 <div class="agent-dashboard">
-  <!-- Navigation Header -->
-  <header class="dashboard-nav">
-    <div class="nav-container">
-      <div class="nav-left">
-        <div class="nav-brand">
-          <span class="nav-icon">🏠</span>
-          <span class="nav-title">Your Leads</span>
-        </div>
-        <nav class="nav-links">
-          <a href="#" class="nav-link active">Leads</a>
-          <a href="#" class="nav-link">Agents</a>
-        </nav>
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="dashboard-header-content">
+      <div class="header-info">
+        <h1 class="header-title">Welcome Back, {{ agentName }}!</h1>
+        <p class="header-subtitle">{{ agencyName }} - Agent Portal</p>
       </div>
-      <div class="nav-right">
-        <span class="nav-section-label">Leads</span>
-        <div class="user-menu" (click)="logout()" title="Logout">
-          <span class="user-avatar">👤</span>
-          <span class="user-name">{{ agentName }}</span>
-          <span class="dropdown-arrow">⊗</span>
-        </div>
-      </div>
+      <button (click)="logout()" class="btn btn-danger">
+        Logout
+      </button>
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- Stats Cards -->
   <div class="dashboard-container">
-    <!-- Welcome Section -->
-    <div class="welcome-section">
-      <h1 class="welcome-title">Welcome Back, {{ agentName }}!</h1>
-    </div>
-
-    <!-- Stats Cards -->
     <div class="stats-grid">
-      <div class="stat-card stat-card-new">
-        <p class="stat-label">New Leads</p>
+      <div class="stat-card">
+        <h3 class="stat-label">New Leads</h3>
         <p class="stat-number">{{ newLeadsCount }}</p>
       </div>
-      <div class="stat-card stat-card-followup">
-        <p class="stat-label">Follow-Ups</p>
+      <div class="stat-card">
+        <h3 class="stat-label">Follow-Ups</h3>
         <p class="stat-number">{{ followUpsCount }}</p>
       </div>
-      <div class="stat-card stat-card-appointment">
-        <p class="stat-label">Appointments</p>
+      <div class="stat-card">
+        <h3 class="stat-label">Appointments</h3>
         <p class="stat-number">{{ appointmentsCount }}</p>
       </div>
-      <div class="stat-card stat-card-closed">
-        <p class="stat-label">Closed Deals</p>
+      <div class="stat-card">
+        <h3 class="stat-label">Closed Deals</h3>
         <p class="stat-number">{{ closedDealsCount }}</p>
       </div>
     </div>
 
     <!-- Filters -->
     <div class="filter-section">
+      <label class="filter-label">Filter by Status:</label>
       <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()" class="filter-select">
         <option value="all">All Leads</option>
         <option value="New">New</option>
@@ -83,7 +67,7 @@
             </td>
             <td class="cell-status">
               <span [class]="'status-badge status-' + (lead.status?.toLowerCase() || 'new')">
-                {{ formatStatus(lead.status) }}
+                {{ lead.status }}
               </span>
             </td>
             <td class="cell-time">{{ lead.preferredContactTime || 'Anytime' }}</td>
@@ -93,9 +77,6 @@
           </tr>
         </tbody>
       </table>
-      <div *ngIf="filteredLeads.length === 0" class="no-data">
-        No leads found.
-      </div>
     </div>
 
     <!-- Lead Details Modal -->
@@ -138,48 +119,33 @@
           <!-- Status Update -->
           <div class="detail-section">
             <h3 class="section-title">Update Status</h3>
-            <select [(ngModel)]="newStatus" class="form-input form-select">
+            <select [(ngModel)]="newStatus" class="form-input">
               <option value="">Select Status</option>
               <option value="New">New</option>
               <option value="Contacted">Contacted</option>
               <option value="Scheduled">Scheduled</option>
               <option value="Closed">Closed</option>
             </select>
-            <button (click)="updateLeadStatus()" [disabled]="!newStatus" class="btn btn-primary btn-full">Update Status</button>
           </div>
 
           <!-- Add Note -->
           <div class="detail-section">
-            <div class="section-header">
-              <h3 class="section-title">Add Note</h3>
-              <button 
-                *ngIf="selectedLead.callHistory && selectedLead.callHistory.length > 0"
-                (click)="toggleNotesPanel()" 
-                class="btn btn-sm btn-outline">
-                {{ showNotesPanel ? 'Hide' : 'View' }} Notes ({{ selectedLead.callHistory.length }})
-              </button>
-            </div>
-            <textarea [(ngModel)]="noteText" placeholder="Add a note..." class="form-input textarea" rows="4"></textarea>
-            <button (click)="addNoteToLead()" [disabled]="!noteText.trim()" class="btn btn-primary btn-full">Add Note</button>
+            <h3 class="section-title">Add Note</h3>
+            <textarea [(ngModel)]="noteText" placeholder="Add a note..." class="form-input textarea" rows="3"></textarea>
+            <button (click)="addNoteToLead()" class="btn btn-secondary">Add Note</button>
           </div>
 
           <!-- Schedule Follow-Up -->
           <div class="detail-section">
             <h3 class="section-title">Schedule Follow-Up</h3>
-            <div class="form-group">
-              <label class="form-label">Follow-Up Date & Time</label>
-              <input type="datetime-local" [(ngModel)]="followUpDate" class="form-input" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Notes</label>
-              <textarea [(ngModel)]="followUpNotes" placeholder="Follow-up notes..." class="form-input textarea" rows="3"></textarea>
-            </div>
-            <button (click)="scheduleFollowUp()" [disabled]="!followUpDate" class="btn btn-primary btn-full">Schedule Follow-Up</button>
+            <input type="datetime-local" [(ngModel)]="followUpDate" class="form-input" />
+            <textarea [(ngModel)]="followUpNotes" placeholder="Follow-up notes..." class="form-input textarea" rows="3"></textarea>
+            <button (click)="scheduleFollowUp()" class="btn btn-secondary">Schedule Follow-Up</button>
           </div>
 
           <!-- Call History -->
-          <div class="detail-section notes-panel" *ngIf="showNotesPanel && selectedLead.callHistory && selectedLead.callHistory.length">
-            <h3 class="section-title">Previous Notes & History</h3>
+          <div class="detail-section" *ngIf="selectedLead.callHistory && selectedLead.callHistory.length">
+            <h3 class="section-title">Call History</h3>
             <ul class="history-list">
               <li *ngFor="let call of selectedLead.callHistory" class="history-item">{{ call }}</li>
             </ul>
