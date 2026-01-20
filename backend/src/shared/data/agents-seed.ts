@@ -1,0 +1,38 @@
+export const AGENTS_SEED = [
+  {
+    id: 1,
+    name: 'Sarah Johnson',
+    email: 'sarah@brisbanecentral.com',
+    phone: '(07) 3000 1111',
+    agencyId: 1,
+    territory: 'North Suburbs',
+    leadsAssigned: 32,
+  },
+  {
+    id: 2,
+    name: 'Mike Lee',
+    email: 'mike@southbrisbane.com',
+    phone: '(07) 3000 2222',
+    agencyId: 2,
+    territory: 'East District',
+    leadsAssigned: 19,
+  },
+  {
+    id: 3,
+    name: 'Linda Green',
+    email: 'linda@northsiderealty.com',
+    phone: '(07) 3000 3333',
+    agencyId: 3,
+    territory: 'South Hills',
+    leadsAssigned: 45,
+  },
+  {
+    id: 4,
+    name: 'David Wong',
+    email: 'david@eastbrisbane.com',
+    phone: '(07) 3000 4444',
+    agencyId: 4,
+    territory: 'Central Area',
+    leadsAssigned: 14,
+  },
+];

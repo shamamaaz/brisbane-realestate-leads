@@ -1,57 +1,67 @@
 <div class="agent-dashboard">
-  <!-- Navigation Header -->
   <header class="dashboard-nav">
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-brand">
-          <span class="nav-icon">🏠</span>
-          <span class="nav-title">Your Leads</span>
+          <span class="nav-title">Brisbane Lead Exchange</span>
+          <span class="nav-subtitle">Agent workspace</span>
         </div>
         <nav class="nav-links">
           <a href="#" class="nav-link active">Leads</a>
-          <a href="#" class="nav-link">Agents</a>
+          <a href="#" class="nav-link">Territories</a>
         </nav>
       </div>
       <div class="nav-right">
-        <span class="nav-section-label">Leads</span>
+        <span class="nav-section-label">Pipeline</span>
         <div class="user-menu" (click)="logout()" title="Logout">
           <span class="user-avatar">👤</span>
           <span class="user-name">{{ agentName }}</span>
-          <span class="dropdown-arrow">⊗</span>
+          <span class="dropdown-arrow">Sign out</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <div class="dashboard-container">
-    <!-- Welcome Section -->
-    <div class="welcome-section">
-      <h1 class="welcome-title">Welcome Back, {{ agentName }}!</h1>
-    </div>
+  <main class="dashboard-container">
+    <section class="welcome-section">
+      <div class="welcome-copy">
+        <p class="eyebrow">Agent workspace</p>
+        <h1 class="welcome-title">Welcome back, {{ agentName }}.</h1>
+        <p class="welcome-subtitle">Your Brisbane leads are sorted by suburb and response priority.</p>
+      </div>
+      <div class="welcome-highlight">
+        <p>Response target</p>
+        <strong>Under 2 hours</strong>
+      </div>
+    </section>
 
-    <!-- Stats Cards -->
-    <div class="stats-grid">
+    <section class="stats-grid">
       <div class="stat-card stat-card-new">
         <p class="stat-label">New Leads</p>
         <p class="stat-number">{{ newLeadsCount }}</p>
+        <span class="stat-meta">Last 7 days</span>
       </div>
       <div class="stat-card stat-card-followup">
         <p class="stat-label">Follow-Ups</p>
         <p class="stat-number">{{ followUpsCount }}</p>
+        <span class="stat-meta">Needs action</span>
       </div>
       <div class="stat-card stat-card-appointment">
         <p class="stat-label">Appointments</p>
         <p class="stat-number">{{ appointmentsCount }}</p>
+        <span class="stat-meta">Scheduled</span>
       </div>
       <div class="stat-card stat-card-closed">
         <p class="stat-label">Closed Deals</p>
         <p class="stat-number">{{ closedDealsCount }}</p>
+        <span class="stat-meta">This quarter</span>
       </div>
-    </div>
+    </section>
 
-    <!-- Filters -->
-    <div class="filter-section">
+    <section class="filter-section">
+      <div class="filter-label">
+        <span>Lead status</span>
+      </div>
       <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()" class="filter-select">
         <option value="all">All Leads</option>
         <option value="New">New</option>
@@ -59,44 +69,49 @@
         <option value="Scheduled">Appointment</option>
         <option value="Closed">Closed Deals</option>
       </select>
-    </div>
+    </section>
 
-    <!-- Leads Table -->
-    <div class="table-section">
-      <table class="leads-table">
-        <thead class="table-header">
-          <tr>
-            <th>Lead Name</th>
-            <th>Property Address</th>
-            <th>Score</th>
-            <th>Status</th>
-            <th>Callback Time</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody class="table-body">
-          <tr *ngFor="let lead of filteredLeads" class="table-row">
-            <td class="cell-name">{{ lead.homeownerName }}</td>
-            <td class="cell-address">{{ lead.propertyAddress }}</td>
-            <td class="cell-score">
-              <span class="score-badge">★★★★☆</span>
-            </td>
-            <td class="cell-status">
-              <span [class]="'status-badge status-' + (lead.status?.toLowerCase() || 'new')">
-                {{ formatStatus(lead.status) }}
-              </span>
-            </td>
-            <td class="cell-time">{{ lead.preferredContactTime || 'Anytime' }}</td>
-            <td class="cell-actions">
-              <button (click)="selectLead(lead)" class="btn-small btn-action">Actions</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <section class="table-section">
+      <div class="table-header-row">
+        <h2>Assigned leads</h2>
+        <p>{{ filteredLeads.length }} active records</p>
+      </div>
+      <div class="table-scroll">
+        <table class="leads-table">
+          <thead class="table-header">
+            <tr>
+              <th>Lead Name</th>
+              <th>Property Address</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Callback Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody class="table-body">
+            <tr *ngFor="let lead of filteredLeads" class="table-row">
+              <td class="cell-name">{{ lead.homeownerName }}</td>
+              <td class="cell-address">{{ lead.propertyAddress }}</td>
+              <td class="cell-score">
+                <span class="score-badge">★★★★☆</span>
+              </td>
+              <td class="cell-status">
+                <span [class]="'status-badge status-' + (lead.status?.toLowerCase() || 'new')">
+                  {{ formatStatus(lead.status) }}
+                </span>
+              </td>
+              <td class="cell-time">{{ lead.preferredContactTime || 'Anytime' }}</td>
+              <td class="cell-actions">
+                <button (click)="selectLead(lead)" class="btn-small btn-action">Actions</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div *ngIf="filteredLeads.length === 0" class="no-data">
         No leads found.
       </div>
-    </div>
+    </section>
 
     <!-- Lead Details Modal -->
     <div *ngIf="selectedLead" class="modal-overlay" (click)="closeModal()">
@@ -191,5 +206,5 @@
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </div>

@@ -27,6 +27,14 @@ export class LeadsController {
     return this.leadsService.createLead(createLeadDto);
   }
 
+  /**
+   * Legacy/alternate route for appraisal requests
+   */
+  @Post('appraisal-request')
+  async createAppraisalLead(@Body() createLeadDto: CreateLeadDto): Promise<Lead> {
+    return this.leadsService.createLead(createLeadDto);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   async getAllLeads(

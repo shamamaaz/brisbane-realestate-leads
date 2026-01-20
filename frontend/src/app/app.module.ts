@@ -15,10 +15,13 @@ import { LeadFormComponent } from './components/lead-form/lead-form.component';
 import { PropertyCardComponent } from './components/shared/property-card/property-card.component';
 import { SearchBarComponent } from './components/shared/search-bar/search-bar.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { ForAgentsComponent } from './pages/for-agents/for-agents.component';
 import { HomeComponent } from './pages/home/home.component';
+import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
 import { PropertyDetailComponent } from './pages/property-detail/property-detail.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { SellComponent } from './pages/sell/sell.component';
 import { ThankYouComponent } from './pages/thank-you/thank-you.component';
 
 // Feature Modules
@@ -36,11 +39,14 @@ import { AgentModule } from './agent/agent.module';
     FooterComponent,
     SearchBarComponent,
     PropertyCardComponent,
+    LandingComponent,
     HomeComponent,
     PropertyDetailComponent,
     LoginComponent,
     RegisterComponent,
+    SellComponent,
     ThankYouComponent,
+    ForAgentsComponent,
   ],
   imports: [
     BrowserModule,
@@ -65,4 +71,3 @@ import { AgentModule } from './agent/agent.module';
   bootstrap: [AppComponent],
 })
 export class AppModule {}
-

@@ -20,11 +20,11 @@ export class HeaderComponent {
   }
 
   navigateToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
   }
 
   navigateToRegister() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/auth/register']);
   }
 
   logout() {

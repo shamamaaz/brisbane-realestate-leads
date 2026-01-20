@@ -1,166 +1,198 @@
-<div class="lead-form-container">
-  <div class="lead-form-card">
-    <div class="form-header">
-      <h2 class="form-title">Get Your Property Appraisal</h2>
-      <p class="form-subtitle">Connect with top local agents.</p>
-    </div>
+<section class="lead-form-container">
+  <div class="lead-form-shell">
+    <div class="lead-form-info">
+      <p class="eyebrow">Seller appraisal</p>
+      <h1>Tell us about your property in minutes.</h1>
+      <p class="lead-form-intro">
+        Brisbane Lead Exchange connects you with agents who specialize in your suburb. Share your details and pick the
+        best fit for your timeline.
+      </p>
 
-    <!-- Success Message -->
-    <div *ngIf="submitMessage" class="alert alert-success">
-      {{ submitMessage }}
-    </div>
-
-    <!-- Error Message -->
-    <div *ngIf="submitError" class="alert alert-error">
-      {{ submitError }}
-    </div>
-
-    <form [formGroup]="leadForm" (ngSubmit)="onSubmit()" class="form-content">
-    <!-- Name Field -->
-    <div class="form-group">
-      <label class="form-label">Your Name *</label>
-      <input
-        type="text"
-        formControlName="homeownerName"
-        placeholder="Enter your full name"
-        class="form-input"
-        required
-      />
-      <span *ngIf="leadForm.get('homeownerName')?.invalid && leadForm.get('homeownerName')?.touched" 
-            class="form-error">
-        Name is required
-      </span>
-    </div>
-
-    <!-- Email Field -->
-    <div class="form-group">
-      <label class="form-label">Email Address *</label>
-      <input
-        type="email"
-        formControlName="homeownerEmail"
-        placeholder="Enter your email"
-        class="form-input"
-        required
-      />
-      <span *ngIf="leadForm.get('homeownerEmail')?.invalid && leadForm.get('homeownerEmail')?.touched" 
-            class="form-error">
-        Valid email is required
-      </span>
-    </div>
-
-    <!-- Phone Field -->
-    <div class="form-group">
-      <label class="form-label">Phone Number *</label>
-      <input
-        type="tel"
-        formControlName="homeownerPhone"
-        placeholder="Enter your phone number"
-        class="form-input"
-        required
-      />
-      <span *ngIf="leadForm.get('homeownerPhone')?.invalid && leadForm.get('homeownerPhone')?.touched" 
-            class="form-error">
-        Phone number is required
-      </span>
-    </div>
-
-    <!-- Property Address Field -->
-    <div class="form-group">
-      <label class="form-label">Property Address *</label>
-      <input
-        type="text"
-        formControlName="propertyAddress"
-        placeholder="Enter property address with postcode"
-        (change)="onPropertyAddressChange()"
-        (blur)="onPropertyAddressChange()"
-        class="form-input"
-        required
-      />
-      <span *ngIf="leadForm.get('propertyAddress')?.invalid && leadForm.get('propertyAddress')?.touched" 
-            class="form-error">
-        Property address is required
-      </span>
-      
-      <!-- Loading indicator for agency lookup -->
-      <div *ngIf="isLookingUpAgencies" class="agency-loading">
-        Looking up agencies for this area...
-      </div>
-
-      <!-- Suggested Agencies -->
-      <div *ngIf="suggestedAgencies.length > 0" class="agencies-suggestion">
-        <p class="agencies-title">Suggested Agencies for this area:</p>
-        <div class="agencies-list">
-          <button
-            *ngFor="let agency of suggestedAgencies"
-            type="button"
-            (click)="selectAgency(agency)"
-            class="agency-button"
-          >
-            <span class="agency-name">{{ agency.name }}</span>
-            <span class="agency-details">{{ agency.territory }} | {{ agency.phone }}</span>
-          </button>
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>Territory matched</h3>
+          <p>We route your request to agencies active in your postcode.</p>
+        </div>
+        <div class="info-card">
+          <h3>No obligation</h3>
+          <p>Compare agent responses before you decide to proceed.</p>
+        </div>
+        <div class="info-card">
+          <h3>Fast response</h3>
+          <p>Most Brisbane suburbs receive an agent response within hours.</p>
         </div>
       </div>
+
+      <div class="trust-strip">
+        <span>Secure data handling</span>
+        <span>Brisbane only</span>
+        <span>Verified agencies</span>
+      </div>
     </div>
 
-    <!-- Property Type Dropdown -->
-    <div class="form-group">
-      <label class="form-label">Property Type *</label>
-      <select
-        formControlName="propertyType"
-        class="form-input"
-        required
-      >
-        <option value="">Select Property Type</option>
-        <option value="house">House</option>
-        <option value="apartment">Apartment</option>
-        <option value="unit">Unit</option>
-        <option value="townhouse">Townhouse</option>
-        <option value="land">Land</option>
-        <option value="other">Other</option>
-      </select>
-      <span *ngIf="leadForm.get('propertyType')?.invalid && leadForm.get('propertyType')?.touched" 
-            class="form-error">
-        Property type is required
-      </span>
-    </div>
+    <div class="lead-form-card">
+      <div class="form-header">
+        <h2 class="form-title">Get your free appraisal</h2>
+        <p class="form-subtitle">Tell us a little about your home.</p>
+      </div>
 
-    <!-- Preferred Agency (Optional) -->
-    <div class="form-group">
-      <label class="form-label">Preferred Agency (Optional)</label>
-      <input
-        type="text"
-        formControlName="preferredAgency"
-        placeholder="Agency name (if any)"
-        class="form-input"
-      />
-    </div>
+      <!-- Success Message -->
+      <div *ngIf="submitMessage" class="alert alert-success">
+        {{ submitMessage }}
+      </div>
 
-    <!-- Preferred Contact Time (Optional) -->
-    <div class="form-group">
-      <label class="form-label">Best Time to Call (Optional)</label>
-      <input
-        type="text"
-        formControlName="preferredContactTime"
-        placeholder="e.g., Evenings 5-8pm"
-        class="form-input"
-      />
-    </div>
+      <!-- Error Message -->
+      <div *ngIf="submitError" class="alert alert-error">
+        {{ submitError }}
+      </div>
 
-    <!-- Submit Button -->
-    <button
-      type="submit"
-      [disabled]="isSubmitting"
-      class="btn btn-primary"
-    >
-      {{ isSubmitting ? 'Submitting...' : 'Get My Appraisal' }}
-    </button>
+      <form [formGroup]="leadForm" (ngSubmit)="onSubmit()" class="form-content">
+        <!-- Name Field -->
+        <div class="form-group">
+          <label class="form-label">Your name <span>*</span></label>
+          <input
+            type="text"
+            formControlName="homeownerName"
+            placeholder="Enter your full name"
+            class="form-input"
+            required
+          />
+          <span
+            *ngIf="leadForm.get('homeownerName')?.invalid && leadForm.get('homeownerName')?.touched"
+            class="form-error"
+          >
+            Name is required
+          </span>
+        </div>
 
-    <!-- Benefits List -->
-    <div class="benefits-list">
-      <p class="benefit-item">* Free & No Obligation</p>
-      <p class="benefit-item">* Compare Agents</p>
-      <p class="benefit-item">* Fast Response</p>
+        <!-- Email Field -->
+        <div class="form-group">
+          <label class="form-label">Email address <span>*</span></label>
+          <input
+            type="email"
+            formControlName="homeownerEmail"
+            placeholder="Enter your email"
+            class="form-input"
+            required
+          />
+          <span
+            *ngIf="leadForm.get('homeownerEmail')?.invalid && leadForm.get('homeownerEmail')?.touched"
+            class="form-error"
+          >
+            Valid email is required
+          </span>
+        </div>
+
+        <!-- Phone Field -->
+        <div class="form-group">
+          <label class="form-label">Phone number <span>*</span></label>
+          <input
+            type="tel"
+            formControlName="homeownerPhone"
+            placeholder="Enter your phone number"
+            class="form-input"
+            required
+          />
+          <span
+            *ngIf="leadForm.get('homeownerPhone')?.invalid && leadForm.get('homeownerPhone')?.touched"
+            class="form-error"
+          >
+            Phone number is required
+          </span>
+        </div>
+
+        <!-- Property Address Field -->
+        <div class="form-group">
+          <label class="form-label">Property address <span>*</span></label>
+          <input
+            type="text"
+            formControlName="propertyAddress"
+            placeholder="Enter property address with postcode"
+            (change)="onPropertyAddressChange()"
+            (blur)="onPropertyAddressChange()"
+            class="form-input"
+            required
+          />
+          <span
+            *ngIf="leadForm.get('propertyAddress')?.invalid && leadForm.get('propertyAddress')?.touched"
+            class="form-error"
+          >
+            Property address is required
+          </span>
+
+          <!-- Loading indicator for agency lookup -->
+          <div *ngIf="isLookingUpAgencies" class="agency-loading">
+            Looking up agencies for this area...
+          </div>
+
+          <!-- Suggested Agencies -->
+          <div *ngIf="suggestedAgencies.length > 0" class="agencies-suggestion">
+            <p class="agencies-title">Suggested agencies for your area</p>
+            <div class="agencies-list">
+              <button
+                *ngFor="let agency of suggestedAgencies"
+                type="button"
+                (click)="selectAgency(agency)"
+                class="agency-button"
+              >
+                <span class="agency-name">{{ agency.name }}</span>
+                <span class="agency-details">{{ agency.territory }} | {{ agency.phone }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Property Type Dropdown -->
+        <div class="form-group">
+          <label class="form-label">Property type <span>*</span></label>
+          <select formControlName="propertyType" class="form-input" required>
+            <option value="">Select property type</option>
+            <option value="house">House</option>
+            <option value="apartment">Apartment</option>
+            <option value="unit">Unit</option>
+            <option value="townhouse">Townhouse</option>
+            <option value="land">Land</option>
+            <option value="other">Other</option>
+          </select>
+          <span
+            *ngIf="leadForm.get('propertyType')?.invalid && leadForm.get('propertyType')?.touched"
+            class="form-error"
+          >
+            Property type is required
+          </span>
+        </div>
+
+        <!-- Preferred Agency (Optional) -->
+        <div class="form-group">
+          <label class="form-label">Preferred agency (optional)</label>
+          <input
+            type="text"
+            formControlName="preferredAgency"
+            placeholder="Agency name (if any)"
+            class="form-input"
+          />
+        </div>
+
+        <!-- Preferred Contact Time (Optional) -->
+        <div class="form-group">
+          <label class="form-label">Best time to call (optional)</label>
+          <input
+            type="text"
+            formControlName="preferredContactTime"
+            placeholder="e.g., Evenings 5-8pm"
+            class="form-input"
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" [disabled]="isSubmitting" class="btn btn-primary">
+          {{ isSubmitting ? 'Submitting...' : 'Get My Appraisal' }}
+        </button>
+
+        <p class="form-disclaimer">
+          This is not a formal valuation. We will connect you with licensed Brisbane agents.
+        </p>
+      </form>
     </div>
-  </form>
-</div>
+  </div>
+</section>

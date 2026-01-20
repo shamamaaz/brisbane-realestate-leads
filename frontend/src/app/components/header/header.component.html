@@ -1,20 +1,25 @@
-<header class="bg-white shadow-md">
-  <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-    <div class="text-2xl font-bold text-blue-600 cursor-pointer" routerLink="/">MyRealEstate</div>
-    <nav class="space-x-4 hidden md:flex">
-      <a routerLink="/" class="text-gray-700 hover:text-blue-600 cursor-pointer">Home</a>
-      <a routerLink="/listings" class="text-gray-700 hover:text-blue-600 cursor-pointer">Listings</a>
-      <a routerLink="/about" class="text-gray-700 hover:text-blue-600 cursor-pointer">About</a>
-      <a routerLink="/contact" class="text-gray-700 hover:text-blue-600 cursor-pointer">Contact</a>
+<div class="site-header">
+  <div class="site-header-inner">
+    <a class="brand" routerLink="/">
+      <span class="brand-title">Brisbane Lead Exchange</span>
+      <span class="brand-subtitle">Real estate lead platform</span>
+    </a>
+    <nav class="site-nav">
+      <a routerLink="/">Home</a>
+      <a routerLink="/sell">Sell</a>
+      <a routerLink="/for-agents">For Agents</a>
+      <a routerLink="/agent">Agent</a>
+      <a routerLink="/agency">Agency</a>
+      <a routerLink="/admin">Admin</a>
     </nav>
-    <div class="space-x-2">
+    <div class="auth-actions">
       <ng-container *ngIf="!isLoggedIn">
-        <button (click)="navigateToLogin()" class="px-4 py-2 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 font-semibold transition">Login</button>
-        <button (click)="navigateToRegister()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition shadow-md">Register</button>
+        <button (click)="navigateToLogin()" class="btn btn-outline">Login</button>
+        <button (click)="navigateToRegister()" class="btn btn-primary">Register</button>
       </ng-container>
       <ng-container *ngIf="isLoggedIn">
-        <button (click)="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition">Logout</button>
+        <button (click)="logout()" class="btn btn-danger">Logout</button>
       </ng-container>
     </div>
   </div>
-</header>
+</div>

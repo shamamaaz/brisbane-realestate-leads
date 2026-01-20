@@ -1,14 +1,13 @@
 <div class="agency-dashboard">
-  <!-- Navigation Header -->
   <header class="dashboard-nav">
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-brand">
-          <span class="nav-icon">🏠</span>
-          <span class="nav-title">Your Leads</span>
+          <span class="nav-title">Brisbane Lead Exchange</span>
+          <span class="nav-subtitle">Agency admin</span>
         </div>
         <nav class="nav-links">
-          <a href="#" class="nav-link active">Leads</a>
+          <a href="#" class="nav-link active">Dashboard</a>
           <a href="#" class="nav-link">Agents</a>
           <a href="#" class="nav-link">Settings</a>
         </nav>
@@ -17,63 +16,91 @@
         <div class="user-menu" (click)="logout()" title="Logout">
           <span class="user-avatar">👤</span>
           <span class="user-name">{{ agencyName }}</span>
-          <span class="dropdown-arrow">⊗</span>
+          <span class="dropdown-arrow">Sign out</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <div class="dashboard-container">
-    <!-- Header Section -->
-    <div class="header-section">
+  <main class="dashboard-container">
+    <section class="header-section">
       <div>
-        <h1 class="page-title">{{ agencyName }} - Admin</h1>
+        <p class="eyebrow">Agency overview</p>
+        <h1 class="page-title">{{ agencyName }}</h1>
+        <p class="page-subtitle">Lead intake, agent performance, and revenue snapshot.</p>
       </div>
       <button class="btn btn-primary btn-upload">Upload CSV</button>
-    </div>
+    </section>
 
-    <!-- Statistics Cards -->
-    <div class="stats-grid">
+    <section class="stats-grid">
       <div class="stat-card">
-        <p class="stat-label">Total Leads</p>
-        <p class="stat-number">{{ totalLeads }}</p>
+        <p>Total Leads</p>
+        <strong>{{ totalLeads }}</strong>
       </div>
       <div class="stat-card">
-        <p class="stat-label">Active Agents</p>
-        <p class="stat-number">{{ activeAgents }}</p>
+        <p>Active Agents</p>
+        <strong>{{ activeAgents }}</strong>
       </div>
       <div class="stat-card">
-        <p class="stat-label">Monthly Revenue</p>
-        <p class="stat-number">{{ monthlyRevenue | currency }}</p>
+        <p>Monthly Revenue</p>
+        <strong>{{ monthlyRevenue | currency }}</strong>
       </div>
-    </div>
+    </section>
 
-    <!-- Agents Table -->
-    <div class="table-section">
-      <table class="agents-table">
-        <thead class="table-header">
-          <tr>
-            <th>Agent</th>
-            <th>Leads Assigned</th>
-            <th>Territory</th>
-            <th>Performance</th>
-          </tr>
-        </thead>
-        <tbody class="table-body">
-          <tr *ngFor="let agent of agents" class="table-row">
-            <td class="cell-name">{{ agent.name }}</td>
-            <td class="cell-leads">{{ agent.leadsAssigned }}</td>
-            <td class="cell-territory">{{ agent.territory }}</td>
-            <td class="cell-actions">
-              <button (click)="manageAgent(agent)" class="btn-manage">Manage</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <section class="table-section">
+      <div class="table-header-row">
+        <h2>Agent performance</h2>
+        <span>{{ agents.length }} agents</span>
+      </div>
+      <div class="table-scroll">
+        <table class="agents-table">
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Leads Assigned</th>
+              <th>Territory</th>
+              <th>Performance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let agent of agents">
+              <td class="cell-name">{{ agent.name }}</td>
+              <td>{{ agent.leadsAssigned || 0 }}</td>
+              <td>{{ agent.territory || '—' }}</td>
+              <td>
+                <button (click)="manageAgent(agent)" class="btn-manage">Manage</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-    <!-- Background Image -->
-    <div class="background-image"></div>
-  </div>
+    <section class="table-section">
+      <div class="table-header-row">
+        <h2>Recent leads</h2>
+        <span>{{ filteredLeads.length }} records</span>
+      </div>
+      <div class="table-scroll">
+        <table class="agents-table">
+          <thead>
+            <tr>
+              <th>Lead</th>
+              <th>Address</th>
+              <th>Status</th>
+              <th>Callback</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let lead of filteredLeads | slice:0:5">
+              <td class="cell-name">{{ lead.homeownerName }}</td>
+              <td>{{ lead.propertyAddress }}</td>
+              <td><span class="status-pill">{{ lead.status || 'New' }}</span></td>
+              <td>{{ lead.preferredContactTime || 'Anytime' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 </div>

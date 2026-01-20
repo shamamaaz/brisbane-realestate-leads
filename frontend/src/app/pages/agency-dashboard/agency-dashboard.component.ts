@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { LeadDetailModalComponent } from '../../components/lead-detail-modal/lead-detail-modal.component';
 import { Lead } from '../../models/lead.model';
+import { AgentService } from '../../services/agent.service';
 import { LeadService } from '../../services/lead.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -20,12 +21,7 @@ export class AgencyDashboardComponent implements OnInit {
   activeAgents = 0;
   monthlyRevenue = 18750;
 
-  agents = [
-    { name: 'Sarah Johnson', leadsAssigned: 32, territory: 'North Suburbs' },
-    { name: 'Mike Lee', leadsAssigned: 19, territory: 'East District' },
-    { name: 'Linda Green', leadsAssigned: 45, territory: 'South Hills' },
-    { name: 'David Wong', leadsAssigned: 14, territory: 'Central Area' }
-  ];
+  agents: any[] = [];
 
   statusFilter: string = '';
   propertyTypeFilter: string = '';
@@ -42,6 +38,7 @@ export class AgencyDashboardComponent implements OnInit {
 
   constructor(
     private leadService: LeadService,
+    private agentService: AgentService,
     private authService: AuthService,
     private router: Router,
     private dialog: MatDialog
@@ -50,6 +47,7 @@ export class AgencyDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.checkAuth();
     this.loadAgencyInfo();
+    this.loadAgents();
     this.loadLeads();
   }
 
@@ -88,6 +86,18 @@ export class AgencyDashboardComponent implements OnInit {
         this.errorMessage = 'Failed to load leads. Please try again.';
         this.isLoading = false;
       }
+    });
+  }
+
+  loadAgents() {
+    this.agentService.getAgents().subscribe({
+      next: (agents) => {
+        this.agents = agents;
+        this.activeAgents = agents.length;
+      },
+      error: (err) => {
+        console.error('Error loading agents:', err);
+      },
     });
   }
 

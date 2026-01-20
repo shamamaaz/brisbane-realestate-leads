@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 250, 243, 0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(28, 37, 41, 0.12);
+}
+
+.site-header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: 'Manrope', sans-serif;
+  color: #1c2529;
+}
+
+.brand {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: inherit;
+}
+
+.brand-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+}
+
+.brand-subtitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  color: #5a6a70;
+}
+
+.site-nav {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: #5a6a70;
+  font-weight: 600;
+  font-size: 14px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.site-nav a:hover {
+  color: #1f6b6f;
+  border-bottom-color: #1f6b6f;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary {
+  background: #1f6b6f;
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(31, 107, 111, 0.2);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(31, 107, 111, 0.4);
+  color: #1f6b6f;
+}
+
+.btn-danger {
+  background: #b84d4d;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .site-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .auth-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

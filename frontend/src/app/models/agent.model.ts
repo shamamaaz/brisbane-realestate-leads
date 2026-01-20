@@ -5,6 +5,8 @@ export interface Agent {
   phone: string;
   agencyId: number;
   territoryId: number;
+  territory?: string;
+  leadsAssigned?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
