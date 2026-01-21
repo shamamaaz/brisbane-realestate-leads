@@ -1,15 +1,16 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AgencyService } from '../../services/agency.service';
 import { AuthService } from '../../services/auth.service';
 import { LeadService } from '../../services/lead.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-lead-form',
   templateUrl: './lead-form.component.html',
   styleUrls: ['./lead-form.component.scss']
 })
-export class LeadFormComponent {
+export class LeadFormComponent implements AfterViewInit, OnDestroy {
   leadForm: FormGroup;
   isSubmitting = false;
   submitMessage = '';
@@ -18,6 +19,9 @@ export class LeadFormComponent {
   isLookingUpAgencies = false;
 
   @Output() submitLeadEvent = new EventEmitter<any>();
+  @ViewChild('propertyAddressInput') propertyAddressInput?: ElementRef<HTMLInputElement>;
+
+  private autocompleteListener?: { remove: () => void };
 
   constructor(
     private fb: FormBuilder,
@@ -33,6 +37,76 @@ export class LeadFormComponent {
       propertyType: ['', Validators.required],
       preferredAgency: [''],
       preferredContactTime: ['']
+    });
+  }
+
+  ngAfterViewInit() {
+    void this.initializeAddressAutocomplete();
+  }
+
+  ngOnDestroy() {
+    if (this.autocompleteListener) {
+      this.autocompleteListener.remove();
+    }
+  }
+
+  private async initializeAddressAutocomplete() {
+    if (!environment.googleMapsApiKey || !this.propertyAddressInput) {
+      return;
+    }
+
+    try {
+      await this.loadGooglePlacesApi();
+    } catch (error) {
+      console.warn('Google Places API failed to load:', error);
+      return;
+    }
+
+    const googleMaps = (window as any).google;
+    if (!googleMaps?.maps?.places) {
+      return;
+    }
+
+    const autocomplete = new googleMaps.maps.places.Autocomplete(
+      this.propertyAddressInput.nativeElement,
+      {
+        types: ['address'],
+        componentRestrictions: { country: 'au' },
+        fields: ['formatted_address', 'address_components'],
+      }
+    );
+
+    this.autocompleteListener = autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      const formattedAddress = place?.formatted_address;
+      if (formattedAddress) {
+        this.leadForm.patchValue({ propertyAddress: formattedAddress });
+      }
+      this.onPropertyAddressChange();
+    });
+  }
+
+  private loadGooglePlacesApi(): Promise<void> {
+    if ((window as any).google?.maps?.places) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      const existing = document.getElementById('google-maps-places-script') as HTMLScriptElement | null;
+      if (existing) {
+        existing.addEventListener('load', () => resolve());
+        existing.addEventListener('error', () => reject(new Error('Google Places script failed to load.')));
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.id = 'google-maps-places-script';
+      script.async = true;
+      script.defer = true;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${environment.googleMapsApiKey}&libraries=places`;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Google Places script failed to load.'));
+      document.head.appendChild(script);
     });
   }
 

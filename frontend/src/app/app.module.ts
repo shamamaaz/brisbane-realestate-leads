@@ -20,6 +20,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
 import { PropertyDetailComponent } from './pages/property-detail/property-detail.component';
+import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { SellComponent } from './pages/sell/sell.component';
 import { ThankYouComponent } from './pages/thank-you/thank-you.component';
@@ -42,6 +43,7 @@ import { AgentModule } from './agent/agent.module';
     LandingComponent,
     HomeComponent,
     PropertyDetailComponent,
+    AuthCallbackComponent,
     LoginComponent,
     RegisterComponent,
     SellComponent,

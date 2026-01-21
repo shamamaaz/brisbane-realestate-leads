@@ -1,0 +1,8 @@
+<div class="auth-callback">
+  <div class="callback-card">
+    <div class="spinner" [class.error]="hasError"></div>
+    <h1>{{ statusMessage }}</h1>
+    <p *ngIf="hasError">Return to the sign in page and try again.</p>
+    <a *ngIf="hasError" routerLink="/auth/login" class="btn-link">Back to sign in</a>
+  </div>
+</div>

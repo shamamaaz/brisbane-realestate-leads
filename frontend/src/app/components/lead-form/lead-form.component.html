@@ -79,6 +79,8 @@
             placeholder="Enter property address with postcode"
             (change)="onPropertyAddressChange()"
             (blur)="onPropertyAddressChange()"
+            #propertyAddressInput
+            autocomplete="off"
             class="form-input"
             required
           />

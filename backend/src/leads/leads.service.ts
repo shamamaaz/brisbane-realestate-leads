@@ -144,6 +144,7 @@ export class LeadsService {
     const lead = await this.getLeadById(id);
     lead.nextFollowUpDate = followUpDate;
     lead.status = 'Scheduled';
+    lead.followUpNotes = notes || '';
     
     await this.addNoteToLead(id, { note: `Follow-up scheduled: ${notes}` });
     

@@ -40,6 +40,9 @@ export class Lead {
   @Column({ type: 'simple-array', nullable: true })
   callHistory: string[]; // Array of call timestamps and notes
 
+  @Column({ type: 'text', nullable: true })
+  followUpNotes: string; // Notes saved with scheduled follow-up
+
   @Column({ nullable: true })
   nextFollowUpDate: Date; // Scheduled follow-up date
 

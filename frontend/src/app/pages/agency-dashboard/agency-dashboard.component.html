@@ -102,5 +102,37 @@
         </table>
       </div>
     </section>
+
+    <div class="modal-overlay" *ngIf="selectedAgent && isAgentModalOpen" (click)="closeAgentModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <h2>{{ selectedAgent.name }}</h2>
+            <p>{{ selectedAgent.territory || 'No territory set' }}</p>
+          </div>
+          <button class="close-btn" type="button" (click)="closeAgentModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Email</span>
+              <span class="detail-value">{{ selectedAgent.email }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Phone</span>
+              <span class="detail-value">{{ selectedAgent.phone }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Leads assigned</span>
+              <span class="detail-value">{{ selectedAgent.leadsAssigned || 0 }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" type="button" (click)="emailAgent(selectedAgent)">Email</button>
+          <button class="btn btn-primary" type="button" (click)="callAgent(selectedAgent)">Call</button>
+        </div>
+      </div>
+    </div>
   </main>
 </div>

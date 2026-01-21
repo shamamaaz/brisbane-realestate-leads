@@ -102,6 +102,7 @@
               </td>
               <td class="cell-time">{{ lead.preferredContactTime || 'Anytime' }}</td>
               <td class="cell-actions">
+                <button (click)="viewLead(lead)" class="btn-small btn-view">View</button>
                 <button (click)="selectLead(lead)" class="btn-small btn-action">Actions</button>
               </td>
             </tr>
@@ -150,8 +151,53 @@
             </div>
           </div>
 
-          <!-- Status Update -->
           <div class="detail-section">
+            <h3 class="section-title">Lead Details</h3>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">{{ selectedLead.status || 'New' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Preferred Agency:</span>
+                <span class="detail-value">{{ selectedLead.preferredAgency || '—' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Best Time to Call:</span>
+                <span class="detail-value">{{ selectedLead.preferredContactTime || 'Anytime' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Assigned Agent:</span>
+                <span class="detail-value">{{ selectedLead.assignedAgentName || '—' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Next Follow-Up:</span>
+                <span class="detail-value">{{ selectedLead.nextFollowUpDate | date:'medium' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Follow-Up Notes:</span>
+                <span class="detail-value">{{ selectedLead.followUpNotes || '—' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Last Contacted:</span>
+                <span class="detail-value">{{ selectedLead.lastContactedDate | date:'medium' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Created:</span>
+                <span class="detail-value">{{ selectedLead.createdAt | date:'medium' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section notes-panel" *ngIf="isViewOnly && selectedLead.callHistory && selectedLead.callHistory.length">
+            <h3 class="section-title">Notes & History</h3>
+            <ul class="history-list">
+              <li *ngFor="let call of selectedLead.callHistory" class="history-item">{{ call }}</li>
+            </ul>
+          </div>
+
+          <!-- Status Update -->
+          <div class="detail-section" *ngIf="!isViewOnly">
             <h3 class="section-title">Update Status</h3>
             <select [(ngModel)]="newStatus" class="form-input form-select">
               <option value="">Select Status</option>
@@ -164,7 +210,7 @@
           </div>
 
           <!-- Add Note -->
-          <div class="detail-section">
+          <div class="detail-section" *ngIf="!isViewOnly">
             <div class="section-header">
               <h3 class="section-title">Add Note</h3>
               <button 
@@ -179,17 +225,21 @@
           </div>
 
           <!-- Schedule Follow-Up -->
-          <div class="detail-section">
+          <div class="detail-section" *ngIf="!isViewOnly">
             <h3 class="section-title">Schedule Follow-Up</h3>
             <div class="form-group">
-              <label class="form-label">Follow-Up Date & Time</label>
-              <input type="datetime-local" [(ngModel)]="followUpDate" class="form-input" />
+              <label class="form-label">Follow-Up Date</label>
+              <input type="date" [(ngModel)]="followUpDate" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Follow-Up Time</label>
+              <input type="time" [(ngModel)]="followUpTime" class="form-input" />
             </div>
             <div class="form-group">
               <label class="form-label">Notes</label>
               <textarea [(ngModel)]="followUpNotes" placeholder="Follow-up notes..." class="form-input textarea" rows="3"></textarea>
             </div>
-            <button (click)="scheduleFollowUp()" [disabled]="!followUpDate" class="btn btn-primary btn-full">Schedule Follow-Up</button>
+            <button (click)="scheduleFollowUp()" [disabled]="!followUpDate || !followUpTime" class="btn btn-primary btn-full">Schedule Follow-Up</button>
           </div>
 
           <!-- Call History -->

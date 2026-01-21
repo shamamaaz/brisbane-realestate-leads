@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards, ForbiddenException, Res } from '@nestjs/common';
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { FacebookAuthGuard } from './guards/facebook-auth.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('api/auth')
@@ -19,9 +22,53 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth() {
+    return { status: 'OK' };
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleCallback(@Request() req: any, @Res() res: Response) {
+    const payload = req.user as AuthResponseDto;
+    return this.redirectToApp(res, payload);
+  }
+
+  @Get('facebook')
+  @UseGuards(FacebookAuthGuard)
+  async facebookAuth() {
+    return { status: 'OK' };
+  }
+
+  @Get('facebook/callback')
+  @UseGuards(FacebookAuthGuard)
+  async facebookCallback(@Request() req: any, @Res() res: Response) {
+    const payload = req.user as AuthResponseDto;
+    return this.redirectToApp(res, payload);
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async getCurrentUser(@Request() req: any): Promise<any> {
     return this.authService.getUserById(req.user.id);
+  }
+
+  @Post('seed-demo')
+  async seedDemo() {
+    if (process.env.ENABLE_DEMO_SEED !== 'true') {
+      throw new ForbiddenException('Demo seed is disabled. Set ENABLE_DEMO_SEED=true to enable.');
+    }
+    return this.authService.seedDemoData();
+  }
+
+  private redirectToApp(res: Response, payload: AuthResponseDto) {
+    const webAppUrl = process.env.WEB_APP_URL || 'http://localhost:4200';
+    const redirectUrl = new URL('/auth/callback', webAppUrl);
+    redirectUrl.searchParams.set('token', payload.accessToken);
+    redirectUrl.searchParams.set('role', payload.role);
+    redirectUrl.searchParams.set('email', payload.email);
+    redirectUrl.searchParams.set('name', payload.name || '');
+    return res.redirect(redirectUrl.toString());
   }
 }

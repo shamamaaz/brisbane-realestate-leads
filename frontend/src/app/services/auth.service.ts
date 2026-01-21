@@ -107,6 +107,14 @@ export class AuthService {
     }
   }
 
+  setSession(accessToken: string, role?: string): void {
+    this.setToken(accessToken);
+    this.tokenSubject.next(accessToken);
+    if (role) {
+      this.setRole(role);
+    }
+  }
+
   /**
    * Remove token
    */

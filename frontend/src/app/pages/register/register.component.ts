@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -12,6 +13,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isLoading = false;
   error = '';
+  socialError = '';
 
   roles = [
     { value: 'homeowner', label: 'Homeowner (Submit leads)' },
@@ -72,5 +74,22 @@ export class RegisterComponent {
         this.error = err.error?.message || 'Registration failed. Please try again.';
       }
     });
+  }
+
+  continueWithGoogle() {
+    this.startSocialAuth(environment.googleAuthUrl, 'Google');
+  }
+
+  continueWithFacebook() {
+    this.startSocialAuth(environment.facebookAuthUrl, 'Facebook');
+  }
+
+  private startSocialAuth(url: string, provider: string) {
+    this.socialError = '';
+    if (!url) {
+      this.socialError = `${provider} sign-up is not configured yet.`;
+      return;
+    }
+    window.location.href = url;
   }
 }

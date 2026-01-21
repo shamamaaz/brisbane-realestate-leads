@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ForAgentsComponent } from './pages/for-agents/for-agents.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
+import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { SellComponent } from './pages/sell/sell.component';
 import { ThankYouComponent } from './pages/thank-you/thank-you.component';
@@ -22,6 +23,7 @@ const routes: Routes = [
   // 🔐 Auth
   { path: 'auth/login', component: LoginComponent },
   { path: 'auth/register', component: RegisterComponent },
+  { path: 'auth/callback', component: AuthCallbackComponent },
   { path: 'login', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'register', redirectTo: 'auth/register', pathMatch: 'full' },
   { path: 'submit', redirectTo: 'sell', pathMatch: 'full' },

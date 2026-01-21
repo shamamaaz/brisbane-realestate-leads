@@ -5,6 +5,9 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000',
+  googleMapsApiKey: '',
+  googleAuthUrl: 'http://localhost:3000/api/auth/google',
+  facebookAuthUrl: 'http://localhost:3000/api/auth/facebook',
 };
 
 /*

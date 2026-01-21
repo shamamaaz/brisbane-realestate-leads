@@ -23,7 +23,7 @@ BRISBANE REAL ESTATE LEADS PLATFORM
               GET /api/leads
               POST /api/leads
               PUT /api/leads/:id
-              POST /api/leads/:id/status
+                POST /api/leads/:id/status
                            ↓
                     💾 DATABASE 💾
                  (PostgreSQL/MySQL)

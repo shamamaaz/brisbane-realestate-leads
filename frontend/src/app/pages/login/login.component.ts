@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +13,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   isLoading = false;
   error = '';
+  socialError = '';
 
   constructor(
     private fb: FormBuilder,
@@ -53,5 +55,22 @@ export class LoginComponent {
         this.error = err.error?.message || 'Login failed. Please check your credentials.';
       }
     });
+  }
+
+  continueWithGoogle() {
+    this.startSocialAuth(environment.googleAuthUrl, 'Google');
+  }
+
+  continueWithFacebook() {
+    this.startSocialAuth(environment.facebookAuthUrl, 'Facebook');
+  }
+
+  private startSocialAuth(url: string, provider: string) {
+    this.socialError = '';
+    if (!url) {
+      this.socialError = `${provider} sign-in is not configured yet.`;
+      return;
+    }
+    window.location.href = url;
   }
 }

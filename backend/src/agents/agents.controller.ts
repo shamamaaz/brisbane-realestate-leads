@@ -1,4 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { CreateAgentDto } from './dto/create-agent.dto';
 import { AgentsService } from './agents.service';
 
 @Controller('api/agents')
@@ -8,6 +9,11 @@ export class AgentsController {
   @Get()
   getAllAgents() {
     return this.agentsService.getAllAgents();
+  }
+
+  @Post()
+  createAgent(@Body() createAgentDto: CreateAgentDto) {
+    return this.agentsService.createAgent(createAgentDto);
   }
 
   @Get(':id')

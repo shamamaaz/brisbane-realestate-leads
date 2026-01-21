@@ -16,6 +16,10 @@ export class AgentService {
     return this.http.get<Agent[]>(this.apiUrl);
   }
 
+  createAgent(agent: Partial<Agent>): Observable<Agent> {
+    return this.http.post<Agent>(this.apiUrl, agent);
+  }
+
   getAgentById(id: number): Observable<Agent> {
     return this.http.get<Agent>(`${this.apiUrl}/${id}`);
   }

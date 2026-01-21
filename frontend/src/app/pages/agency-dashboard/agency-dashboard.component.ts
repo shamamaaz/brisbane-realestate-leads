@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { LeadDetailModalComponent } from '../../components/lead-detail-modal/lead-detail-modal.component';
 import { Lead } from '../../models/lead.model';
+import { Agent } from '../../models/agent.model';
 import { AgentService } from '../../services/agent.service';
 import { LeadService } from '../../services/lead.service';
 import { AuthService } from '../../services/auth.service';
@@ -21,7 +22,9 @@ export class AgencyDashboardComponent implements OnInit {
   activeAgents = 0;
   monthlyRevenue = 18750;
 
-  agents: any[] = [];
+  agents: Agent[] = [];
+  selectedAgent: Agent | null = null;
+  isAgentModalOpen = false;
 
   statusFilter: string = '';
   propertyTypeFilter: string = '';
@@ -128,9 +131,31 @@ export class AgencyDashboardComponent implements OnInit {
     this.filterLeads();
   }
 
-  manageAgent(agent: any) {
-    console.log('Managing agent:', agent);
-    // Future: Open agent management modal
+  manageAgent(agent: Agent) {
+    this.selectedAgent = agent;
+    this.isAgentModalOpen = true;
+  }
+
+  closeAgentModal() {
+    this.isAgentModalOpen = false;
+    this.selectedAgent = null;
+  }
+
+  emailAgent(agent: Agent) {
+    if (!agent.email) return;
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(agent.email).catch(() => {
+        window.prompt('Copy email', agent.email);
+      });
+      return;
+    }
+
+    window.prompt('Copy email', agent.email);
+  }
+
+  callAgent(agent: Agent) {
+    if (!agent.phone) return;
+    window.location.href = `tel:${agent.phone}`;
   }
 
   logout() {

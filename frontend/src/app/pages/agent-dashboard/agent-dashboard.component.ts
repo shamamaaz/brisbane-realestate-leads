@@ -30,11 +30,13 @@ export class AgentDashboardComponent implements OnInit {
   statusFilter = 'all';
   selectedLead: Lead | null = null;
   isModalOpen = false;
+  isViewOnly = false;
 
   // Form fields for modal
   newStatus = '';
   noteText = '';
   followUpDate = '';
+  followUpTime = '';
   followUpNotes = '';
   showNotesPanel = false;
 
@@ -95,6 +97,18 @@ export class AgentDashboardComponent implements OnInit {
     }
   }
 
+  private applyLeadUpdate(updatedLead: Lead) {
+    const updateList = (list: Lead[]) => {
+      const index = list.findIndex(l => l.id === updatedLead.id);
+      if (index !== -1) {
+        list[index] = { ...list[index], ...updatedLead };
+      }
+    };
+
+    updateList(this.leads);
+    updateList(this.filteredLeads);
+  }
+
   calculateStats() {
     this.newLeadsCount = this.leads.filter(l => l.status === 'New').length;
     this.followUpsCount = this.leads.filter(l => l.status === 'Contacted').length;
@@ -109,20 +123,35 @@ export class AgentDashboardComponent implements OnInit {
   selectLead(lead: Lead) {
     this.selectedLead = lead;
     this.isModalOpen = true;
+    this.isViewOnly = false;
     // Reset form fields
     this.newStatus = '';
     this.noteText = '';
     this.followUpDate = '';
+    this.followUpTime = '';
+    this.followUpNotes = '';
+  }
+
+  viewLead(lead: Lead) {
+    this.selectedLead = lead;
+    this.isModalOpen = true;
+    this.isViewOnly = true;
+    this.newStatus = '';
+    this.noteText = '';
+    this.followUpDate = '';
+    this.followUpTime = '';
     this.followUpNotes = '';
   }
 
   closeModal() {
     this.isModalOpen = false;
     this.selectedLead = null;
+    this.isViewOnly = false;
     // Reset form fields
     this.newStatus = '';
     this.noteText = '';
     this.followUpDate = '';
+    this.followUpTime = '';
     this.followUpNotes = '';
     this.showNotesPanel = false;
   }
@@ -131,17 +160,13 @@ export class AgentDashboardComponent implements OnInit {
     if (!this.selectedLead || !this.newStatus) return;
 
     this.leadService.updateLeadStatus(this.selectedLead.id!, {
-      status: this.newStatus,
-      lastContactedDate: new Date()
+      status: this.newStatus
     }).subscribe(
       (updatedLead: Lead) => {
-        const index = this.leads.findIndex(l => l.id === updatedLead.id);
-        if (index !== -1) {
-          this.leads[index] = updatedLead;
-        }
+        this.applyLeadUpdate(updatedLead);
         this.filterLeads();
         this.calculateStats();
-        this.selectedLead = updatedLead;
+        this.selectedLead = { ...this.selectedLead, ...updatedLead };
         this.newStatus = '';
       },
       (error) => {
@@ -151,21 +176,18 @@ export class AgentDashboardComponent implements OnInit {
   }
 
   scheduleFollowUp() {
-    if (!this.selectedLead || !this.followUpDate) return;
+    if (!this.selectedLead || !this.followUpDate || !this.followUpTime) return;
 
-    // Convert datetime-local string to Date
-    const followUpDateObj = new Date(this.followUpDate);
+    const followUpDateObj = new Date(`${this.followUpDate}T${this.followUpTime}`);
 
     this.leadService.scheduleFollowUp(this.selectedLead.id!, followUpDateObj, this.followUpNotes).subscribe(
       (updatedLead: Lead) => {
-        const index = this.leads.findIndex(l => l.id === updatedLead.id);
-        if (index !== -1) {
-          this.leads[index] = updatedLead;
-        }
+        this.applyLeadUpdate(updatedLead);
         this.filterLeads();
         this.calculateStats();
-        this.selectedLead = updatedLead;
+        this.selectedLead = { ...this.selectedLead, ...updatedLead };
         this.followUpDate = '';
+        this.followUpTime = '';
         this.followUpNotes = '';
       },
       (error) => {
@@ -179,11 +201,8 @@ export class AgentDashboardComponent implements OnInit {
 
     this.leadService.addNoteToLead(this.selectedLead.id!, this.noteText).subscribe(
       (updatedLead: Lead) => {
-        const index = this.leads.findIndex(l => l.id === updatedLead.id);
-        if (index !== -1) {
-          this.leads[index] = updatedLead;
-        }
-        this.selectedLead = updatedLead;
+        this.applyLeadUpdate(updatedLead);
+        this.selectedLead = { ...this.selectedLead, ...updatedLead };
         this.noteText = '';
       },
       (error) => {
