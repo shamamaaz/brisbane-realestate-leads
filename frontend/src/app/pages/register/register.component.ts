@@ -56,13 +56,15 @@ export class RegisterComponent {
     this.authService.register(email, password, name, role).subscribe({
       next: (response) => {
         this.isLoading = false;
-        // Redirect based on role
-        if (role === 'agent') {
+        const userRole = response.role || role;
+        if (userRole === 'agent') {
           this.router.navigate(['/agent']);
-        } else if (role === 'agency_admin') {
+        } else if (userRole === 'agency_admin') {
           this.router.navigate(['/agency']);
+        } else if (userRole === 'system_admin') {
+          this.router.navigate(['/admin']);
         } else {
-          this.router.navigate(['/']);
+          this.router.navigate(['/sell']);
         }
       },
       error: (err) => {

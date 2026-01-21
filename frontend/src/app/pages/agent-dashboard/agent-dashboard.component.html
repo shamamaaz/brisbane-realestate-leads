@@ -7,8 +7,8 @@
           <span class="nav-subtitle">Agent workspace</span>
         </div>
         <nav class="nav-links">
-          <a href="#" class="nav-link active">Leads</a>
-          <a href="#" class="nav-link">Territories</a>
+          <a routerLink="/agent" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+          <a routerLink="/agent/leads" class="nav-link" routerLinkActive="active">Leads</a>
         </nav>
       </div>
       <div class="nav-right">

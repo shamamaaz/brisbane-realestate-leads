@@ -4,10 +4,11 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AgentDashboardComponent } from '../pages/agent-dashboard/agent-dashboard.component';
+import { AgentLeadsComponent } from '../pages/agent-leads/agent-leads.component';
 import { AgentRoutingModule } from './agent-routing.module';
 
 @NgModule({
-  declarations: [AgentDashboardComponent],
+  declarations: [AgentDashboardComponent, AgentLeadsComponent],
   imports: [
     CommonModule,
     AgentRoutingModule,

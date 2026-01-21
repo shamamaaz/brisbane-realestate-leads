@@ -1,9 +1,37 @@
 <div class="landing">
+  <section class="landing-form" @pageEnter>
+    <div class="landing-form-inner">
+      <div class="landing-form-copy">
+        <p class="eyebrow animate">Seller appraisal</p>
+        <h2 class="animate">Get a tailored property appraisal from Brisbane’s best agents.</h2>
+        <p class="animate">
+          Submit your property details once. We’ll route your request to top-performing agencies in your suburb.
+        </p>
+        <div class="trust-strip animate">
+          <span>✔ Free &amp; no obligation</span>
+          <span>✔ Territory matching</span>
+          <span>✔ Fast response</span>
+        </div>
+        <div class="info-card highlight-card animate">
+          <h3>Where to submit your lead</h3>
+          <p>Use the appraisal form below. It’s the official lead submission point for sellers.</p>
+        </div>
+        <div class="info-card animate">
+          <h3>Lead submitted on the landing page</h3>
+          <p>Sellers submit their appraisal request on the landing page. If you just submitted, you can track it below.</p>
+        </div>
+      </div>
+      <div class="landing-form-card animate">
+        <app-lead-form class="compact" (submitLeadEvent)="handleLeadSubmitted($event)"></app-lead-form>
+      </div>
+    </div>
+  </section>
+
   <section class="hero" @pageEnter>
     <div class="hero-inner">
       <div class="hero-copy">
         <p class="hero-kicker animate">Brisbane sellers, meet your match</p>
-        <h1 class="animate">Smarter property appraisals from agents who know your suburb.</h1>
+        <h1 class="animate">Get your free appraisal from agents who know your suburb.</h1>
         <p class="hero-subtitle animate">
           Submit your property details in minutes. We connect you with verified agents tailored to your area, with
           agency branding and fast response times.

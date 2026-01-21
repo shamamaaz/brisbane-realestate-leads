@@ -25,6 +25,9 @@ export class AuthService {
           if (response.accessToken) {
             this.setToken(response.accessToken);
             this.tokenSubject.next(response.accessToken);
+            if (response.role) {
+              this.setRole(response.role);
+            }
           }
         })
       );
@@ -41,6 +44,9 @@ export class AuthService {
           if (response.accessToken) {
             this.setToken(response.accessToken);
             this.tokenSubject.next(response.accessToken);
+            if (response.role) {
+              this.setRole(response.role);
+            }
           }
         })
       );
@@ -58,6 +64,7 @@ export class AuthService {
    */
   logout(): void {
     this.removeToken();
+    this.removeRole();
     this.tokenSubject.next(null);
   }
 
@@ -66,6 +73,13 @@ export class AuthService {
    */
   isAuthenticated(): boolean {
     return !!this.getToken();
+  }
+
+  getRole(): string | null {
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('role');
+    }
+    return null;
   }
 
   /**
@@ -87,12 +101,24 @@ export class AuthService {
     }
   }
 
+  private setRole(role: string): void {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('role', role);
+    }
+  }
+
   /**
    * Remove token
    */
   private removeToken(): void {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('accessToken');
+    }
+  }
+
+  private removeRole(): void {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('role');
     }
   }
 }

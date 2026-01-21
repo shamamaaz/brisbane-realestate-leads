@@ -1,3 +1,68 @@
 <div class="sell-page">
-  <app-lead-form (submitLeadEvent)="handleLeadSubmitted()"></app-lead-form>
+  <section class="sell-hero">
+    <div class="sell-hero-inner">
+      <div class="sell-hero-copy">
+        <p class="eyebrow">Seller appraisal</p>
+        <h1>Get a tailored property appraisal from Brisbane’s best agents.</h1>
+        <p>
+          Submit your property details once. We’ll route your request to top-performing agencies in your suburb.
+        </p>
+        <div class="sell-hero-note">
+          <span>✔ Free & no obligation</span>
+          <span>✔ Territory matching</span>
+          <span>✔ Fast response</span>
+        </div>
+      </div>
+      <div class="sell-hero-card">
+        <h3>Where to submit your lead</h3>
+        <p>Use the appraisal form below. It’s the official lead submission point for sellers.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sell-form-section">
+    <div class="sell-form-placeholder">
+      <h2>Lead submitted on the landing page</h2>
+      <p>
+        Sellers submit their appraisal request on the landing page. If you just submitted, you can track it below.
+      </p>
+    </div>
+  </section>
+
+  <section class="sell-dashboard" *ngIf="submittedLeads.length > 0">
+    <div class="sell-dashboard-header">
+      <h2>Your submitted leads</h2>
+      <p>Track your appraisal request and connect with agencies below.</p>
+    </div>
+
+    <div class="lead-list">
+      <div class="lead-card" *ngFor="let lead of submittedLeads">
+        <div>
+          <p class="lead-name">{{ lead.homeownerName }}</p>
+          <p class="lead-address">{{ lead.propertyAddress }}</p>
+        </div>
+        <span class="lead-status">{{ lead.status || 'New' }}</span>
+      </div>
+    </div>
+
+    <div class="agency-panel">
+      <div class="agency-header">
+        <h3>Connect with agents</h3>
+        <p>Suggested agencies based on your suburb.</p>
+      </div>
+      <div *ngIf="isLookingUpAgencies" class="agency-loading">Looking up agencies...</div>
+      <div class="agency-list" *ngIf="!isLookingUpAgencies">
+        <div class="agency-card" *ngFor="let agency of suggestedAgencies">
+          <div>
+            <p class="agency-name">{{ agency.name }}</p>
+            <p class="agency-territory">{{ agency.territory }}</p>
+          </div>
+          <span class="agency-phone">{{ agency.phone }}</span>
+        </div>
+        <p *ngIf="suggestedAgencies.length === 0" class="agency-empty">
+          Submit your lead above to see recommended agencies.
+        </p>
+      </div>
+    </div>
+  </section>
 </div>

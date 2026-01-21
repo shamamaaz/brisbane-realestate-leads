@@ -37,20 +37,15 @@ export class LoginComponent {
     this.authService.login(email, password).subscribe({
       next: (response) => {
         this.isLoading = false;
-        // Redirect based on role
-        const token = this.authService.getToken();
-        if (token) {
-          this.authService.getCurrentUser().subscribe({
-            next: (user: any) => {
-              if (user.role === 'agent') {
-                this.router.navigate(['/agent']);
-              } else if (user.role === 'agency_admin') {
-                this.router.navigate(['/agency']);
-              } else {
-                this.router.navigate(['/']);
-              }
-            }
-          });
+        const role = response.role || this.authService.getRole();
+        if (role === 'agent') {
+          this.router.navigate(['/agent']);
+        } else if (role === 'agency_admin') {
+          this.router.navigate(['/agency']);
+        } else if (role === 'system_admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/sell']);
         }
       },
       error: (err) => {

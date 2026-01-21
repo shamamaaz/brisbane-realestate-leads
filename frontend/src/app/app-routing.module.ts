@@ -16,18 +16,21 @@ const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'sell', component: SellComponent },
   { path: 'sell/thank-you', component: ThankYouComponent },
-  { path: 'thank-you', component: ThankYouComponent },
+  { path: 'thank-you', redirectTo: 'sell/thank-you', pathMatch: 'full' },
   { path: 'for-agents', component: ForAgentsComponent },
 
   // 🔐 Auth
   { path: 'auth/login', component: LoginComponent },
   { path: 'auth/register', component: RegisterComponent },
+  { path: 'login', redirectTo: 'auth/login', pathMatch: 'full' },
+  { path: 'register', redirectTo: 'auth/register', pathMatch: 'full' },
+  { path: 'submit', redirectTo: 'sell', pathMatch: 'full' },
 
   // 🧑‍💼 Agent Portal
   {
     path: 'agent',
     canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'agent' },
+    data: { roles: ['agent'] },
     loadChildren: () =>
       import('./agent/agent.module').then((m) => m.AgentModule),
   },
@@ -36,7 +39,7 @@ const routes: Routes = [
   {
     path: 'agency',
     canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'agency' },
+    data: { roles: ['agency_admin'] },
     loadChildren: () =>
       import('./agency/agency.module').then((m) => m.AgencyModule),
   },
@@ -45,7 +48,7 @@ const routes: Routes = [
   {
     path: 'admin',
     canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'admin' },
+    data: { roles: ['system_admin'] },
     loadChildren: () =>
       import('./admin/admin.module').then((m) => m.AdminModule),
   },

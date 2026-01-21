@@ -1,3 +1,217 @@
 .sell-page {
   min-height: 100vh;
+  background: #f6f2eb;
+  font-family: 'Manrope', sans-serif;
+  color: #1c2529;
+}
+
+.sell-page {
+  --teal: #1f6b6f;
+  --muted: #5a6a70;
+  --border: rgba(28, 37, 41, 0.12);
+  --cream: #fffaf3;
+}
+
+.sell-hero {
+  padding: 80px 24px 40px;
+  background: radial-gradient(circle at top, rgba(31, 107, 111, 0.16), transparent 60%);
+}
+
+.sell-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.6fr);
+  gap: 30px;
+  align-items: center;
+}
+
+.sell-hero-copy h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.2rem, 2.8vw, 3rem);
+  margin: 10px 0 16px;
+}
+
+.sell-hero-copy p {
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 2.2px;
+  font-size: 11px;
+  color: var(--teal);
+  font-weight: 700;
+}
+
+.sell-hero-note {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.sell-hero-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 16px 30px rgba(28, 37, 41, 0.12);
+
+  h3 {
+    margin: 0 0 8px;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+}
+
+.sell-form-section {
+  padding: 0 0 40px;
+}
+
+.sell-form-placeholder {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 12px 24px rgba(28, 37, 41, 0.08);
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    margin: 0 0 8px;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+}
+
+.sell-dashboard {
+  max-width: 1100px;
+  margin: 0 auto 60px;
+  padding: 0 24px;
+  display: grid;
+  gap: 22px;
+}
+
+.sell-dashboard-header h2 {
+  font-family: 'Fraunces', serif;
+  margin: 0 0 6px;
+}
+
+.sell-dashboard-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.lead-list {
+  display: grid;
+  gap: 12px;
+}
+
+.lead-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 12px 24px rgba(28, 37, 41, 0.08);
+}
+
+.lead-name {
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.lead-address {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.lead-status {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.agency-panel {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  padding: 18px;
+  box-shadow: 0 14px 30px rgba(28, 37, 41, 0.08);
+}
+
+.agency-header h3 {
+  margin: 0 0 6px;
+}
+
+.agency-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.agency-loading {
+  margin-top: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.agency-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.agency-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+}
+
+.agency-name {
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.agency-territory {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.agency-phone {
+  font-weight: 600;
+  color: var(--teal);
+}
+
+.agency-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .sell-hero-inner {
+    grid-template-columns: 1fr;
+  }
 }

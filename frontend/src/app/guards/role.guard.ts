@@ -1,31 +1,32 @@
 import { Injectable } from '@angular/core';
 import {
-    ActivatedRouteSnapshot,
-    CanActivate,
-    Router,
-    RouterStateSnapshot,
+  ActivatedRouteSnapshot,
+  CanActivate,
+  Router,
+  RouterStateSnapshot,
 } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoleGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot,
   ): boolean {
-    const userRole = localStorage.getItem('role');
-    const requiredRole = route.data['role'];
+    const userRole = this.authService.getRole();
+    const requiredRoles = route.data['roles'] as string[] | undefined;
 
-    if (userRole === requiredRole) {
+    if (!requiredRoles || (userRole && requiredRoles.includes(userRole))) {
       return true;
     }
 
     // Redirect to home if role doesn't match
     console.warn(
-      `User role '${userRole}' does not match required role '${requiredRole}'`,
+      `User role '${userRole}' does not match required roles '${requiredRoles}'`,
     );
     this.router.navigate(['/']);
     return false;

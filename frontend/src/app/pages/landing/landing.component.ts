@@ -25,6 +25,16 @@ import { Router } from '@angular/router';
 export class LandingComponent {
   constructor(private router: Router) {}
 
+  handleLeadSubmitted(lead: any) {
+    if (lead) {
+      const stored = localStorage.getItem('submittedLeads');
+      const leads = stored ? JSON.parse(stored) : [];
+      leads.unshift(lead);
+      localStorage.setItem('submittedLeads', JSON.stringify(leads));
+    }
+    this.router.navigate(['/sell']);
+  }
+
   goToSell() {
     this.router.navigate(['/sell']);
   }
