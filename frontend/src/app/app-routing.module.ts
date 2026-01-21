@@ -5,6 +5,7 @@ import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { SellerDashboardComponent } from './pages/seller-dashboard/seller-dashboard.component';
 import { SellComponent } from './pages/sell/sell.component';
 import { ThankYouComponent } from './pages/thank-you/thank-you.component';
 
@@ -27,6 +28,14 @@ const routes: Routes = [
   { path: 'login', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'register', redirectTo: 'auth/register', pathMatch: 'full' },
   { path: 'submit', redirectTo: 'sell', pathMatch: 'full' },
+
+  // 🏠 Seller Portal
+  {
+    path: 'seller',
+    component: SellerDashboardComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['homeowner'] },
+  },
 
   // 🧑‍💼 Agent Portal
   {

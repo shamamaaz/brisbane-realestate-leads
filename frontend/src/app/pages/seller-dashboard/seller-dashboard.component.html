@@ -1,0 +1,120 @@
+<div class="seller-dashboard">
+  <header class="dashboard-nav">
+    <div class="nav-container">
+      <div class="nav-left">
+        <div class="nav-brand">
+          <span class="nav-title">Brisbane Lead Exchange</span>
+          <span class="nav-subtitle">Seller dashboard</span>
+        </div>
+        <nav class="nav-links">
+          <a routerLink="/seller" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            Dashboard
+          </a>
+          <a routerLink="/sell" class="nav-link">Request appraisal</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <span class="nav-section-label">Your leads</span>
+        <div class="user-menu" (click)="logout()" title="Logout">
+          <span class="user-avatar">👤</span>
+          <span class="user-name">{{ sellerName }}</span>
+          <span class="dropdown-arrow">Sign out</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    <section class="header-section">
+      <div>
+        <p class="eyebrow">Your requests</p>
+        <h1 class="page-title">Track your appraisals</h1>
+        <p class="page-subtitle">See the latest status and agent responses for your property requests.</p>
+      </div>
+      <button class="btn btn-primary" routerLink="/sell">Submit new request</button>
+    </section>
+
+    <section class="status-banner">
+      <div>
+        <h3>What happens next</h3>
+        <p>We notify local agencies and update your dashboard as agents respond.</p>
+      </div>
+      <ul>
+        <li>Responses typically arrive within 2 hours.</li>
+        <li>You can compare agent offers in one place.</li>
+      </ul>
+    </section>
+
+    <section class="lead-section">
+      <div class="lead-header">
+        <h2>Your submitted leads</h2>
+        <span>{{ leads.length }} records</span>
+      </div>
+
+      <div *ngIf="isLoading" class="state-message">Loading your leads...</div>
+      <div *ngIf="!isLoading && errorMessage" class="state-message error">{{ errorMessage }}</div>
+
+      <div class="lead-grid" *ngIf="!isLoading && !errorMessage">
+        <div class="lead-card" *ngFor="let lead of leads">
+          <div class="lead-header-row">
+            <div>
+              <p class="lead-address">{{ lead.propertyAddress }}</p>
+              <p class="lead-meta">{{ lead.propertyType || 'Property' }} - {{ lead.preferredContactTime || 'Anytime' }}</p>
+            </div>
+            <span class="status-pill status-{{ lead.status?.toLowerCase() || 'new' }}">
+              {{ lead.status || 'New' }}
+            </span>
+          </div>
+          <div class="lead-body">
+            <div>
+              <span class="label">Submitted</span>
+              <strong>{{ lead.createdAt | date:'mediumDate' }}</strong>
+            </div>
+            <div>
+              <span class="label">Preferred agency</span>
+              <strong>{{ lead.preferredAgency || 'Matched automatically' }}</strong>
+            </div>
+          </div>
+          <div class="lead-footer">
+            <p *ngIf="!lead.offers || lead.offers.length === 0">Agent offers will appear here once agencies respond.</p>
+            <div class="offer-list" *ngIf="lead.offers && lead.offers.length > 0">
+              <div class="offer-card" *ngFor="let offer of lead.offers">
+                <div class="offer-header">
+                  <div>
+                    <p class="offer-agent">{{ offer.agentName }}</p>
+                    <p class="offer-agency">{{ offer.agencyName || 'Local agency' }}</p>
+                  </div>
+                  <span class="offer-date">{{ offer.createdAt | date:'mediumDate' }}</span>
+                </div>
+                <div class="offer-grid">
+                  <div>
+                    <span class="label">Price range</span>
+                    <strong>
+                      {{ offer.priceMin ? ('$' + offer.priceMin) : '-' }} -
+                      {{ offer.priceMax ? ('$' + offer.priceMax) : '-' }}
+                    </strong>
+                  </div>
+                  <div>
+                    <span class="label">Commission</span>
+                    <strong>{{ offer.commissionPercent ? offer.commissionPercent + '%' : '-' }}</strong>
+                  </div>
+                  <div>
+                    <span class="label">Estimated days</span>
+                    <strong>{{ offer.estimatedDays || '-' }}</strong>
+                  </div>
+                </div>
+                <p class="offer-message" *ngIf="offer.message">{{ offer.message }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="!isLoading && !errorMessage && leads.length === 0">
+        <h3>No leads yet</h3>
+        <p>Submit your first appraisal request to get started.</p>
+        <button class="btn btn-primary" routerLink="/sell">Request appraisal</button>
+      </div>
+    </section>
+  </main>
+</div>

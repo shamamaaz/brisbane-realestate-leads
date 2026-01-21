@@ -66,7 +66,7 @@ export class RegisterComponent {
         } else if (userRole === 'system_admin') {
           this.router.navigate(['/admin']);
         } else {
-          this.router.navigate(['/sell']);
+          this.router.navigate(['/seller']);
         }
       },
       error: (err) => {

@@ -8,7 +8,6 @@
         </div>
         <nav class="nav-links">
           <a routerLink="/agent" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
-          <a routerLink="/agent/leads" class="nav-link" routerLinkActive="active">Leads</a>
         </nav>
       </div>
       <div class="nav-right">
@@ -58,17 +57,38 @@
       </div>
     </section>
 
-    <section class="filter-section">
-      <div class="filter-label">
-        <span>Lead status</span>
+    <section class="filters-section">
+      <div class="filter-field">
+        <span>Search</span>
+        <input
+          type="text"
+          placeholder="Search by name, email, phone, address"
+          [(ngModel)]="searchTerm"
+          (input)="onFilterChange()"
+        />
       </div>
-      <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()" class="filter-select">
-        <option value="all">All Leads</option>
-        <option value="New">New</option>
-        <option value="Contacted">Follow-Up</option>
-        <option value="Scheduled">Appointment</option>
-        <option value="Closed">Closed Deals</option>
-      </select>
+      <div class="filter-field">
+        <span>Status</span>
+        <select [(ngModel)]="statusFilter" (change)="onFilterChange()">
+          <option value="all">All Leads</option>
+          <option value="New">New</option>
+          <option value="Contacted">Follow-Up</option>
+          <option value="Scheduled">Appointment</option>
+          <option value="Closed">Closed Deals</option>
+        </select>
+      </div>
+      <div class="filter-field">
+        <span>Property type</span>
+        <select [(ngModel)]="propertyTypeFilter" (change)="onFilterChange()">
+          <option value="all">All</option>
+          <option value="house">House</option>
+          <option value="apartment">Apartment</option>
+          <option value="unit">Unit</option>
+          <option value="townhouse">Townhouse</option>
+          <option value="land">Land</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
     </section>
 
     <section class="table-section">
@@ -187,6 +207,32 @@
                 <span class="detail-value">{{ selectedLead.createdAt | date:'medium' }}</span>
               </div>
             </div>
+          </div>
+
+          <div class="detail-section" *ngIf="!isViewOnly">
+            <h3 class="section-title">Submit offer</h3>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Price min</span>
+                <input type="number" [(ngModel)]="offerPriceMin" class="form-input" placeholder="e.g. 850000" />
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Price max</span>
+                <input type="number" [(ngModel)]="offerPriceMax" class="form-input" placeholder="e.g. 950000" />
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Commission %</span>
+                <input type="number" [(ngModel)]="offerCommissionPercent" class="form-input" placeholder="e.g. 2.5" />
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Estimated days</span>
+                <input type="number" [(ngModel)]="offerEstimatedDays" class="form-input" placeholder="e.g. 21" />
+              </div>
+            </div>
+            <textarea [(ngModel)]="offerMessage" placeholder="Write a short note to the seller..." class="form-input textarea" rows="3"></textarea>
+            <div *ngIf="offerError" class="form-error">{{ offerError }}</div>
+            <div *ngIf="offerSuccess" class="form-success">{{ offerSuccess }}</div>
+            <button (click)="submitOffer()" class="btn btn-primary btn-full">Submit Offer</button>
           </div>
 
           <div class="detail-section notes-panel" *ngIf="isViewOnly && selectedLead.callHistory && selectedLead.callHistory.length">

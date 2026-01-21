@@ -5,7 +5,9 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { FacebookAuthGuard } from './guards/facebook-auth.guard';
+import { FacebookOAuthEnabledGuard } from './guards/facebook-oauth-enabled.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { GoogleOAuthEnabledGuard } from './guards/google-oauth-enabled.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('api/auth')
@@ -23,26 +25,26 @@ export class AuthController {
   }
 
   @Get('google')
-  @UseGuards(GoogleAuthGuard)
+  @UseGuards(GoogleOAuthEnabledGuard, GoogleAuthGuard)
   async googleAuth() {
     return { status: 'OK' };
   }
 
   @Get('google/callback')
-  @UseGuards(GoogleAuthGuard)
+  @UseGuards(GoogleOAuthEnabledGuard, GoogleAuthGuard)
   async googleCallback(@Request() req: any, @Res() res: Response) {
     const payload = req.user as AuthResponseDto;
     return this.redirectToApp(res, payload);
   }
 
   @Get('facebook')
-  @UseGuards(FacebookAuthGuard)
+  @UseGuards(FacebookOAuthEnabledGuard, FacebookAuthGuard)
   async facebookAuth() {
     return { status: 'OK' };
   }
 
   @Get('facebook/callback')
-  @UseGuards(FacebookAuthGuard)
+  @UseGuards(FacebookOAuthEnabledGuard, FacebookAuthGuard)
   async facebookCallback(@Request() req: any, @Res() res: Response) {
     const payload = req.user as AuthResponseDto;
     return this.redirectToApp(res, payload);

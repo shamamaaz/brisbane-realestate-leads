@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Lead } from '../../models/lead.model';
 import { AdminService } from '../../services/admin.service';
+import { AuthService } from '../../services/auth.service';
 import { LeadService } from '../../services/lead.service';
 
 @Component({
@@ -16,15 +18,30 @@ export class AdminDashboardComponent implements OnInit {
   };
   leads: Lead[] = [];
   isLoading = false;
+  adminName = 'Admin';
 
   constructor(
     private adminService: AdminService,
     private leadService: LeadService,
+    private authService: AuthService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
+    this.loadAdminInfo();
     this.loadOverview();
     this.loadLeads();
+  }
+
+  loadAdminInfo() {
+    this.authService.getCurrentUser().subscribe({
+      next: (user: any) => {
+        this.adminName = user.name || 'Admin';
+      },
+      error: (err) => {
+        console.error('Failed to load admin info:', err);
+      },
+    });
   }
 
   loadOverview() {
@@ -50,5 +67,10 @@ export class AdminDashboardComponent implements OnInit {
         this.isLoading = false;
       },
     });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }

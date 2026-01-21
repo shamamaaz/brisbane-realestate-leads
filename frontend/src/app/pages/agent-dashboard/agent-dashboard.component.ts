@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { CreateAgentOffer } from '../../models/agent-offer.model';
 import { Lead } from '../../models/lead.model';
 import { AuthService } from '../../services/auth.service';
 import { LeadService } from '../../services/lead.service';
+import { OfferService } from '../../services/offer.service';
 
 @Component({
   selector: 'app-agent-dashboard',
@@ -14,6 +16,7 @@ export class AgentDashboardComponent implements OnInit {
   filteredLeads: Lead[] = [];
   
   agentName = 'Agent';
+  agentEmail = '';
   agencyName = 'Agency';
   agencyBranding = {
     logo: '',
@@ -28,6 +31,8 @@ export class AgentDashboardComponent implements OnInit {
 
   // Filters
   statusFilter = 'all';
+  propertyTypeFilter = 'all';
+  searchTerm = '';
   selectedLead: Lead | null = null;
   isModalOpen = false;
   isViewOnly = false;
@@ -39,6 +44,14 @@ export class AgentDashboardComponent implements OnInit {
   followUpTime = '';
   followUpNotes = '';
   showNotesPanel = false;
+  offerError = '';
+  offerSuccess = '';
+
+  offerPriceMin: number | null = null;
+  offerPriceMax: number | null = null;
+  offerCommissionPercent: number | null = null;
+  offerEstimatedDays: number | null = null;
+  offerMessage = '';
 
   isLoading = false;
   errorMessage = '';
@@ -46,6 +59,7 @@ export class AgentDashboardComponent implements OnInit {
   constructor(
     private leadService: LeadService,
     private authService: AuthService,
+    private offerService: OfferService,
     private router: Router
   ) {}
 
@@ -65,6 +79,7 @@ export class AgentDashboardComponent implements OnInit {
     this.authService.getCurrentUser().subscribe(
       (user: any) => {
         this.agentName = user.name || 'Agent';
+        this.agentEmail = user.email || '';
       },
       (error) => {
         console.error('Failed to load agent info:', error);
@@ -90,11 +105,20 @@ export class AgentDashboardComponent implements OnInit {
   }
 
   filterLeads() {
-    if (this.statusFilter === 'all') {
-      this.filteredLeads = this.leads;
-    } else {
-      this.filteredLeads = this.leads.filter(lead => lead.status === this.statusFilter);
-    }
+    const term = this.searchTerm.trim().toLowerCase();
+    const status = this.statusFilter;
+    const type = this.propertyTypeFilter;
+
+    this.filteredLeads = this.leads.filter((lead) => {
+      const matchesStatus = status === 'all' || lead.status === status;
+      const matchesType = type === 'all' || lead.propertyType === type;
+      const matchesSearch = !term ||
+        lead.homeownerName.toLowerCase().includes(term) ||
+        lead.homeownerEmail.toLowerCase().includes(term) ||
+        lead.homeownerPhone.includes(term) ||
+        lead.propertyAddress.toLowerCase().includes(term);
+      return matchesStatus && matchesType && matchesSearch;
+    });
   }
 
   private applyLeadUpdate(updatedLead: Lead) {
@@ -120,6 +144,10 @@ export class AgentDashboardComponent implements OnInit {
     this.filterLeads();
   }
 
+  onFilterChange() {
+    this.filterLeads();
+  }
+
   selectLead(lead: Lead) {
     this.selectedLead = lead;
     this.isModalOpen = true;
@@ -130,6 +158,7 @@ export class AgentDashboardComponent implements OnInit {
     this.followUpDate = '';
     this.followUpTime = '';
     this.followUpNotes = '';
+    this.resetOfferFields();
   }
 
   viewLead(lead: Lead) {
@@ -141,6 +170,7 @@ export class AgentDashboardComponent implements OnInit {
     this.followUpDate = '';
     this.followUpTime = '';
     this.followUpNotes = '';
+    this.resetOfferFields();
   }
 
   closeModal() {
@@ -154,6 +184,7 @@ export class AgentDashboardComponent implements OnInit {
     this.followUpTime = '';
     this.followUpNotes = '';
     this.showNotesPanel = false;
+    this.resetOfferFields();
   }
 
   updateLeadStatus() {
@@ -211,6 +242,42 @@ export class AgentDashboardComponent implements OnInit {
     );
   }
 
+  submitOffer() {
+    if (!this.selectedLead) return;
+
+    this.offerError = '';
+    this.offerSuccess = '';
+
+    const payload: CreateAgentOffer = {
+      leadId: this.selectedLead.id!,
+      agentName: this.agentName || 'Agent',
+      agentEmail: this.agentEmail || undefined,
+      agencyName: undefined,
+      priceMin: this.offerPriceMin ?? undefined,
+      priceMax: this.offerPriceMax ?? undefined,
+      commissionPercent: this.offerCommissionPercent ?? undefined,
+      estimatedDays: this.offerEstimatedDays ?? undefined,
+      message: this.offerMessage.trim() || undefined,
+    };
+
+    if (!payload.priceMin && !payload.priceMax && !payload.message) {
+      this.offerError = 'Add a price range or message before submitting.';
+      return;
+    }
+
+    this.offerService.createOffer(payload).subscribe({
+      next: () => {
+        this.offerSuccess = 'Offer submitted.';
+        this.loadLeads();
+        this.resetOfferFields();
+      },
+      error: (err) => {
+        console.error('Failed to submit offer:', err);
+        this.offerError = 'Failed to submit offer. Please try again.';
+      },
+    });
+  }
+
   callLead(leadId: number) {
     console.log('Calling lead:', leadId);
     // Future: integrate with calling system
@@ -253,5 +320,15 @@ export class AgentDashboardComponent implements OnInit {
 
   toggleNotesPanel() {
     this.showNotesPanel = !this.showNotesPanel;
+  }
+
+  private resetOfferFields() {
+    this.offerError = '';
+    this.offerSuccess = '';
+    this.offerPriceMin = null;
+    this.offerPriceMax = null;
+    this.offerCommissionPercent = null;
+    this.offerEstimatedDays = null;
+    this.offerMessage = '';
   }
 }

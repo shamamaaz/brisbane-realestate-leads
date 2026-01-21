@@ -1,3 +1,5 @@
+import { AgentOffer } from './agent-offer.model';
+
 export interface Lead {
   id?: number;
   homeownerName: string;
@@ -15,6 +17,7 @@ export interface Lead {
   nextFollowUpDate?: Date;
   lastContactedDate?: Date;
   assignedAgentName?: string;
+  offers?: AgentOffer[];
   territoryId?: number;
   agencyId?: number;
   createdAt?: Date;

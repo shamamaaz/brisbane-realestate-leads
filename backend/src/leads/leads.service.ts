@@ -41,6 +41,7 @@ export class LeadsService {
     const query = this.leadRepo.createQueryBuilder('lead')
       .leftJoinAndSelect('lead.agency', 'agency')
       .leftJoinAndSelect('lead.territory', 'territory')
+      .leftJoinAndSelect('lead.offers', 'offers')
       .orderBy('lead.createdAt', 'DESC');
 
     if (status) {
@@ -54,10 +55,22 @@ export class LeadsService {
     return query.getMany();
   }
 
+  async getLeadsByEmail(email?: string): Promise<Lead[]> {
+    if (!email) {
+      return [];
+    }
+
+    return this.leadRepo.find({
+      where: { homeownerEmail: email },
+      relations: ['agency', 'territory', 'offers'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async getLeadById(id: number): Promise<Lead> {
     const lead = await this.leadRepo.findOne({
       where: { id },
-      relations: ['agency', 'territory'],
+      relations: ['agency', 'territory', 'offers'],
     });
 
     if (!lead) {

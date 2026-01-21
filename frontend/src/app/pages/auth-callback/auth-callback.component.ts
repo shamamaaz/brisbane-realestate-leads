@@ -46,6 +46,6 @@ export class AuthCallbackComponent implements OnInit {
       this.router.navigate(['/admin']);
       return;
     }
-    this.router.navigate(['/sell']);
+    this.router.navigate(['/seller']);
   }
 }

@@ -1,0 +1,79 @@
+<div class="admin-agencies">
+  <header class="dashboard-nav">
+    <div class="nav-container">
+      <div class="nav-left">
+        <div class="nav-brand">
+          <span class="nav-title">Brisbane Lead Exchange</span>
+          <span class="nav-subtitle">Platform admin</span>
+        </div>
+        <nav class="nav-links">
+          <a routerLink="/admin" class="nav-link">Dashboard</a>
+          <a routerLink="/admin/leads" class="nav-link" routerLinkActive="active">Leads</a>
+          <a routerLink="/admin/agencies" class="nav-link" routerLinkActive="active">Agencies</a>
+          <a routerLink="/admin/agents" class="nav-link" routerLinkActive="active">Agents</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <span class="nav-section-label">Admin</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    <section class="header-section">
+      <div>
+        <p class="eyebrow">Agency management</p>
+        <h1 class="page-title">Agency directory</h1>
+        <p class="page-subtitle">Monitor agency activity and contact details across the platform.</p>
+      </div>
+      <button class="btn btn-outline" type="button" (click)="loadAgencies()">Refresh</button>
+    </section>
+
+    <section class="filters-section">
+      <div class="filter-field">
+        <span>Search</span>
+        <input
+          type="text"
+          placeholder="Search by name, email, phone, address"
+          [(ngModel)]="searchTerm"
+          (input)="onFilterChange()"
+        />
+      </div>
+    </section>
+
+    <section class="table-section">
+      <div class="table-header-row">
+        <h2>Agencies</h2>
+        <span>{{ filteredAgencies.length }} records</span>
+      </div>
+
+      <div *ngIf="isLoading" class="state-message">Loading agencies...</div>
+      <div *ngIf="!isLoading && errorMessage" class="state-message error">{{ errorMessage }}</div>
+
+      <div class="table-scroll" *ngIf="!isLoading && !errorMessage">
+        <table class="agencies-table">
+          <thead>
+            <tr>
+              <th>Agency</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let agency of filteredAgencies">
+              <td class="cell-name">{{ agency.name }}</td>
+              <td>{{ agency.email }}</td>
+              <td>{{ agency.phone }}</td>
+              <td>{{ agency.address || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="state-message" *ngIf="!isLoading && !errorMessage && filteredAgencies.length === 0">
+        No agencies match your search.
+      </div>
+    </section>
+  </main>
+</div>

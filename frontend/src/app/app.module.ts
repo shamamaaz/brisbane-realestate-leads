@@ -19,6 +19,7 @@ import { ForAgentsComponent } from './pages/for-agents/for-agents.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
+import { SellerDashboardComponent } from './pages/seller-dashboard/seller-dashboard.component';
 import { PropertyDetailComponent } from './pages/property-detail/property-detail.component';
 import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.component';
 import { RegisterComponent } from './pages/register/register.component';
@@ -43,6 +44,7 @@ import { AgentModule } from './agent/agent.module';
     LandingComponent,
     HomeComponent,
     PropertyDetailComponent,
+    SellerDashboardComponent,
     AuthCallbackComponent,
     LoginComponent,
     RegisterComponent,

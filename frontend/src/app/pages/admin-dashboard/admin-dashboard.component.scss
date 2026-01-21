@@ -3,7 +3,6 @@
 .admin-dashboard {
   font-family: 'Manrope', sans-serif;
   color: #1c2529;
-  padding: 40px 28px;
   min-height: 100vh;
   background: #f6f2eb;
 }
@@ -14,6 +13,119 @@
   --muted: #5a6a70;
   --border: rgba(28, 37, 41, 0.12);
   --cream: #fffaf3;
+}
+
+.dashboard-nav {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 250, 243, 0.86);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 72px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.nav-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+}
+
+.nav-subtitle {
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 14px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid transparent;
+
+  &.active,
+  &:hover {
+    color: var(--teal);
+    border-bottom-color: var(--teal);
+  }
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-section-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  color: var(--muted);
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #1c2529;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(31, 107, 111, 0.18);
+  }
+}
+
+.user-avatar {
+  font-size: 18px;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dropdown-arrow {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 28px;
 }
 
 .admin-header {
@@ -153,5 +265,17 @@
   .admin-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .nav-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+  }
+
+  .nav-right {
+    width: 100%;
+    justify-content: space-between;
   }
 }

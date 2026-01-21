@@ -1,59 +1,88 @@
 <div class="admin-dashboard">
-  <header class="admin-header">
-    <div>
-      <p class="eyebrow">Platform admin</p>
-      <h1>Control center</h1>
-      <p class="subtitle">Monitor lead flow, agency activity, and conversion signals.</p>
+  <header class="dashboard-nav">
+    <div class="nav-container">
+      <div class="nav-left">
+        <div class="nav-brand">
+          <span class="nav-title">Brisbane Lead Exchange</span>
+          <span class="nav-subtitle">Platform admin</span>
+        </div>
+        <nav class="nav-links">
+          <a routerLink="/admin" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            Dashboard
+          </a>
+          <a routerLink="/admin/leads" class="nav-link" routerLinkActive="active">Leads</a>
+          <a routerLink="/admin/agencies" class="nav-link" routerLinkActive="active">Agencies</a>
+          <a routerLink="/admin/agents" class="nav-link" routerLinkActive="active">Agents</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <span class="nav-section-label">Admin</span>
+        <div class="user-menu" (click)="logout()" title="Logout">
+          <span class="user-avatar">👤</span>
+          <span class="user-name">{{ adminName }}</span>
+          <span class="dropdown-arrow">Sign out</span>
+        </div>
+      </div>
     </div>
-    <button class="btn btn-primary">Export Report</button>
   </header>
 
-  <section class="stats-grid">
-    <div class="stat-card">
-      <p>Total Leads</p>
-      <strong>{{ overview.leads.total }}</strong>
-    </div>
-    <div class="stat-card">
-      <p>New Leads</p>
-      <strong>{{ overview.leads.New }}</strong>
-    </div>
-    <div class="stat-card">
-      <p>Agencies</p>
-      <strong>{{ overview.agenciesCount }}</strong>
-    </div>
-    <div class="stat-card">
-      <p>Agents</p>
-      <strong>{{ overview.agentsCount }}</strong>
-    </div>
-  </section>
+  <main class="dashboard-container">
+    <section class="admin-header">
+      <div>
+        <p class="eyebrow">Platform admin</p>
+        <h1>Control center</h1>
+        <p class="subtitle">Monitor lead flow, agency activity, and conversion signals.</p>
+      </div>
+      <button class="btn btn-primary">Export Report</button>
+    </section>
 
-  <section class="lead-section">
-    <div class="lead-header">
-      <h2>Recent leads</h2>
-      <span>{{ leads.length }} records</span>
-    </div>
-    <div class="lead-table">
-      <table>
-        <thead>
-          <tr>
-            <th>Lead</th>
-            <th>Address</th>
-            <th>Status</th>
-            <th>Contact</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let lead of leads">
-            <td>{{ lead.homeownerName }}</td>
-            <td>{{ lead.propertyAddress }}</td>
-            <td>
-              <span class="status-pill">{{ lead.status || 'New' }}</span>
-            </td>
-            <td>{{ lead.homeownerPhone || '—' }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p *ngIf="!isLoading && leads.length === 0" class="empty">No leads yet.</p>
-    </div>
-  </section>
+    <section class="stats-grid">
+      <div class="stat-card">
+        <p>Total Leads</p>
+        <strong>{{ overview.leads.total }}</strong>
+      </div>
+      <div class="stat-card">
+        <p>New Leads</p>
+        <strong>{{ overview.leads.New }}</strong>
+      </div>
+      <div class="stat-card">
+        <p>Agencies</p>
+        <strong>{{ overview.agenciesCount }}</strong>
+      </div>
+      <div class="stat-card">
+        <p>Agents</p>
+        <strong>{{ overview.agentsCount }}</strong>
+      </div>
+    </section>
+
+    <section class="lead-section">
+      <div class="lead-header">
+        <h2>Recent leads</h2>
+        <span>{{ leads.length }} records</span>
+      </div>
+      <div class="lead-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Lead</th>
+              <th>Address</th>
+              <th>Status</th>
+              <th>Contact</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let lead of leads">
+              <td>{{ lead.homeownerName }}</td>
+              <td>{{ lead.propertyAddress }}</td>
+              <td>
+                <span class="status-pill">{{ lead.status || 'New' }}</span>
+              </td>
+              <td>{{ lead.homeownerPhone || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p *ngIf="!isLoading && leads.length === 0" class="empty">No leads yet.</p>
+      </div>
+    </section>
+  </main>
 </div>

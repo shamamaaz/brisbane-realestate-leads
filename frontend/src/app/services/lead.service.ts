@@ -20,6 +20,10 @@ export class LeadService {
     return this.http.get<Lead[]>(this.apiUrl);
   }
 
+  getMyLeads(): Observable<Lead[]> {
+    return this.http.get<Lead[]>(`${this.apiUrl}/mine`);
+  }
+
   getLeadById(id: number): Observable<Lead> {
     return this.http.get<Lead>(`${this.apiUrl}/${id}`);
   }

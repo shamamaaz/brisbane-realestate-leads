@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { AgentOffer } from '../../agent-offers/entities/agent-offer.entity';
 import { Agency } from '../../agencies/entities/agency.entity';
 import { Territory } from '../../territories/entities/territory.entity';
 
@@ -57,6 +58,9 @@ export class Lead {
 
   @ManyToOne(() => Agency, (agency) => agency.id, { nullable: true })
   agency: Agency;
+
+  @OneToMany(() => AgentOffer, (offer) => offer.lead)
+  offers: AgentOffer[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -5,7 +5,7 @@
       <div class="header-left">
         <div class="logo">
           <span class="logo-icon">🏠</span>
-          <span class="logo-text">Your Leads</span>
+          <span class="logo-text">Brisbane Lead Exchange</span>
         </div>
       </div>
       <nav class="header-nav">
@@ -13,7 +13,7 @@
         <a href="#agents" class="nav-link">For Agents</a>
         <a href="/login" class="nav-link">Login</a>
       </nav>
-      <button class="btn btn-signup">Sign Up</button>
+      <button class="btn btn-signup">Join the Network</button>
     </div>
   </header>
 
@@ -21,15 +21,15 @@
   <section class="hero">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h1 class="hero-title">Get Your Property Appraisal</h1>
-      <p class="hero-subtitle">Connect with top local agents for a free, no-obligation property appraisal in minutes.</p>
+      <h1 class="hero-title">Get a Brisbane property appraisal</h1>
+      <p class="hero-subtitle">Connect with trusted local agents for a free, no-obligation appraisal in minutes.</p>
       
       <!-- Lead Form -->
       <div class="hero-form">
         <div class="form-group">
           <label class="form-label">
             <span class="form-icon">🏠</span>
-            Select Property Type
+            Property type
           </label>
           <select [(ngModel)]="formData.propertyType" class="form-select">
             <option value="">Choose property type...</option>
@@ -43,7 +43,7 @@
         <div class="form-group">
           <label class="form-label">
             <span class="form-icon">📋</span>
-            Select Property Status
+            Selling or renting?
           </label>
           <select [(ngModel)]="formData.propertyStatus" class="form-select">
             <option value="">Choose status...</option>
@@ -55,7 +55,7 @@
         <div class="form-group">
           <label class="form-label">
             <span class="form-icon">📍</span>
-            Enter Property Address
+            Property address
           </label>
           <input 
             type="text" 
@@ -68,7 +68,7 @@
         <div class="form-group">
           <label class="form-label">
             <span class="form-icon">📱</span>
-            Enter Phone Number <span class="optional">(Optional)</span>
+            Phone number <span class="optional">(Optional)</span>
           </label>
           <input 
             type="tel" 
@@ -78,11 +78,11 @@
           />
         </div>
 
-        <button (click)="submitLead()" class="btn btn-appraisal">Get My Appraisal</button>
+        <button (click)="submitLead()" class="btn btn-appraisal">Request My Appraisal</button>
 
         <div class="form-benefits">
-          <span class="benefit">✓ Get Multiple Proposals</span>
-          <span class="benefit">/ Compare Agents</span>
+          <span class="benefit">✓ Matched by suburb</span>
+          <span class="benefit">/ Compare agent options</span>
           <span class="benefit">✓ Free & No Obligation</span>
         </div>
       </div>
@@ -92,25 +92,25 @@
   <!-- How It Works Section -->
   <section class="how-it-works">
     <div class="section-container">
-      <h2 class="section-title">How It Works</h2>
+      <h2 class="section-title">How it works</h2>
       
       <div class="steps-grid">
         <div class="step-card">
           <div class="step-icon">🏠</div>
-          <h3 class="step-title">1. Enter Your Property Details</h3>
-          <p class="step-description">Fill out your property information in a quick form</p>
+          <h3 class="step-title">1. Share your property details</h3>
+          <p class="step-description">Tell us about your home and your preferred contact time.</p>
         </div>
 
         <div class="step-card">
           <div class="step-icon">🤝</div>
-          <h3 class="step-title">2. Get Connected with Agents</h3>
-          <p class="step-description">Receive proposals from top local agents interested in listing</p>
+          <h3 class="step-title">2. We match local agents</h3>
+          <p class="step-description">Top-performing Brisbane agencies receive your request.</p>
         </div>
 
         <div class="step-card">
           <div class="step-icon">✅</div>
-          <h3 class="step-title">3. Compare and Choose</h3>
-          <p class="step-description">Compare offers from different agents and select the best one for you</p>
+          <h3 class="step-title">3. Compare and choose</h3>
+          <p class="step-description">Pick the team that feels right for you, no pressure.</p>
         </div>
       </div>
     </div>
@@ -119,19 +119,19 @@
   <!-- Why Choose Us Section -->
   <section class="why-choose-us">
     <div class="section-container">
-      <h2 class="section-title">Why Choose Us?</h2>
+      <h2 class="section-title">Why Brisbane sellers use us</h2>
       
       <div class="testimonials-grid">
         <div class="testimonial-card">
           <div class="stars">⭐⭐⭐⭐⭐</div>
-          <p class="testimonial-text">"I received three offers within 24 hours and sold my house for above asking price. Great service!"</p>
-          <p class="testimonial-author">- Emily R., Naperville, IL</p>
+          <p class="testimonial-text">"Three quality agents reached out the same day. We sold in under two weeks."</p>
+          <p class="testimonial-author">- Emily R., Paddington</p>
         </div>
 
         <div class="testimonial-card">
           <div class="stars">⭐⭐⭐⭐⭐</div>
-          <p class="testimonial-text">"The agents were professional and quick to respond. Highly recommend for easy property appraisals!"</p>
-          <p class="testimonial-author">- Brian S., San Diego, CA</p>
+          <p class="testimonial-text">"Fast responses and clear advice. It made choosing an agent easy."</p>
+          <p class="testimonial-author">- Brian S., New Farm</p>
         </div>
       </div>
     </div>
@@ -139,14 +139,14 @@
 
   <!-- CTA Section -->
   <section class="cta-section">
-    <button class="btn btn-cta">Get Started Now</button>
+    <button class="btn btn-cta">Start your appraisal</button>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-links">
-        <a href="#about">About Us</a>
+        <a href="#about">About</a>
         <a href="#faq">FAQs</a>
         <a href="#terms">Terms of Service</a>
         <a href="#privacy">Privacy Policy</a>
@@ -157,7 +157,7 @@
         <a href="#twitter" class="social-icon">𝕏</a>
         <a href="#linkedin" class="social-icon">in</a>
       </div>
-      <p class="footer-copyright">© 2024 Your Leads. All rights reserved.</p>
+      <p class="footer-copyright">© 2024 Brisbane Lead Exchange. All rights reserved.</p>
     </div>
   </footer>
 </div>

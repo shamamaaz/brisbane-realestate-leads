@@ -45,6 +45,12 @@ export class LeadsController {
     return this.leadsService.getAllLeads(status, propertyType);
   }
 
+  @Get('mine')
+  @UseGuards(JwtAuthGuard)
+  async getMyLeads(@Request() req: any): Promise<Lead[]> {
+    return this.leadsService.getLeadsByEmail(req.user?.email);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async getLeadById(@Param('id') id: number): Promise<Lead> {
