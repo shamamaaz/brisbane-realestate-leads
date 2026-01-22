@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -19,6 +20,8 @@ import { ForAgentsComponent } from './pages/for-agents/for-agents.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
+import { SellerAccessComponent } from './pages/seller-access/seller-access.component';
+import { SellerLoginComponent } from './pages/seller-login/seller-login.component';
 import { SellerDashboardComponent } from './pages/seller-dashboard/seller-dashboard.component';
 import { PropertyDetailComponent } from './pages/property-detail/property-detail.component';
 import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.component';
@@ -44,6 +47,8 @@ import { AgentModule } from './agent/agent.module';
     LandingComponent,
     HomeComponent,
     PropertyDetailComponent,
+    SellerAccessComponent,
+    SellerLoginComponent,
     SellerDashboardComponent,
     AuthCallbackComponent,
     LoginComponent,
@@ -53,6 +58,7 @@ import { AgentModule } from './agent/agent.module';
     ForAgentsComponent,
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,

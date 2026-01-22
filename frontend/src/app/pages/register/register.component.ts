@@ -16,7 +16,7 @@ export class RegisterComponent {
   socialError = '';
 
   roles = [
-    { value: 'homeowner', label: 'Homeowner (Submit leads)' },
+    { value: 'seller', label: 'Seller (Submit leads)' },
     { value: 'agent', label: 'Real Estate Agent' },
     { value: 'agency_admin', label: 'Agency Admin' }
   ];

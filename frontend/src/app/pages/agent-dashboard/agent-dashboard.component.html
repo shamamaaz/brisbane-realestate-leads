@@ -102,7 +102,6 @@
             <tr>
               <th>Lead Name</th>
               <th>Property Address</th>
-              <th>Score</th>
               <th>Status</th>
               <th>Callback Time</th>
               <th>Actions</th>
@@ -112,9 +111,6 @@
             <tr *ngFor="let lead of filteredLeads" class="table-row">
               <td class="cell-name">{{ lead.homeownerName }}</td>
               <td class="cell-address">{{ lead.propertyAddress }}</td>
-              <td class="cell-score">
-                <span class="score-badge">★★★★☆</span>
-              </td>
               <td class="cell-status">
                 <span [class]="'status-badge status-' + (lead.status?.toLowerCase() || 'new')">
                   {{ formatStatus(lead.status) }}
@@ -233,6 +229,58 @@
             <div *ngIf="offerError" class="form-error">{{ offerError }}</div>
             <div *ngIf="offerSuccess" class="form-success">{{ offerSuccess }}</div>
             <button (click)="submitOffer()" class="btn btn-primary btn-full">Submit Offer</button>
+          </div>
+
+          <div class="detail-section" *ngIf="isViewOnly">
+            <h3 class="section-title">Offer summary</h3>
+            <div *ngIf="!selectedLead.offers || selectedLead.offers.length === 0" class="detail-item">
+              <span class="detail-value">No offers submitted yet.</span>
+            </div>
+            <div class="offer-list" *ngIf="selectedLead.offers && selectedLead.offers.length">
+              <div class="offer-card" *ngFor="let offer of selectedLead.offers">
+                <div class="offer-header">
+                  <div>
+                    <p class="offer-agent">{{ offer.agentName }}</p>
+                    <p class="offer-agency">{{ offer.agencyName || 'Local agency' }}</p>
+                  </div>
+                  <span class="offer-date">{{ offer.createdAt | date:'mediumDate' }}</span>
+                </div>
+                <div class="offer-grid">
+                  <div>
+                    <span class="label">Price range</span>
+                    <strong>
+                      {{ offer.priceMin ? ('$' + offer.priceMin) : '-' }} -
+                      {{ offer.priceMax ? ('$' + offer.priceMax) : '-' }}
+                    </strong>
+                  </div>
+                  <div>
+                    <span class="label">Commission</span>
+                    <strong>{{ offer.commissionPercent ? offer.commissionPercent + '%' : '-' }}</strong>
+                  </div>
+                  <div>
+                    <span class="label">Estimated days</span>
+                    <strong>{{ offer.estimatedDays || '-' }}</strong>
+                  </div>
+                </div>
+                <p class="offer-message" *ngIf="offer.message">{{ offer.message }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section" *ngIf="isViewOnly">
+            <h3 class="section-title">Follow-up schedule</h3>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Next follow-up</span>
+                <span class="detail-value">
+                  {{ selectedLead.nextFollowUpDate ? (selectedLead.nextFollowUpDate | date:'medium') : 'Not scheduled' }}
+                </span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Follow-up notes</span>
+                <span class="detail-value">{{ selectedLead.followUpNotes || '—' }}</span>
+              </div>
+            </div>
           </div>
 
           <div class="detail-section notes-panel" *ngIf="isViewOnly && selectedLead.callHistory && selectedLead.callHistory.length">

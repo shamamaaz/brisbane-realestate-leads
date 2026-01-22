@@ -2,11 +2,14 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
 import { Repository } from 'typeorm';
 import { Lead } from '../leads/entities/lead.entity';
+import { EmailService } from '../shared/email/email.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { SellerLoginToken } from './entities/seller-login-token.entity';
 import { User, UserRole } from './entities/user.entity';
 
 @Injectable()
@@ -16,7 +19,10 @@ export class AuthService {
     private userRepo: Repository<User>,
     @InjectRepository(Lead)
     private leadRepo: Repository<Lead>,
+    @InjectRepository(SellerLoginToken)
+    private sellerTokenRepo: Repository<SellerLoginToken>,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
@@ -40,7 +46,7 @@ export class AuthService {
       passwordHash,
       name,
       phone,
-      role: role || UserRole.HOMEOWNER,
+      role: role || UserRole.SELLER,
       agency: agencyId ? { id: agencyId } : undefined,
     });
 
@@ -118,7 +124,7 @@ export class AuthService {
       user = this.userRepo.create({
         email,
         name: name || email,
-        role: UserRole.HOMEOWNER,
+        role: UserRole.SELLER,
         passwordHash,
         isActive: true,
       });
@@ -183,7 +189,7 @@ export class AuthService {
       {
         email: 'seller@brisbaneleads.com',
         name: 'Seller User',
-        role: UserRole.HOMEOWNER,
+        role: UserRole.SELLER,
         password: 'Seller123!',
       },
     ];
@@ -248,5 +254,78 @@ export class AuthService {
     }
 
     return demoUsers.map(({ password, ...rest }) => ({ ...rest, password }));
+  }
+
+  async createSellerMagicLink(email: string) {
+    const normalized = email.toLowerCase();
+    let user = await this.userRepo.findOne({ where: { email: normalized } });
+    if (!user) {
+      const salt = await bcrypt.genSalt();
+      const passwordHash = await bcrypt.hash(`${normalized}:${Date.now()}`, salt);
+      user = this.userRepo.create({
+        email: normalized,
+        name: normalized.split('@')[0],
+        role: UserRole.SELLER,
+        passwordHash,
+        isActive: true,
+      });
+      user = await this.userRepo.save(user);
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('User account is inactive');
+    }
+
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 30);
+    const record = this.sellerTokenRepo.create({ token, user, expiresAt });
+    await this.sellerTokenRepo.save(record);
+
+    const webAppUrl = process.env.WEB_APP_URL || 'http://localhost:4200';
+    const link = new URL('/seller/login', webAppUrl);
+    link.searchParams.set('token', token);
+
+    const magicLinkMode = (process.env.MAGIC_LINK_MODE || 'dev').toLowerCase();
+    if (magicLinkMode === 'email') {
+      if (!this.emailService.isConfigured()) {
+        throw new BadRequestException('Email is not configured.');
+      }
+      await this.emailService.sendMagicLink(normalized, link.toString());
+    } else {
+      console.log(`🔗 Seller magic link for ${normalized}: ${link.toString()}`);
+    }
+
+    return { sent: true };
+  }
+
+  async verifySellerMagicLink(token: string): Promise<AuthResponseDto> {
+    const record = await this.sellerTokenRepo.findOne({
+      where: { token },
+      relations: ['user'],
+    });
+    if (!record || record.usedAt) {
+      throw new UnauthorizedException('Invalid or used magic link.');
+    }
+    if (record.expiresAt.getTime() < Date.now()) {
+      throw new UnauthorizedException('Magic link has expired.');
+    }
+
+    record.usedAt = new Date();
+    await this.sellerTokenRepo.save(record);
+
+    const user = record.user;
+    const accessToken = this.jwtService.sign({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      accessToken,
+    };
   }
 }

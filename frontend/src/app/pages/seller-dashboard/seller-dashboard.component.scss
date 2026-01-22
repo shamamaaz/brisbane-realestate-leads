@@ -319,6 +319,19 @@
   font-size: 13px;
 }
 
+.offer-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-outline {
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  background: transparent;
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;

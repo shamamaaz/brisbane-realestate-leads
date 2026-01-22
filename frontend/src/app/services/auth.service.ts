@@ -52,6 +52,14 @@ export class AuthService {
       );
   }
 
+  requestSellerMagicLink(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/seller/magic-link`, { email });
+  }
+
+  verifySellerMagicLink(token: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/seller/verify?token=${encodeURIComponent(token)}`);
+  }
+
   /**
    * Get current user
    */

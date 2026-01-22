@@ -6,6 +6,7 @@ import { LeadAssignment } from '../lead-assignments/entities/lead-assignment.ent
 import { AgentOffer } from '../agent-offers/entities/agent-offer.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { Territory } from '../territories/entities/territory.entity';
+import { SellerLoginToken } from '../auth/entities/seller-login-token.entity';
 
 export const getDatabaseConfig = (): TypeOrmModuleOptions => {
   return {
@@ -15,7 +16,7 @@ export const getDatabaseConfig = (): TypeOrmModuleOptions => {
     username: process.env.DB_USERNAME || 'brisbane_user',
     password: process.env.DB_PASSWORD || 'vaseem@123',
     database: process.env.DB_DATABASE || 'brisbane_realestate_leads',
-    entities: [Lead, Agency, Agent, Territory, LeadAssignment, User, AgentOffer],
+    entities: [Lead, Agency, Agent, Territory, LeadAssignment, User, AgentOffer, SellerLoginToken],
     synchronize: process.env.NODE_ENV !== 'production',
     logging: process.env.NODE_ENV !== 'production',
     dropSchema: false,

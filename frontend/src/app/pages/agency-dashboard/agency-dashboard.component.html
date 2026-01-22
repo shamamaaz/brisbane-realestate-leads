@@ -9,7 +9,6 @@
         <nav class="nav-links">
           <a routerLink="/agency" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
           <a routerLink="/agency/agents" class="nav-link" routerLinkActive="active">Agents</a>
-          <a routerLink="/agency" class="nav-link">Settings</a>
         </nav>
       </div>
       <div class="nav-right">
@@ -29,7 +28,6 @@
         <h1 class="page-title">{{ agencyName }}</h1>
         <p class="page-subtitle">Lead intake, agent performance, and revenue snapshot.</p>
       </div>
-      <button class="btn btn-primary btn-upload">Upload CSV</button>
     </section>
 
     <section class="stats-grid">
@@ -40,10 +38,6 @@
       <div class="stat-card">
         <p>Active Agents</p>
         <strong>{{ activeAgents }}</strong>
-      </div>
-      <div class="stat-card">
-        <p>Monthly Revenue</p>
-        <strong>{{ monthlyRevenue | currency }}</strong>
       </div>
     </section>
 

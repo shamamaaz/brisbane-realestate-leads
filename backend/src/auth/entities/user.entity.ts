@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Up
 import { Agency } from '../../agencies/entities/agency.entity';
 
 export enum UserRole {
+  SELLER = 'seller',
   HOMEOWNER = 'homeowner',
   AGENT = 'agent',
   AGENCY_ADMIN = 'agency_admin',
@@ -25,7 +26,7 @@ export class User {
   @Column({
     type: 'enum',
     enum: UserRole,
-    default: UserRole.HOMEOWNER,
+    default: UserRole.SELLER,
   })
   role: UserRole;
 

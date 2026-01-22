@@ -98,25 +98,6 @@
           <span *ngIf="isLoading">Creating account...</span>
         </button>
 
-        <div class="divider">
-          <span>or continue with</span>
-        </div>
-
-        <div class="social-grid">
-          <button type="button" class="social-button facebook" (click)="continueWithFacebook()">
-            <span class="social-icon">f</span>
-            Continue with Facebook
-          </button>
-
-          <button type="button" class="social-button google" (click)="continueWithGoogle()">
-            <span class="social-icon">G</span>
-            Continue with Google
-          </button>
-        </div>
-
-        <div *ngIf="socialError" class="error-message">
-          {{ socialError }}
-        </div>
       </form>
 
       <div class="auth-footer">
@@ -130,14 +111,5 @@
       </div>
     </div>
 
-    <div class="auth-note">
-      <h2>Every lead, one shared workspace</h2>
-      <p>Assign agents, track progress, and keep sellers informed with real-time updates.</p>
-      <ul>
-        <li>Centralized lead assignments</li>
-        <li>Status updates in one click</li>
-        <li>Agency dashboards for visibility</li>
-      </ul>
-    </div>
   </div>
 </div>

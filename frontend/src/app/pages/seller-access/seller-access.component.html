@@ -1,0 +1,21 @@
+<div class="seller-access">
+  <div class="access-card">
+    <div class="header">
+      <p class="eyebrow">Seller access</p>
+      <h1>Get your private link</h1>
+      <p>Enter the email you used for your appraisal request.</p>
+    </div>
+
+    <label>
+      <span>Email address</span>
+      <input type="email" [(ngModel)]="email" placeholder="name@email.com" />
+    </label>
+
+    <button class="btn btn-primary" (click)="requestLink()" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Sending...' : 'Send login link' }}
+    </button>
+
+    <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </div>
+</div>

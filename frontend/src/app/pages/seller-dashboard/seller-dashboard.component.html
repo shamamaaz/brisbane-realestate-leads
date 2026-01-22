@@ -47,7 +47,7 @@
 
     <section class="lead-section">
       <div class="lead-header">
-        <h2>Your submitted leads</h2>
+        <h2>Proposals from top agents</h2>
         <span>{{ leads.length }} records</span>
       </div>
 
@@ -104,6 +104,9 @@
                   </div>
                 </div>
                 <p class="offer-message" *ngIf="offer.message">{{ offer.message }}</p>
+                <div class="offer-actions">
+                  <span class="label">We’ll notify you when an agent contacts you.</span>
+                </div>
               </div>
             </div>
           </div>

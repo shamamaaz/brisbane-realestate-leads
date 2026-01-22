@@ -170,13 +170,17 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
     const name = this.leadForm.get('homeownerName')?.value;
     const generatedPassword = 'Lead_' + Math.random().toString(36).slice(-8);
 
-    this.authService.register(email, generatedPassword, name, 'homeowner').subscribe({
+    this.authService.register(email, generatedPassword, name, 'seller').subscribe({
       next: () => {
         // Now submit the lead with the token
         this.leadService.createLead(this.leadForm.value).subscribe({
           next: (res) => {
-            this.submitMessage = 'Thank you! Your lead has been submitted successfully.';
+            this.submitMessage = 'Thank you! Check your email for your private seller link to view agent offers.';
             this.submitLeadEvent.emit(res);
+            this.authService.requestSellerMagicLink(email).subscribe({
+              next: () => {},
+              error: (magicErr) => console.warn('Magic link request failed:', magicErr),
+            });
             this.leadForm.reset();
             this.suggestedAgencies = [];
             this.isSubmitting = false;
@@ -201,8 +205,12 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
               // Try to submit lead
               this.leadService.createLead(this.leadForm.value).subscribe({
                 next: (res) => {
-                  this.submitMessage = 'Thank you! Your lead has been submitted successfully.';
+                  this.submitMessage = 'Thank you! Check your email for your private seller link to view agent offers.';
                   this.submitLeadEvent.emit(res);
+                  this.authService.requestSellerMagicLink(email).subscribe({
+                    next: () => {},
+                    error: (magicErr) => console.warn('Magic link request failed:', magicErr),
+                  });
                   this.leadForm.reset();
                   this.suggestedAgencies = [];
                   this.isSubmitting = false;
