@@ -1,5 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, Param, Post, Put, Query, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserRole } from '../auth/entities/user.entity';
 import { AddLeadNoteDto } from '../shared/dto/add-lead-note.dto';
 import { CreateLeadDto } from '../shared/dto/create-lead.dto';
 import { UpdateLeadStatusDto } from '../shared/dto/update-lead-status.dto';
@@ -33,6 +36,33 @@ export class LeadsController {
   @Post('appraisal-request')
   async createAppraisalLead(@Body() createLeadDto: CreateLeadDto): Promise<Lead> {
     return this.leadsService.createLead(createLeadDto);
+  }
+
+  @Post('bulk')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file', {
+    storage: memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 },
+  }))
+  async bulkUpload(
+    @Request() req: any,
+    @UploadedFile() file?: { buffer?: Buffer },
+  ): Promise<{ successCount: number; errorCount: number; errors: Array<{ row: number; message: string }> }> {
+    const role = req.user?.role;
+    if (role !== UserRole.AGENCY_ADMIN && role !== UserRole.SYSTEM_ADMIN) {
+      throw new ForbiddenException('Only agency or admin users can upload leads.');
+    }
+
+    if (!file) {
+      throw new BadRequestException('CSV file is required.');
+    }
+
+    const csv = file.buffer?.toString('utf-8') || '';
+    if (!csv.trim()) {
+      throw new BadRequestException('CSV file is empty.');
+    }
+
+    return this.leadsService.bulkCreateFromCsv(csv);
   }
 
   @Get()

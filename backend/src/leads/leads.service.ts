@@ -168,4 +168,121 @@ export class LeadsService {
     const lead = await this.getLeadById(id);
     await this.leadRepo.remove(lead);
   }
+
+  async bulkCreateFromCsv(csvContent: string): Promise<{
+    successCount: number;
+    errorCount: number;
+    errors: Array<{ row: number; message: string }>;
+  }> {
+    const rows = this.parseCsv(csvContent);
+    if (rows.length === 0) {
+      return { successCount: 0, errorCount: 0, errors: [] };
+    }
+
+    const [header, ...dataRows] = rows;
+    const headerIndex = header.reduce((acc, value, index) => {
+      acc[value.trim()] = index;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const requiredColumns = [
+      'homeownerName',
+      'homeownerEmail',
+      'homeownerPhone',
+      'propertyAddress',
+      'propertyType',
+    ];
+
+    const missingRequired = requiredColumns.filter((col) => headerIndex[col] === undefined);
+    if (missingRequired.length) {
+      return {
+        successCount: 0,
+        errorCount: dataRows.length,
+        errors: [
+          {
+            row: 1,
+            message: `Missing required columns: ${missingRequired.join(', ')}`,
+          },
+        ],
+      };
+    }
+
+    let successCount = 0;
+    const errors: Array<{ row: number; message: string }> = [];
+
+    for (let i = 0; i < dataRows.length; i += 1) {
+      const row = dataRows[i];
+      const rowNumber = i + 2;
+
+      const leadData: CreateLeadDto = {
+        homeownerName: row[headerIndex.homeownerName]?.trim() || '',
+        homeownerEmail: row[headerIndex.homeownerEmail]?.trim() || '',
+        homeownerPhone: row[headerIndex.homeownerPhone]?.trim() || '',
+        propertyAddress: row[headerIndex.propertyAddress]?.trim() || '',
+        propertyType: row[headerIndex.propertyType]?.trim() || '',
+        preferredAgency: row[headerIndex.preferredAgency]?.trim() || undefined,
+        preferredContactTime: row[headerIndex.preferredContactTime]?.trim() || undefined,
+      };
+
+      if (
+        !leadData.homeownerName ||
+        !leadData.homeownerEmail ||
+        !leadData.homeownerPhone ||
+        !leadData.propertyAddress ||
+        !leadData.propertyType
+      ) {
+        errors.push({ row: rowNumber, message: 'Missing required values.' });
+        continue;
+      }
+
+      try {
+        await this.createLead(leadData);
+        successCount += 1;
+      } catch (error) {
+        errors.push({ row: rowNumber, message: 'Failed to create lead.' });
+      }
+    }
+
+    return {
+      successCount,
+      errorCount: errors.length,
+      errors,
+    };
+  }
+
+  private parseCsv(csvContent: string): string[][] {
+    const lines = csvContent.split(/\r?\n/).filter((line) => line.trim() !== '');
+    return lines.map((line) => this.parseCsvLine(line));
+  }
+
+  private parseCsvLine(line: string): string[] {
+    const values: string[] = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i += 1) {
+      const char = line[i];
+
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i += 1;
+        } else {
+          inQuotes = !inQuotes;
+        }
+        continue;
+      }
+
+      if (char === ',' && !inQuotes) {
+        values.push(current);
+        current = '';
+        continue;
+      }
+
+      current += char;
+    }
+
+    values.push(current);
+    return values;
+  }
 }

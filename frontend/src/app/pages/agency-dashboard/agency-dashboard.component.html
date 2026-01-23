@@ -30,6 +30,37 @@
       </div>
     </section>
 
+    <section class="upload-section">
+      <div class="upload-card">
+        <div>
+          <h2>Bulk upload leads</h2>
+          <p>Upload a CSV file using the standard lead columns.</p>
+        </div>
+        <div class="upload-actions">
+          <input
+            type="file"
+            accept=".csv"
+            (change)="onFileSelected($event)"
+            [disabled]="isUploading"
+          />
+          <button class="btn btn-primary" type="button" (click)="uploadLeads()" [disabled]="isUploading || !selectedFile">
+            {{ isUploading ? 'Uploading...' : 'Upload CSV' }}
+          </button>
+          <button class="btn btn-outline" type="button" (click)="downloadTemplate()" [disabled]="isUploading">
+            Download template
+          </button>
+        </div>
+        <div class="upload-message success" *ngIf="uploadSuccess">{{ uploadSuccess }}</div>
+        <div class="upload-message error" *ngIf="uploadError">{{ uploadError }}</div>
+        <div class="upload-results" *ngIf="uploadResults.length > 0">
+          <p>Rows with issues:</p>
+          <ul>
+            <li *ngFor="let item of uploadResults">Row {{ item.row }}: {{ item.message }}</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <section class="stats-grid">
       <div class="stat-card">
         <p>Total Leads</p>

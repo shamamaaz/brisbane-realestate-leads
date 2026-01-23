@@ -70,4 +70,18 @@ export class LeadService {
   deleteLead(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  uploadLeadsCsv(file: File): Observable<{
+    successCount: number;
+    errorCount: number;
+    errors: Array<{ row: number; message: string }>;
+  }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{
+      successCount: number;
+      errorCount: number;
+      errors: Array<{ row: number; message: string }>;
+    }>(`${this.apiUrl}/bulk`, formData);
+  }
 }

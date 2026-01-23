@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class HeaderComponent {
   isLoggedIn = false;
+  role: string | null = null;
 
   constructor(
     private router: Router,
@@ -16,7 +17,9 @@ export class HeaderComponent {
   ) {
     this.authService.token$.subscribe(token => {
       this.isLoggedIn = !!token;
+      this.role = this.authService.getRole();
     });
+    this.role = this.authService.getRole();
   }
 
   navigateToLogin() {
@@ -30,7 +33,7 @@ export class HeaderComponent {
   logout() {
     this.authService.logout();
     this.isLoggedIn = false;
+    this.role = null;
     this.router.navigate(['/']);
   }
 }
-

@@ -198,45 +198,36 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
         });
       },
       error: (err) => {
-        // If user already exists, try to login
+        // If user already exists, still submit the lead and send magic link.
         if (err.status === 400) {
-          this.authService.login(email, generatedPassword).subscribe({
-            next: () => {
-              // Try to submit lead
-              this.leadService.createLead(this.leadForm.value).subscribe({
-                next: (res) => {
-                  this.submitMessage = 'Thank you! Check your email for your private seller link to view agent offers.';
-                  this.submitLeadEvent.emit(res);
-                  this.authService.requestSellerMagicLink(email).subscribe({
-                    next: () => {},
-                    error: (magicErr) => console.warn('Magic link request failed:', magicErr),
-                  });
-                  this.leadForm.reset();
-                  this.suggestedAgencies = [];
-                  this.isSubmitting = false;
-
-                  setTimeout(() => {
-                    this.submitMessage = '';
-                  }, 3000);
-                },
-                error: (leadErr) => {
-                  console.error('Error submitting lead:', leadErr);
-                  this.submitError = leadErr.error?.message || 'Failed to submit lead. Please try again.';
-                  this.isSubmitting = false;
-                }
+          this.leadService.createLead(this.leadForm.value).subscribe({
+            next: (res) => {
+              this.submitMessage = 'Thank you! Check your email for your private seller link to view agent offers.';
+              this.submitLeadEvent.emit(res);
+              this.authService.requestSellerMagicLink(email).subscribe({
+                next: () => {},
+                error: (magicErr) => console.warn('Magic link request failed:', magicErr),
               });
+              this.leadForm.reset();
+              this.suggestedAgencies = [];
+              this.isSubmitting = false;
+
+              setTimeout(() => {
+                this.submitMessage = '';
+              }, 3000);
             },
-            error: (loginErr) => {
-              console.error('Authentication error:', loginErr);
-              this.submitError = 'Failed to authenticate. Please try again.';
+            error: (leadErr) => {
+              console.error('Error submitting lead:', leadErr);
+              this.submitError = leadErr.error?.message || 'Failed to submit lead. Please try again.';
               this.isSubmitting = false;
             }
           });
-        } else {
-          console.error('Registration error:', err);
-          this.submitError = err.error?.message || 'Failed to process lead. Please try again.';
-          this.isSubmitting = false;
+          return;
         }
+
+        console.error('Registration error:', err);
+        this.submitError = err.error?.message || 'Failed to process lead. Please try again.';
+        this.isSubmitting = false;
       }
     });
   }

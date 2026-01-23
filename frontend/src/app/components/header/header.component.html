@@ -5,11 +5,11 @@
       <span class="brand-subtitle">Real estate lead platform</span>
     </a>
     <nav class="site-nav">
-      <a routerLink="/sell">Sell</a>
-      <a routerLink="/for-agents">For Agents</a>
-      <a routerLink="/agent">Agent</a>
-      <a routerLink="/agency">Agency</a>
-      <a routerLink="/admin">Admin</a>
+      <a routerLink="/sell" *ngIf="!isLoggedIn || role === 'seller'">Sell</a>
+      <a routerLink="/for-agents" *ngIf="!isLoggedIn">For Agents</a>
+      <a routerLink="/agent" *ngIf="role === 'agent'">Agent</a>
+      <a routerLink="/agency" *ngIf="role === 'agency_admin'">Agency</a>
+      <a routerLink="/admin" *ngIf="role === 'system_admin'">Admin</a>
     </nav>
     <div class="auth-actions">
       <ng-container *ngIf="!isLoggedIn">
