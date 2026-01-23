@@ -56,6 +56,23 @@ export class AgentDashboardComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
 
+  selectedFile: File | null = null;
+  isUploading = false;
+  uploadSuccess = '';
+  uploadError = '';
+  uploadResults: Array<{ row: number; message: string }> = [];
+  successCount = 0;
+  errorCount = 0;
+  templateHeaders = [
+    'homeownerName',
+    'homeownerEmail',
+    'homeownerPhone',
+    'propertyAddress',
+    'propertyType',
+    'preferredAgency',
+    'preferredContactTime',
+  ];
+
   constructor(
     private leadService: LeadService,
     private authService: AuthService,
@@ -119,6 +136,65 @@ export class AgentDashboardComponent implements OnInit {
         lead.propertyAddress.toLowerCase().includes(term);
       return matchesStatus && matchesType && matchesSearch;
     });
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.selectedFile = input.files && input.files.length > 0 ? input.files[0] : null;
+    this.uploadError = '';
+    this.uploadSuccess = '';
+    this.uploadResults = [];
+    this.successCount = 0;
+    this.errorCount = 0;
+  }
+
+  uploadLeads() {
+    if (!this.selectedFile) {
+      this.uploadError = 'Please select a CSV file.';
+      return;
+    }
+
+    this.isUploading = true;
+    this.uploadError = '';
+    this.uploadSuccess = '';
+    this.uploadResults = [];
+    this.successCount = 0;
+    this.errorCount = 0;
+
+    this.leadService.uploadLeadsCsv(this.selectedFile).subscribe({
+      next: (res) => {
+        this.successCount = res.successCount || 0;
+        this.errorCount = res.errorCount || 0;
+        this.uploadResults = res.errors || [];
+        this.uploadSuccess = `Upload complete: ${this.successCount} leads added.`;
+        if (this.errorCount > 0) {
+          this.uploadSuccess += ` ${this.errorCount} rows failed.`;
+        }
+        this.isUploading = false;
+        this.selectedFile = null;
+        this.loadLeads();
+      },
+      error: (err) => {
+        this.uploadError = err.error?.message || 'Upload failed. Please try again.';
+        this.isUploading = false;
+      },
+    });
+  }
+
+  downloadTemplate() {
+    const header = this.templateHeaders.join(',');
+    const sampleRows = [
+      'John Smith,john.smith@example.com,0412345678,123 Queen St Brisbane QLD 4000,house,Brisbane Central Realty,Evenings',
+      'Sarah Lee,sarah.lee@example.com,0400111222,8 James St Fortitude Valley QLD 4006,apartment,,Mornings',
+    ];
+    const csv = [header, ...sampleRows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'lead-upload-template.csv';
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   private applyLeadUpdate(updatedLead: Lead) {

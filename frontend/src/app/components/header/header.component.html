@@ -5,6 +5,7 @@
       <span class="brand-subtitle">Real estate lead platform</span>
     </a>
     <nav class="site-nav">
+      <a routerLink="/">Home</a>
       <a routerLink="/sell" *ngIf="!isLoggedIn || role === 'seller'">Sell</a>
       <a routerLink="/for-agents" *ngIf="!isLoggedIn">For Agents</a>
       <a routerLink="/agent" *ngIf="role === 'agent'">Agent</a>

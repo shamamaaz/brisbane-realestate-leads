@@ -49,8 +49,8 @@ export class LeadsController {
     @UploadedFile() file?: { buffer?: Buffer },
   ): Promise<{ successCount: number; errorCount: number; errors: Array<{ row: number; message: string }> }> {
     const role = req.user?.role;
-    if (role !== UserRole.AGENCY_ADMIN && role !== UserRole.SYSTEM_ADMIN) {
-      throw new ForbiddenException('Only agency or admin users can upload leads.');
+    if (role !== UserRole.AGENCY_ADMIN && role !== UserRole.SYSTEM_ADMIN && role !== UserRole.AGENT) {
+      throw new ForbiddenException('Only agency, agent, or admin users can upload leads.');
     }
 
     if (!file) {
