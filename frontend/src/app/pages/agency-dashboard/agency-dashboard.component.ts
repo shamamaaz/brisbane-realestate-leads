@@ -4,10 +4,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { LeadDetailModalComponent } from '../../components/lead-detail-modal/lead-detail-modal.component';
 import { Lead } from '../../models/lead.model';
 import { Agent } from '../../models/agent.model';
+import { Agency } from '../../models/agency.model';
 import { AgentService } from '../../services/agent.service';
 import { LeadService } from '../../services/lead.service';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
+import { AgencyService } from '../../services/agency.service';
 
 @Component({
   selector: 'app-agency-dashboard',
@@ -26,6 +28,16 @@ export class AgencyDashboardComponent implements OnInit {
   agents: Agent[] = [];
   selectedAgent: Agent | null = null;
   isAgentModalOpen = false;
+  agencyDetails: Agency | null = null;
+
+  brandingPrimary = '#1f6b6f';
+  brandingSecondary = '#fffaf3';
+  routingMode = 'postcode';
+  routingPostcodes = '';
+  brandingMessage = '';
+  brandingError = '';
+  routingMessage = '';
+  routingError = '';
 
   statusFilter: string = '';
   propertyTypeFilter: string = '';
@@ -63,6 +75,7 @@ export class AgencyDashboardComponent implements OnInit {
     private agentService: AgentService,
     private authService: AuthService,
     private themeService: ThemeService,
+    private agencyService: AgencyService,
     private router: Router,
     private dialog: MatDialog
   ) {}
@@ -72,6 +85,7 @@ export class AgencyDashboardComponent implements OnInit {
     this.loadAgencyInfo();
     this.loadAgents();
     this.loadLeads();
+    this.loadAgencySettings();
   }
 
   checkAuth() {
@@ -85,11 +99,33 @@ export class AgencyDashboardComponent implements OnInit {
       (user: any) => {
         this.agencyName = user.agency?.name || 'Agency';
         this.themeService.applyAgencyTheme(user.agency);
+        if (user.agency) {
+          this.agencyDetails = user.agency;
+          this.brandingPrimary = user.agency.primaryColor || this.brandingPrimary;
+          this.brandingSecondary = user.agency.secondaryColor || this.brandingSecondary;
+          this.routingMode = user.agency.routingMode || this.routingMode;
+          this.routingPostcodes = (user.agency.postcodes || []).join(', ');
+        }
       },
       (error) => {
         console.error('Failed to load agency info:', error);
       }
     );
+  }
+
+  loadAgencySettings() {
+    this.agencyService.getMyAgency().subscribe({
+      next: (agency) => {
+        this.agencyDetails = agency;
+        this.brandingPrimary = agency.primaryColor || '#1f6b6f';
+        this.brandingSecondary = agency.secondaryColor || '#fffaf3';
+        this.routingMode = agency.routingMode || 'postcode';
+        this.routingPostcodes = (agency.postcodes || []).join(', ');
+      },
+      error: () => {
+        this.agencyDetails = null;
+      },
+    });
   }
 
   loadLeads() {
@@ -121,6 +157,88 @@ export class AgencyDashboardComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading agents:', err);
+      },
+    });
+  }
+
+  saveBranding() {
+    if (!this.agencyDetails?.id) {
+      this.brandingError = 'Agency settings not loaded. Please refresh and try again.';
+      return;
+    }
+
+    this.brandingError = '';
+    this.brandingMessage = '';
+
+    this.agencyService.updateAgency(this.agencyDetails.id, {
+      primaryColor: this.brandingPrimary,
+      secondaryColor: this.brandingSecondary,
+    }).subscribe({
+      next: (agency) => {
+        this.brandingMessage = 'Branding updated.';
+        this.agencyDetails = agency;
+        this.themeService.applyAgencyTheme(agency);
+      },
+      error: () => {
+        this.brandingError = 'Failed to update branding.';
+      },
+    });
+  }
+
+  saveRouting() {
+    if (!this.agencyDetails?.id) {
+      this.routingError = 'Agency settings not loaded. Please refresh and try again.';
+      return;
+    }
+
+    this.routingError = '';
+    this.routingMessage = '';
+
+    const postcodes = this.routingPostcodes
+      .split(',')
+      .map((code) => code.trim())
+      .filter((code) => code.length > 0);
+
+    this.agencyService.updateAgency(this.agencyDetails.id, {
+      routingMode: this.routingMode,
+      postcodes,
+    }).subscribe({
+      next: () => {
+        this.routingMessage = 'Routing rules updated.';
+      },
+      error: () => {
+        this.routingError = 'Failed to update routing rules.';
+      },
+    });
+  }
+
+  updateAgent(agent: Agent) {
+    if (!agent.id) return;
+    this.agentService.updateAgent(agent.id, {
+      territory: agent.territory,
+      role: agent.role,
+      isActive: agent.isActive,
+    }).subscribe({
+      next: (updated) => {
+        Object.assign(agent, updated);
+      },
+      error: () => {
+        this.errorMessage = 'Failed to update agent.';
+      },
+    });
+  }
+
+  assignLeadToAgent(lead: Lead, agentId: number) {
+    const agent = this.agents.find((item) => item.userId === agentId || item.id === agentId);
+    if (!lead.id || !agent) return;
+
+    this.leadService.assignLead(lead.id, agentId, agent.name).subscribe({
+      next: (updated) => {
+        lead.assignedAgentName = updated.assignedAgentName;
+        lead.assignedAgentId = updated.assignedAgentId;
+      },
+      error: () => {
+        this.errorMessage = 'Failed to assign lead.';
       },
     });
   }
@@ -198,7 +316,7 @@ export class AgencyDashboardComponent implements OnInit {
   downloadTemplate() {
     const header = this.templateHeaders.join(',');
     const sampleRows = [
-      'John Smith,john.smith@example.com,0412345678,123 Queen St Brisbane QLD 4000,house,Brisbane Central Realty,Evenings',
+      'John Smith,john.smith@example.com,0412345678,123 Queen St Sydney NSW 2000,house,Central Realty,Evenings',
       'Sarah Lee,sarah.lee@example.com,0400111222,8 James St Fortitude Valley QLD 4006,apartment,,Mornings',
     ];
     const csv = [header, ...sampleRows].join('\n');

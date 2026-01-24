@@ -20,6 +20,14 @@ export class AgencyService {
     return this.http.get<Agency>(`${this.apiUrl}/${id}`);
   }
 
+  getMyAgency(): Observable<Agency> {
+    return this.http.get<Agency>(`${this.apiUrl}/me`);
+  }
+
+  updateAgency(id: number, payload: Partial<Agency>): Observable<Agency> {
+    return this.http.patch<Agency>(`${this.apiUrl}/${id}`, payload);
+  }
+
   /**
    * Lookup agencies by postcode
    */

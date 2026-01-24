@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getJwtConfig } from '../config/jwt.config';
 import { Agency } from '../agencies/entities/agency.entity';
+import { Agent } from '../agents/entities/agent.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { EmailModule } from '../shared/email/email.module';
 import { AuthController } from './auth.controller';
@@ -16,7 +17,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Lead, Agency, SellerLoginToken]),
+    TypeOrmModule.forFeature([User, Lead, Agency, Agent, SellerLoginToken]),
     EmailModule,
     PassportModule,
     JwtModule.registerAsync({

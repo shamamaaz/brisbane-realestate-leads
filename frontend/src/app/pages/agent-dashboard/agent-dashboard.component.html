@@ -3,7 +3,7 @@
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-brand">
-          <span class="nav-title">Brisbane Lead Exchange</span>
+          <span class="nav-title">Lead Exchange</span>
           <span class="nav-subtitle">Agent workspace</span>
         </div>
         <nav class="nav-links">
@@ -26,7 +26,7 @@
       <div class="welcome-copy">
         <p class="eyebrow">Agent workspace</p>
         <h1 class="welcome-title">Welcome back, {{ agentName }}.</h1>
-        <p class="welcome-subtitle">Your Brisbane leads are sorted by suburb and response priority.</p>
+        <p class="welcome-subtitle">Your leads are sorted by suburb and response priority.</p>
       </div>
     </section>
 
@@ -161,73 +161,97 @@
     <div *ngIf="selectedLead" class="modal-overlay" (click)="closeModal()">
       <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h2 class="modal-title">{{ selectedLead.homeownerName }} - {{ selectedLead.propertyAddress }}</h2>
-          <button (click)="closeModal()" class="close-btn">&times;</button>
+          <div>
+            <h2 class="modal-title">{{ selectedLead.homeownerName }}</h2>
+            <p class="modal-subtitle">{{ selectedLead.propertyAddress }}</p>
+          </div>
+          <div class="modal-header-actions">
+            <span class="status-pill status-{{ selectedLead.status?.toLowerCase() || 'new' }}">
+              {{ selectedLead.status || 'New' }}
+            </span>
+            <button (click)="closeModal()" class="close-btn">&times;</button>
+          </div>
         </div>
 
         <div class="modal-body">
-          <div class="detail-section">
+          <div class="detail-summary">
+            <div class="summary-card">
+              <span class="summary-label">Preferred time</span>
+              <strong>{{ selectedLead.preferredContactTime || 'Anytime' }}</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Created</span>
+              <strong>{{ selectedLead.createdAt | date:'mediumDate' }}</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Source</span>
+              <strong>{{ selectedLead.sourceType || 'public' }}</strong>
+            </div>
+          </div>
+
+          <div class="detail-section detail-card">
             <h3 class="section-title">Contact Information</h3>
             <div class="detail-grid">
               <div class="detail-item">
-                <span class="detail-label">Email:</span>
+                <span class="detail-label">Email</span>
                 <span class="detail-value">{{ selectedLead.homeownerEmail }}</span>
               </div>
               <div class="detail-item">
-                <span class="detail-label">Phone:</span>
+                <span class="detail-label">Phone</span>
                 <span class="detail-value">{{ selectedLead.homeownerPhone }}</span>
               </div>
             </div>
+            <div class="detail-actions">
+              <button class="btn btn-outline" type="button" (click)="sendSellerLink()">Send login link</button>
+              <span class="inline-success" *ngIf="linkSuccess">{{ linkSuccess }}</span>
+              <span class="inline-error" *ngIf="linkError">{{ linkError }}</span>
+            </div>
           </div>
 
-          <div class="detail-section">
+          <div class="detail-section detail-card">
             <h3 class="section-title">Property Details</h3>
             <div class="detail-grid">
               <div class="detail-item">
-                <span class="detail-label">Type:</span>
-                <span class="detail-value">{{ selectedLead.propertyType }}</span>
+                <span class="detail-label">Type</span>
+                <span class="detail-value value-spaced">{{ selectedLead.propertyType || '—' }}</span>
               </div>
               <div class="detail-item">
-                <span class="detail-label">Est. Value:</span>
-                <span class="detail-value">{{ selectedLead.estimatedValue | currency }}</span>
+                <span class="detail-label">Est. Value</span>
+                <span class="detail-value value-spaced">{{ selectedLead.estimatedValue | currency }}</span>
               </div>
             </div>
           </div>
 
-          <div class="detail-section">
+          <div class="detail-section detail-card">
             <h3 class="section-title">Lead Details</h3>
             <div class="detail-grid">
               <div class="detail-item">
-                <span class="detail-label">Status:</span>
-                <span class="detail-value">{{ selectedLead.status || 'New' }}</span>
+                <span class="detail-label">Status</span>
+                <span class="detail-value value-spaced">{{ selectedLead.status || 'New' }}</span>
               </div>
               <div class="detail-item">
-                <span class="detail-label">Preferred Agency:</span>
-                <span class="detail-value">{{ selectedLead.preferredAgency || '—' }}</span>
+                <span class="detail-label">Preferred Agency</span>
+                <span class="detail-value value-spaced">{{ selectedLead.preferredAgency || '—' }}</span>
               </div>
               <div class="detail-item">
-                <span class="detail-label">Best Time to Call:</span>
-                <span class="detail-value">{{ selectedLead.preferredContactTime || 'Anytime' }}</span>
+                <span class="detail-label">Assigned Agent</span>
+                <span class="detail-value value-spaced">{{ selectedLead.assignedAgentName || '—' }}</span>
               </div>
               <div class="detail-item">
-                <span class="detail-label">Assigned Agent:</span>
-                <span class="detail-value">{{ selectedLead.assignedAgentName || '—' }}</span>
+                <span class="detail-label">Next Follow-Up</span>
+                <span class="detail-value">
+                  {{ selectedLead.nextFollowUpDate ? (selectedLead.nextFollowUpDate | date:'medium') : '—' }}
+                </span>
               </div>
               <div class="detail-item">
-                <span class="detail-label">Next Follow-Up:</span>
-                <span class="detail-value">{{ selectedLead.nextFollowUpDate | date:'medium' }}</span>
+                <span class="detail-label">Follow-Up Notes</span>
+                <span class="detail-value value-spaced">{{ selectedLead.followUpNotes || '—' }}</span>
               </div>
               <div class="detail-item">
-                <span class="detail-label">Follow-Up Notes:</span>
-                <span class="detail-value">{{ selectedLead.followUpNotes || '—' }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">Last Contacted:</span>
-                <span class="detail-value">{{ selectedLead.lastContactedDate | date:'medium' }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label">Created:</span>
-                <span class="detail-value">{{ selectedLead.createdAt | date:'medium' }}</span>
+                <span class="detail-label">Last Contacted</span>
+                <span class="detail-value">
+                  {{ selectedLead.lastContactedDate ? (selectedLead.lastContactedDate | date:'medium') : '—' }}
+                </span>
               </div>
             </div>
           </div>

@@ -24,6 +24,10 @@ export class AgentService {
     return this.http.get<Agent>(`${this.apiUrl}/${id}`);
   }
 
+  updateAgent(id: number, payload: Partial<Agent>): Observable<Agent> {
+    return this.http.patch<Agent>(`${this.apiUrl}/${id}`, payload);
+  }
+
   getAgentAssignments(agentId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${agentId}/assignments`);
   }

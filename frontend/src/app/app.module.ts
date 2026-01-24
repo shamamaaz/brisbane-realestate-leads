@@ -20,6 +20,8 @@ import { ForAgentsComponent } from './pages/for-agents/for-agents.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
+import { LegalComponent } from './pages/legal/legal.component';
+import { PrivacyComponent } from './pages/privacy/privacy.component';
 import { SellerAccessComponent } from './pages/seller-access/seller-access.component';
 import { SellerLoginComponent } from './pages/seller-login/seller-login.component';
 import { SellerDashboardComponent } from './pages/seller-dashboard/seller-dashboard.component';
@@ -47,6 +49,8 @@ import { AgentModule } from './agent/agent.module';
     LandingComponent,
     HomeComponent,
     PropertyDetailComponent,
+    LegalComponent,
+    PrivacyComponent,
     SellerAccessComponent,
     SellerLoginComponent,
     SellerDashboardComponent,

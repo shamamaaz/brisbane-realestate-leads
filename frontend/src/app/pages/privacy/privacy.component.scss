@@ -1,0 +1,60 @@
+.legal-page {
+  min-height: 100vh;
+  background: #f6f2eb;
+  padding: 60px 24px 80px;
+  font-family: 'Manrope', sans-serif;
+  color: #1c2529;
+}
+
+.legal-hero {
+  max-width: 900px;
+  margin: 0 auto 30px;
+  text-align: left;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 2.2px;
+  font-size: 11px;
+  color: #1f6b6f;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-family: 'Fraunces', serif;
+  margin: 0 0 8px;
+  font-size: clamp(2.2rem, 3vw, 3rem);
+}
+
+.subtitle {
+  margin: 0;
+  color: #5a6a70;
+}
+
+.legal-section {
+  max-width: 900px;
+  margin: 0 auto 22px;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(28, 37, 41, 0.12);
+  padding: 20px 22px;
+  box-shadow: 0 12px 24px rgba(28, 37, 41, 0.08);
+
+  h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+  }
+
+  p {
+    margin: 0;
+    color: #5a6a70;
+    line-height: 1.6;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 18px;
+    color: #5a6a70;
+  }
+}

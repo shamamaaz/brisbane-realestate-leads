@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { Repository } from 'typeorm';
 import { Agency } from '../agencies/entities/agency.entity';
+import { Agent } from '../agents/entities/agent.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { EmailService } from '../shared/email/email.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
@@ -22,6 +23,8 @@ export class AuthService {
     private leadRepo: Repository<Lead>,
     @InjectRepository(Agency)
     private agencyRepo: Repository<Agency>,
+    @InjectRepository(Agent)
+    private agentRepo: Repository<Agent>,
     @InjectRepository(SellerLoginToken)
     private sellerTokenRepo: Repository<SellerLoginToken>,
     private jwtService: JwtService,
@@ -74,7 +77,10 @@ export class AuthService {
     });
 
     const savedUser = await this.userRepo.save(user);
+    await this.syncAgentUserLink(savedUser);
     console.log('✅ User registered:', { id: savedUser.id, email: savedUser.email, role: savedUser.role });
+
+    await this.syncAgentUserLink(user);
 
     // Generate token
     const accessToken = this.jwtService.sign({
@@ -160,6 +166,8 @@ export class AuthService {
       throw new UnauthorizedException('User account is inactive');
     }
 
+    await this.syncAgentUserLink(user);
+
     const accessToken = this.jwtService.sign({
       id: user.id,
       email: user.email,
@@ -189,14 +197,15 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('User not found');
     }
+    await this.syncAgentUserLink(user);
     return user;
   }
 
   async seedDemoData() {
-    let demoAgency = await this.agencyRepo.findOne({ where: { name: 'Brisbane Demo Agency' } });
+    let demoAgency = await this.agencyRepo.findOne({ where: { name: 'Lead Exchange Demo Agency' } });
     if (!demoAgency) {
       demoAgency = await this.agencyRepo.save(this.agencyRepo.create({
-        name: 'Brisbane Demo Agency',
+        name: 'Lead Exchange Demo Agency',
         primaryColor: '#1f6b6f',
         secondaryColor: '#fffaf3',
       }));
@@ -357,6 +366,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       role: user.role,
+      agencyId: user.agencyId,
     });
 
     return {
@@ -366,5 +376,28 @@ export class AuthService {
       role: user.role,
       accessToken,
     };
+  }
+
+  private async syncAgentUserLink(user: User): Promise<void> {
+    if (user.role !== UserRole.AGENT) {
+      return;
+    }
+
+    const agent = await this.agentRepo.findOne({ where: { email: user.email } });
+    if (!agent) {
+      return;
+    }
+
+    if (agent.userId !== user.id) {
+      agent.userId = user.id;
+      await this.agentRepo.save(agent);
+    }
+
+    if (agent.id !== user.id) {
+      await this.leadRepo.update(
+        { assignedAgentId: agent.id },
+        { assignedAgentId: user.id },
+      );
+    }
   }
 }

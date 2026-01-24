@@ -18,6 +18,7 @@ export interface Lead {
   nextFollowUpDate?: Date;
   lastContactedDate?: Date;
   assignedAgentName?: string;
+  assignedAgentId?: number;
   createdByAgentId?: number;
   offers?: AgentOffer[];
   territoryId?: number;

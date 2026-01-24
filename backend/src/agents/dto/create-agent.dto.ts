@@ -19,6 +19,13 @@ export class CreateAgentDto {
   territory?: string;
 
   @IsOptional()
+  @IsString()
+  role?: string;
+
+  @IsOptional()
+  isActive?: boolean;
+
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   agencyId?: number;

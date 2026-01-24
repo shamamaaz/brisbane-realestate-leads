@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Agent } from '../../models/agent.model';
 import { AgentService } from '../../services/agent.service';
+import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-agency-agents',
@@ -36,10 +38,24 @@ export class AgencyAgentsComponent implements OnInit {
   activeAgents = 0;
   totalLeadsAssigned = 0;
 
-  constructor(private agentService: AgentService) {}
+  constructor(
+    private agentService: AgentService,
+    private authService: AuthService,
+    private themeService: ThemeService,
+  ) {}
 
   ngOnInit() {
+    this.loadAgencyTheme();
     this.loadAgents();
+  }
+
+  private loadAgencyTheme() {
+    this.authService.getCurrentUser().subscribe({
+      next: (user: any) => {
+        this.themeService.applyAgencyTheme(user.agency);
+      },
+      error: () => {},
+    });
   }
 
   loadAgents() {

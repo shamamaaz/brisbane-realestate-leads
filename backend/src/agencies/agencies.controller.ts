@@ -1,4 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, Request, UseGuards, ForbiddenException } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserRole } from '../auth/entities/user.entity';
 import { AgenciesService } from './agencies.service';
 
 @Controller('api/agencies')
@@ -10,8 +12,30 @@ export class AgenciesController {
     return this.agenciesService.getAllAgencies();
   }
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getMyAgency(@Request() req: any) {
+    if (!req.user?.agencyId) {
+      throw new ForbiddenException('Agency not found');
+    }
+    return this.agenciesService.getAgencyById(req.user.agencyId);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  async updateAgency(
+    @Request() req: any,
+    @Param('id') id: number,
+    @Body() payload: any,
+  ) {
+    if (req.user.role === UserRole.AGENCY_ADMIN && Number(id) !== req.user.agencyId) {
+      throw new ForbiddenException('Access denied');
+    }
+    return this.agenciesService.updateAgency(Number(id), payload);
+  }
+
   @Get('lookup')
-  lookupByPostcode(@Query('postcode') postcode: string) {
+  async lookupByPostcode(@Query('postcode') postcode: string) {
     if (!postcode) {
       return {
         success: false,
@@ -20,14 +44,14 @@ export class AgenciesController {
       };
     }
 
-    const agencies = this.agenciesService.findAgenciesByPostcode(postcode);
+    const agencies = await this.agenciesService.findAgenciesByPostcode(postcode);
     
     if (agencies.length === 0) {
       // If no exact match, return nearest agency
       return {
         success: true,
         message: 'No agencies found for this postcode, suggesting nearby agency',
-        agencies: [this.agenciesService.findNearestAgency()],
+        agencies: [await this.agenciesService.findNearestAgency()],
         exact: false
       };
     }

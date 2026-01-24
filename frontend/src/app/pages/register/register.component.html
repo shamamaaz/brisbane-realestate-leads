@@ -4,9 +4,9 @@
   <div class="auth-content">
     <div class="auth-card">
       <div class="auth-header">
-        <div class="brand-pill">Brisbane Lead Exchange</div>
+        <div class="brand-pill">Lead Exchange</div>
         <h1>Create your account</h1>
-        <p class="auth-subtitle">Join the network and start receiving qualified Brisbane seller leads.</p>
+        <p class="auth-subtitle">Join the network and start receiving qualified seller leads.</p>
       </div>
 
       <form [formGroup]="registerForm" (ngSubmit)="register()" class="auth-form">
@@ -144,7 +144,9 @@
 
       <div class="auth-footer">
         <p class="terms-text">
-          By creating an account, you agree to our Terms of Service and Privacy Policy.
+          By creating an account, you agree to our
+          <a routerLink="/legal" class="auth-link">Terms of Service</a> and
+          <a routerLink="/privacy" class="auth-link">Privacy Notice</a>.
         </p>
         <p>
           Already have an account?

@@ -14,7 +14,7 @@ export class AdminService {
   async getOverview(user: any) {
     const leads = await this.leadsService.getAllLeads(user);
     const agencies = await this.agenciesService.getAllAgencies();
-    const agents = await this.agentsService.getAllAgents();
+    const agents = await this.agentsService.getAllAgents(user);
 
     const statusCounts = leads.reduce(
       (acc, lead) => {

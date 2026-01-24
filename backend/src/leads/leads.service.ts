@@ -1,7 +1,9 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Agent } from '../agents/entities/agent.entity';
 import { UserRole } from '../auth/entities/user.entity';
+import { User } from '../auth/entities/user.entity';
 import { LeadAssignmentsService } from '../lead-assignments/lead-assignments.service';
 import { AddLeadNoteDto } from '../shared/dto/add-lead-note.dto';
 import { CreateLeadDto } from '../shared/dto/create-lead.dto';
@@ -13,6 +15,10 @@ export class LeadsService {
   constructor(
     @InjectRepository(Lead)
     private readonly leadRepo: Repository<Lead>,
+    @InjectRepository(Agent)
+    private readonly agentRepo: Repository<Agent>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
     private readonly leadAssignmentService: LeadAssignmentsService,
   ) {}
 
@@ -126,6 +132,36 @@ export class LeadsService {
       lead.assignedAgentName = updateStatusDto.assignedAgentName;
     }
 
+    return this.leadRepo.save(lead);
+  }
+
+  async assignLeadToAgent(id: number, agentId: number, agentName: string | undefined, user: any): Promise<Lead> {
+    if (user.role !== UserRole.AGENCY_ADMIN && user.role !== UserRole.SYSTEM_ADMIN) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const lead = await this.getLeadById(id, user);
+    if (user.role === UserRole.AGENCY_ADMIN && lead.agencyId !== user.agencyId) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const matchedUser = await this.userRepo.findOne({ where: { id: agentId } });
+    if (matchedUser) {
+      const agentRecord = await this.agentRepo.findOne({ where: { email: matchedUser.email } });
+      lead.assignedAgentId = matchedUser.id;
+      lead.assignedAgentName = agentName || agentRecord?.name || lead.assignedAgentName || '';
+      lead.updatedAt = new Date();
+      return this.leadRepo.save(lead);
+    }
+
+    const agentRecord = await this.agentRepo.findOne({ where: { id: agentId } });
+    if (!agentRecord) {
+      throw new NotFoundException('Agent not found');
+    }
+
+    lead.assignedAgentId = agentRecord.userId || agentRecord.id;
+    lead.assignedAgentName = agentName || agentRecord.name || lead.assignedAgentName || '';
+    lead.updatedAt = new Date();
     return this.leadRepo.save(lead);
   }
 
@@ -318,8 +354,7 @@ export class LeadsService {
     }
 
     if (user.role === UserRole.AGENT) {
-      query.andWhere('(lead.agencyId = :agencyId OR lead.createdByAgentId = :agentId)', {
-        agencyId: user.agencyId || 0,
+      query.andWhere('(lead.assignedAgentId = :agentId OR lead.createdByAgentId = :agentId)', {
         agentId: user.id,
       });
       return;
@@ -341,7 +376,7 @@ export class LeadsService {
       if (lead.createdByAgentId === user.id) {
         return;
       }
-      if (lead.agencyId && lead.agencyId === user.agencyId) {
+      if (lead.assignedAgentId && lead.assignedAgentId === user.id) {
         return;
       }
     }

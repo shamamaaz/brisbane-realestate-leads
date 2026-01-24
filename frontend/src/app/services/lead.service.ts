@@ -39,6 +39,10 @@ export class LeadService {
     return this.http.post<Lead>(`${this.apiUrl}/${id}/status`, statusUpdate);
   }
 
+  assignLead(id: number, agentId: number, agentName?: string): Observable<Lead> {
+    return this.http.post<Lead>(`${this.apiUrl}/${id}/assign`, { agentId, agentName });
+  }
+
   /**
    * Add a note/comment to a lead
    */

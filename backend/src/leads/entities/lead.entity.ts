@@ -57,6 +57,9 @@ export class Lead {
   assignedAgentName: string; // Name of assigned agent
 
   @Column({ nullable: true })
+  assignedAgentId: number;
+
+  @Column({ nullable: true })
   createdByAgentId: number;
 
   @Column({ nullable: true })

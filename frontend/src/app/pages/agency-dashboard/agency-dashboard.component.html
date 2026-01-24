@@ -3,7 +3,7 @@
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-brand">
-          <span class="nav-title">Brisbane Lead Exchange</span>
+          <span class="nav-title">Lead Exchange</span>
           <span class="nav-subtitle">Agency admin</span>
         </div>
         <nav class="nav-links">
@@ -27,6 +27,40 @@
         <p class="eyebrow">Agency overview</p>
         <h1 class="page-title">{{ agencyName }}</h1>
         <p class="page-subtitle">Lead intake, agent performance, and revenue snapshot.</p>
+      </div>
+    </section>
+
+    <section class="settings-grid">
+      <div class="settings-card">
+        <h2>Branding</h2>
+        <p>Update your agency colors. Changes apply to all agent dashboards.</p>
+        <div class="color-grid">
+          <label class="color-field">
+            <span>Primary color</span>
+            <input type="color" [(ngModel)]="brandingPrimary" />
+          </label>
+          <label class="color-field">
+            <span>Secondary color</span>
+            <input type="color" [(ngModel)]="brandingSecondary" />
+          </label>
+        </div>
+        <button class="btn btn-primary" type="button" (click)="saveBranding()">Save branding</button>
+        <div class="form-success" *ngIf="brandingMessage">{{ brandingMessage }}</div>
+        <div class="form-error" *ngIf="brandingError">{{ brandingError }}</div>
+      </div>
+
+      <div class="settings-card">
+        <h2>Lead routing</h2>
+        <p>Simple postcode-based routing for public seller leads.</p>
+        <label class="form-label">Routing mode</label>
+        <select class="form-input" [(ngModel)]="routingMode">
+          <option value="postcode">Postcode based</option>
+        </select>
+        <label class="form-label">Agency postcodes (comma separated)</label>
+        <textarea class="form-input textarea" rows="3" [(ngModel)]="routingPostcodes"></textarea>
+        <button class="btn btn-primary" type="button" (click)="saveRouting()">Save routing</button>
+        <div class="form-success" *ngIf="routingMessage">{{ routingMessage }}</div>
+        <div class="form-error" *ngIf="routingError">{{ routingError }}</div>
       </div>
     </section>
 
@@ -74,7 +108,7 @@
 
     <section class="table-section">
       <div class="table-header-row">
-        <h2>Agent performance</h2>
+        <h2>Agents</h2>
         <span>{{ agents.length }} agents</span>
       </div>
       <div class="table-scroll">
@@ -82,18 +116,35 @@
           <thead>
             <tr>
               <th>Agent</th>
-              <th>Leads Assigned</th>
               <th>Territory</th>
-              <th>Performance</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let agent of agents">
-              <td class="cell-name">{{ agent.name }}</td>
-              <td>{{ agent.leadsAssigned || 0 }}</td>
-              <td>{{ agent.territory || '—' }}</td>
+              <td class="cell-name">
+                <div>{{ agent.name }}</div>
+                <small>{{ agent.email }}</small>
+              </td>
               <td>
-                <button (click)="manageAgent(agent)" class="btn-manage">Manage</button>
+                <input class="form-input" [(ngModel)]="agent.territory" />
+              </td>
+              <td>
+                <select class="form-input" [(ngModel)]="agent.role">
+                  <option value="admin">Admin</option>
+                  <option value="agent">Agent</option>
+                </select>
+              </td>
+              <td>
+                <label class="toggle">
+                  <input type="checkbox" [(ngModel)]="agent.isActive" />
+                  <span>Active</span>
+                </label>
+              </td>
+              <td>
+                <button class="btn btn-outline" type="button" (click)="updateAgent(agent)">Save</button>
               </td>
             </tr>
           </tbody>
@@ -114,6 +165,7 @@
               <th>Address</th>
               <th>Status</th>
               <th>Callback</th>
+              <th>Assign</th>
             </tr>
           </thead>
           <tbody>
@@ -122,42 +174,21 @@
               <td>{{ lead.propertyAddress }}</td>
               <td><span class="status-pill">{{ lead.status || 'New' }}</span></td>
               <td>{{ lead.preferredContactTime || 'Anytime' }}</td>
+              <td>
+                <select
+                  class="form-input"
+                  [ngModel]="lead.assignedAgentId || ''"
+                  (ngModelChange)="assignLeadToAgent(lead, $event)">
+                  <option value="" disabled>Select agent</option>
+                  <option *ngFor="let agent of agents" [value]="agent.userId || agent.id" [disabled]="agent.isActive === false">
+                    {{ agent.name }}
+                  </option>
+                </select>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
-
-    <div class="modal-overlay" *ngIf="selectedAgent && isAgentModalOpen" (click)="closeAgentModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <div>
-            <h2>{{ selectedAgent.name }}</h2>
-            <p>{{ selectedAgent.territory || 'No territory set' }}</p>
-          </div>
-          <button class="close-btn" type="button" (click)="closeAgentModal()">×</button>
-        </div>
-        <div class="modal-body">
-          <div class="detail-grid">
-            <div class="detail-item">
-              <span class="detail-label">Email</span>
-              <span class="detail-value">{{ selectedAgent.email }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Phone</span>
-              <span class="detail-value">{{ selectedAgent.phone }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Leads assigned</span>
-              <span class="detail-value">{{ selectedAgent.leadsAssigned || 0 }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline" type="button" (click)="emailAgent(selectedAgent)">Email</button>
-          <button class="btn btn-primary" type="button" (click)="callAgent(selectedAgent)">Call</button>
-        </div>
-      </div>
-    </div>
   </main>
 </div>

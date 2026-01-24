@@ -7,6 +7,9 @@ export interface Agent {
   territoryId: number;
   territory?: string;
   leadsAssigned?: number;
+  role?: string;
+  isActive?: boolean;
+  userId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

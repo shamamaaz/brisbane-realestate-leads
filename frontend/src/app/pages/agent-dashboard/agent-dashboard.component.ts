@@ -56,6 +56,8 @@ export class AgentDashboardComponent implements OnInit {
 
   isLoading = false;
   errorMessage = '';
+  linkSuccess = '';
+  linkError = '';
 
   selectedFile: File | null = null;
   isUploading = false;
@@ -187,7 +189,7 @@ export class AgentDashboardComponent implements OnInit {
   downloadTemplate() {
     const header = this.templateHeaders.join(',');
     const sampleRows = [
-      'John Smith,john.smith@example.com,0412345678,123 Queen St Brisbane QLD 4000,house,Brisbane Central Realty,Evenings',
+      'John Smith,john.smith@example.com,0412345678,123 Queen St Sydney NSW 2000,house,Central Realty,Evenings',
       'Sarah Lee,sarah.lee@example.com,0400111222,8 James St Fortitude Valley QLD 4006,apartment,,Mornings',
     ];
     const csv = [header, ...sampleRows].join('\n');
@@ -231,6 +233,8 @@ export class AgentDashboardComponent implements OnInit {
     this.selectedLead = lead;
     this.isModalOpen = true;
     this.isViewOnly = false;
+    this.linkSuccess = '';
+    this.linkError = '';
     // Reset form fields
     this.newStatus = '';
     this.noteText = '';
@@ -244,6 +248,8 @@ export class AgentDashboardComponent implements OnInit {
     this.selectedLead = lead;
     this.isModalOpen = true;
     this.isViewOnly = true;
+    this.linkSuccess = '';
+    this.linkError = '';
     this.newStatus = '';
     this.noteText = '';
     this.followUpDate = '';
@@ -256,6 +262,8 @@ export class AgentDashboardComponent implements OnInit {
     this.isModalOpen = false;
     this.selectedLead = null;
     this.isViewOnly = false;
+    this.linkSuccess = '';
+    this.linkError = '';
     // Reset form fields
     this.newStatus = '';
     this.noteText = '';
@@ -264,6 +272,25 @@ export class AgentDashboardComponent implements OnInit {
     this.followUpNotes = '';
     this.showNotesPanel = false;
     this.resetOfferFields();
+  }
+
+  sendSellerLink() {
+    if (!this.selectedLead?.homeownerEmail) {
+      this.linkError = 'Lead email is missing.';
+      return;
+    }
+
+    this.linkError = '';
+    this.linkSuccess = '';
+
+    this.authService.requestSellerMagicLink(this.selectedLead.homeownerEmail).subscribe({
+      next: () => {
+        this.linkSuccess = 'Login link sent to the seller.';
+      },
+      error: () => {
+        this.linkError = 'Failed to send login link. Please try again.';
+      },
+    });
   }
 
   updateLeadStatus() {

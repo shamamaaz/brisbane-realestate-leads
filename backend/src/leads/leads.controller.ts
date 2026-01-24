@@ -112,6 +112,16 @@ export class LeadsController {
     return this.leadsService.updateLeadStatus(id, updateStatusDto, req.user);
   }
 
+  @Post(':id/assign')
+  @UseGuards(JwtAuthGuard)
+  async assignLead(
+    @Request() req: any,
+    @Param('id') id: number,
+    @Body() payload: { agentId: number; agentName?: string },
+  ): Promise<Lead> {
+    return this.leadsService.assignLeadToAgent(id, payload.agentId, payload.agentName, req.user);
+  }
+
   @Post(':id/notes')
   @UseGuards(JwtAuthGuard)
   async addNoteToLead(

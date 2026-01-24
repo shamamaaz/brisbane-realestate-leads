@@ -5,6 +5,8 @@ import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { LegalComponent } from './pages/legal/legal.component';
+import { PrivacyComponent } from './pages/privacy/privacy.component';
 import { SellerAccessComponent } from './pages/seller-access/seller-access.component';
 import { SellerLoginComponent } from './pages/seller-login/seller-login.component';
 import { SellerDashboardComponent } from './pages/seller-dashboard/seller-dashboard.component';
@@ -26,6 +28,8 @@ const routes: Routes = [
   // 🔐 Auth
   { path: 'auth/login', component: LoginComponent },
   { path: 'auth/register', component: RegisterComponent },
+  { path: 'legal', component: LegalComponent },
+  { path: 'privacy', component: PrivacyComponent },
   { path: 'auth/callback', component: AuthCallbackComponent },
   { path: 'seller/login', component: SellerLoginComponent },
   { path: 'seller/access', component: SellerAccessComponent },

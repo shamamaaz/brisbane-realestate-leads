@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { AgentsService } from './agents.service';
 
@@ -7,18 +8,27 @@ export class AgentsController {
   constructor(private readonly agentsService: AgentsService) {}
 
   @Get()
-  getAllAgents() {
-    return this.agentsService.getAllAgents();
+  @UseGuards(JwtAuthGuard)
+  getAllAgents(@Request() req: any) {
+    return this.agentsService.getAllAgents(req.user);
   }
 
   @Post()
-  createAgent(@Body() createAgentDto: CreateAgentDto) {
-    return this.agentsService.createAgent(createAgentDto);
+  @UseGuards(JwtAuthGuard)
+  createAgent(@Request() req: any, @Body() createAgentDto: CreateAgentDto) {
+    return this.agentsService.createAgent(createAgentDto, req.user);
   }
 
   @Get(':id')
-  getAgentById(@Param('id') id: number) {
-    return this.agentsService.getAgentById(Number(id));
+  @UseGuards(JwtAuthGuard)
+  getAgentById(@Request() req: any, @Param('id') id: number) {
+    return this.agentsService.getAgentById(Number(id), req.user);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  updateAgent(@Request() req: any, @Param('id') id: number, @Body() payload: any) {
+    return this.agentsService.updateAgent(Number(id), payload, req.user);
   }
 
   @Get(':id/assignments')

@@ -54,7 +54,7 @@ export class EmailService {
       throw new Error('Email is not configured.');
     }
 
-    const subject = 'Your Brisbane Lead Exchange login link';
+    const subject = 'Your Lead Exchange login link';
     const text = `Use this private link to access your seller dashboard:\n\n${link}\n\nThis link expires in 30 minutes.`;
     const html = `
       <p>Use this private link to access your seller dashboard:</p>

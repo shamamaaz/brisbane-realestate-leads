@@ -16,6 +16,12 @@ export class Agency {
   @Column({ nullable: true })
   secondaryColor?: string;
 
+  @Column({ type: 'text', array: true, nullable: true })
+  postcodes?: string[];
+
+  @Column({ default: 'postcode' })
+  routingMode: string;
+
   @Column({ type: 'enum', enum: ['small', 'large'], default: 'small' })
   size: 'small' | 'large';
 
