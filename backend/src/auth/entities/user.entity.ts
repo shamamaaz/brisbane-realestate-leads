@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Agency } from '../../agencies/entities/agency.entity';
 
 export enum UserRole {
@@ -33,7 +33,11 @@ export class User {
   @Column({ nullable: true })
   phone?: string;
 
+  @Column({ nullable: true })
+  agencyId?: number;
+
   @ManyToOne(() => Agency, { nullable: true })
+  @JoinColumn({ name: 'agencyId' })
   agency?: Agency;
 
   @Column({ default: true })

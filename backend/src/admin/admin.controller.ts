@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminService } from './admin.service';
 
@@ -8,7 +8,7 @@ export class AdminController {
 
   @Get('overview')
   @UseGuards(JwtAuthGuard)
-  async getOverview() {
-    return this.adminService.getOverview();
+  async getOverview(@Request() req: any) {
+    return this.adminService.getOverview(req.user);
   }
 }

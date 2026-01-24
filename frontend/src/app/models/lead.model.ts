@@ -10,6 +10,7 @@ export interface Lead {
   preferredAgency?: string;
   preferredContactTime?: string;
   status?: string; // New, Contacted, Scheduled, Closed
+  sourceType?: string;
   estimatedValue?: number;
   notes?: string;
   callHistory?: string[];
@@ -17,6 +18,7 @@ export interface Lead {
   nextFollowUpDate?: Date;
   lastContactedDate?: Date;
   assignedAgentName?: string;
+  createdByAgentId?: number;
   offers?: AgentOffer[];
   territoryId?: number;
   agencyId?: number;

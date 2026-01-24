@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Agency } from '../../models/agency.model';
 import { AuthService } from '../../services/auth.service';
+import { AgencyService } from '../../services/agency.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -9,21 +11,23 @@ import { environment } from '../../../environments/environment';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   isLoading = false;
   error = '';
   socialError = '';
+  agencies: Agency[] = [];
+  isLoadingAgencies = false;
 
   roles = [
-    { value: 'seller', label: 'Seller (Submit leads)' },
-    { value: 'agent', label: 'Real Estate Agent' },
-    { value: 'agency_admin', label: 'Agency Admin' }
+    { value: 'agency_admin', label: 'Agency' },
+    { value: 'agent', label: 'Agent' }
   ];
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private agencyService: AgencyService,
     private router: Router
   ) {
     this.registerForm = this.fb.group({
@@ -31,8 +35,51 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
-      role: ['homeowner', [Validators.required]]
+      role: ['agency_admin', [Validators.required]],
+      agencyName: [''],
+      agencyId: [''],
+      primaryColor: ['#1f6b6f'],
+      secondaryColor: ['#fffaf3'],
     }, { validators: this.passwordMatchValidator });
+  }
+
+  ngOnInit() {
+    this.loadAgencies();
+    this.registerForm.get('role')?.valueChanges.subscribe((role) => {
+      this.updateRoleValidators(role);
+    });
+    this.updateRoleValidators(this.registerForm.get('role')?.value);
+  }
+
+  private loadAgencies() {
+    this.isLoadingAgencies = true;
+    this.agencyService.getAgencies().subscribe({
+      next: (agencies) => {
+        this.agencies = agencies || [];
+        this.isLoadingAgencies = false;
+      },
+      error: () => {
+        this.isLoadingAgencies = false;
+      },
+    });
+  }
+
+  private updateRoleValidators(role: string) {
+    const agencyNameControl = this.registerForm.get('agencyName');
+    const agencyIdControl = this.registerForm.get('agencyId');
+
+    if (role === 'agency_admin') {
+      agencyNameControl?.setValidators([Validators.required, Validators.minLength(2)]);
+      agencyIdControl?.clearValidators();
+      agencyIdControl?.setValue('');
+    } else {
+      agencyIdControl?.setValidators([Validators.required]);
+      agencyNameControl?.clearValidators();
+      agencyNameControl?.setValue('');
+    }
+
+    agencyNameControl?.updateValueAndValidity();
+    agencyIdControl?.updateValueAndValidity();
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -53,9 +100,14 @@ export class RegisterComponent {
 
     this.isLoading = true;
     this.error = '';
-    const { name, email, password, role } = this.registerForm.value;
+    const { name, email, password, role, agencyId, agencyName, primaryColor, secondaryColor } = this.registerForm.value;
 
-    this.authService.register(email, password, name, role).subscribe({
+    this.authService.register(email, password, name, role, {
+      agencyId: agencyId ? Number(agencyId) : undefined,
+      agencyName,
+      primaryColor,
+      secondaryColor,
+    }).subscribe({
       next: (response) => {
         this.isLoading = false;
         const userRole = response.role || role;

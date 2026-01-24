@@ -7,6 +7,7 @@ import { Agent } from '../../models/agent.model';
 import { AgentService } from '../../services/agent.service';
 import { LeadService } from '../../services/lead.service';
 import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-agency-dashboard',
@@ -61,6 +62,7 @@ export class AgencyDashboardComponent implements OnInit {
     private leadService: LeadService,
     private agentService: AgentService,
     private authService: AuthService,
+    private themeService: ThemeService,
     private router: Router,
     private dialog: MatDialog
   ) {}
@@ -81,7 +83,8 @@ export class AgencyDashboardComponent implements OnInit {
   loadAgencyInfo() {
     this.authService.getCurrentUser().subscribe(
       (user: any) => {
-        this.agencyName = user.agencyName || 'Agency';
+        this.agencyName = user.agency?.name || 'Agency';
+        this.themeService.applyAgencyTheme(user.agency);
       },
       (error) => {
         console.error('Failed to load agency info:', error);

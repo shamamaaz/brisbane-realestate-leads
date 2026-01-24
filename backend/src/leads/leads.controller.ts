@@ -62,7 +62,12 @@ export class LeadsController {
       throw new BadRequestException('CSV file is empty.');
     }
 
-    return this.leadsService.bulkCreateFromCsv(csv);
+    const sourceType = role === UserRole.AGENT ? 'agent_created' : 'agency_upload';
+    return this.leadsService.bulkCreateFromCsv(csv, {
+      agencyId: req.user?.agencyId,
+      createdByAgentId: role === UserRole.AGENT ? req.user?.id : undefined,
+      sourceType,
+    });
   }
 
   @Get()
@@ -72,7 +77,7 @@ export class LeadsController {
     @Query('status') status?: string,
     @Query('propertyType') propertyType?: string,
   ): Promise<Lead[]> {
-    return this.leadsService.getAllLeads(status, propertyType);
+    return this.leadsService.getAllLeads(req.user, status, propertyType);
   }
 
   @Get('mine')
@@ -83,46 +88,50 @@ export class LeadsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  async getLeadById(@Param('id') id: number): Promise<Lead> {
-    return this.leadsService.getLeadById(id);
+  async getLeadById(@Request() req: any, @Param('id') id: number): Promise<Lead> {
+    return this.leadsService.getLeadById(id, req.user);
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   async updateLead(
+    @Request() req: any,
     @Param('id') id: number,
     @Body() updateLeadDto: Partial<CreateLeadDto>,
   ): Promise<Lead> {
-    return this.leadsService.updateLead(id, updateLeadDto);
+    return this.leadsService.updateLead(id, updateLeadDto, req.user);
   }
 
   @Post(':id/status')
   @UseGuards(JwtAuthGuard)
   async updateLeadStatus(
+    @Request() req: any,
     @Param('id') id: number,
     @Body() updateStatusDto: UpdateLeadStatusDto,
   ): Promise<Lead> {
-    return this.leadsService.updateLeadStatus(id, updateStatusDto);
+    return this.leadsService.updateLeadStatus(id, updateStatusDto, req.user);
   }
 
   @Post(':id/notes')
   @UseGuards(JwtAuthGuard)
   async addNoteToLead(
+    @Request() req: any,
     @Param('id') id: number,
     @Body() addNoteDto: AddLeadNoteDto,
   ): Promise<Lead> {
-    return this.leadsService.addNoteToLead(id, addNoteDto);
+    return this.leadsService.addNoteToLead(id, addNoteDto, req.user);
   }
 
   @Get(':id/call-history')
   @UseGuards(JwtAuthGuard)
-  async getCallHistory(@Param('id') id: number): Promise<string[]> {
-    return this.leadsService.getCallHistory(id);
+  async getCallHistory(@Request() req: any, @Param('id') id: number): Promise<string[]> {
+    return this.leadsService.getCallHistory(id, req.user);
   }
 
   @Post(':id/schedule-followup')
   @UseGuards(JwtAuthGuard)
   async scheduleFollowUp(
+    @Request() req: any,
     @Param('id') id: number,
     @Body() scheduleDto: { followUpDate: Date; notes: string },
   ): Promise<Lead> {
@@ -130,12 +139,13 @@ export class LeadsController {
       id,
       new Date(scheduleDto.followUpDate),
       scheduleDto.notes,
+      req.user,
     );
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteLead(@Param('id') id: number): Promise<void> {
-    return this.leadsService.deleteLead(id);
+  async deleteLead(@Request() req: any, @Param('id') id: number): Promise<void> {
+    return this.leadsService.deleteLead(id, req.user);
   }
 }

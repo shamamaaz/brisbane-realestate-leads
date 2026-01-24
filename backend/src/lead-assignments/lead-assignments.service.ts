@@ -11,6 +11,9 @@ export class LeadAssignmentsService {
     @InjectRepository(LeadAssignment)
     private readonly leadAssignmentRepo: Repository<LeadAssignment>,
 
+    @InjectRepository(Lead)
+    private readonly leadRepo: Repository<Lead>,
+
     @InjectRepository(Agent)
     private readonly agentRepo: Repository<Agent>,
   ) {}
@@ -31,10 +34,21 @@ export class LeadAssignmentsService {
       query.andWhere('agency.id = :agencyId', { agencyId: lead.agency.id });
     }
 
-    const agents = await query.getMany();
+    let agents = await query.getMany();
 
     if (!agents.length) {
       throw new NotFoundException('No agents found for this lead.');
+    }
+
+    if (!lead.agency?.id) {
+      const firstAgency = agents.find((agent) => agent.agency)?.agency;
+      if (!firstAgency) {
+        throw new NotFoundException('No agencies found for this lead.');
+      }
+      lead.agency = firstAgency;
+      lead.agencyId = firstAgency.id;
+      await this.leadRepo.save(lead);
+      agents = agents.filter((agent) => agent.agency?.id === firstAgency.id);
     }
 
     // Create assignments for all matched agents

@@ -39,4 +39,13 @@ export class CreateLeadDto {
   @Type(() => Number)
   @IsNumber()
   agencyId?: number;
+
+  @IsOptional()
+  @IsString()
+  sourceType?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  createdByAgentId?: number;
 }

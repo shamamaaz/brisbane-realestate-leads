@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { AgentOffer } from '../../agent-offers/entities/agent-offer.entity';
 import { Agency } from '../../agencies/entities/agency.entity';
 import { Territory } from '../../territories/entities/territory.entity';
@@ -32,6 +32,9 @@ export class Lead {
   @Column({ default: 'New' })
   status: string; // New, Contacted, Scheduled, Closed
 
+  @Column({ default: 'public' })
+  sourceType: string; // public | agency_upload | agent_created
+
   @Column({ type: 'decimal', nullable: true })
   estimatedValue: number;
 
@@ -53,10 +56,17 @@ export class Lead {
   @Column({ nullable: true })
   assignedAgentName: string; // Name of assigned agent
 
+  @Column({ nullable: true })
+  createdByAgentId: number;
+
+  @Column({ nullable: true })
+  agencyId: number;
+
   @ManyToOne(() => Territory, (territory) => territory.id, { nullable: true })
   territory: Territory;
 
   @ManyToOne(() => Agency, (agency) => agency.id, { nullable: true })
+  @JoinColumn({ name: 'agencyId' })
   agency: Agency;
 
   @OneToMany(() => AgentOffer, (offer) => offer.lead)

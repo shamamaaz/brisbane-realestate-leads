@@ -1,17 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Agency } from './entities/agency.entity';
 import { AGENCIES_SEED } from '../shared/data/agencies-seed';
 
 @Injectable()
 export class AgenciesService {
-  // In-memory storage (in production, this would be a database)
-  private agencies = AGENCIES_SEED;
+  constructor(
+    @InjectRepository(Agency)
+    private agencyRepo: Repository<Agency>,
+  ) {}
 
-  getAllAgencies() {
-    return this.agencies;
+  async getAllAgencies() {
+    return this.agencyRepo.find();
   }
 
-  getAgencyById(id: number) {
-    return this.agencies.find(agency => agency.id === id);
+  async getAgencyById(id: number) {
+    return this.agencyRepo.findOne({ where: { id } });
   }
 
   /**
@@ -19,7 +24,7 @@ export class AgenciesService {
    * Returns agencies that cover the specified postcode
    */
   findAgenciesByPostcode(postcode: string) {
-    return this.agencies.filter(agency => 
+    return AGENCIES_SEED.filter(agency => 
       agency.postcodes.includes(postcode)
     );
   }
@@ -28,6 +33,6 @@ export class AgenciesService {
    * Find nearest agency (for cases where exact postcode match not found)
    */
   findNearestAgency() {
-    return this.agencies[Math.floor(Math.random() * this.agencies.length)];
+    return AGENCIES_SEED[Math.floor(Math.random() * AGENCIES_SEED.length)];
   }
 }

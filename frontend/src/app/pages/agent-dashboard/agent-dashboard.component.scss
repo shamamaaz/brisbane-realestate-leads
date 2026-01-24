@@ -8,15 +8,15 @@
 }
 
 .agent-dashboard {
-  --cream: #fffaf3;
   --ink: #1c2529;
   --muted: #5a6a70;
-  --teal: #1f6b6f;
+  --teal: var(--primary-color, #1f6b6f);
   --teal-dark: #145256;
   --terracotta: #c86d4b;
   --gold: #e0b36a;
   --border: rgba(28, 37, 41, 0.12);
   --shadow: 0 18px 40px rgba(28, 37, 41, 0.12);
+  --cream: var(--secondary-color, #fffaf3);
 }
 
 .dashboard-nav {

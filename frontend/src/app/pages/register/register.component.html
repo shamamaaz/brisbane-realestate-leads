@@ -89,6 +89,48 @@
           </select>
         </div>
 
+        <div class="form-group" *ngIf="registerForm.get('role')?.value === 'agency_admin'">
+          <label for="agencyName" class="form-label">Agency name</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏢</span>
+            <input
+              id="agencyName"
+              type="text"
+              formControlName="agencyName"
+              placeholder="Your agency name"
+              class="form-input"
+            />
+          </div>
+          <span *ngIf="registerForm.get('agencyName')?.invalid && registerForm.get('agencyName')?.touched" class="error-text">
+            Agency name is required
+          </span>
+        </div>
+
+        <div class="form-group" *ngIf="registerForm.get('role')?.value === 'agency_admin'">
+          <label class="form-label">Agency colors</label>
+          <div class="color-grid">
+            <label class="color-field">
+              <span>Primary</span>
+              <input type="color" formControlName="primaryColor" />
+            </label>
+            <label class="color-field">
+              <span>Secondary</span>
+              <input type="color" formControlName="secondaryColor" />
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="registerForm.get('role')?.value === 'agent'">
+          <label class="form-label" for="agencyId">Select agency</label>
+          <select id="agencyId" formControlName="agencyId" class="form-input select-input">
+            <option value="" disabled>Select an agency</option>
+            <option *ngFor="let agency of agencies" [value]="agency.id">{{ agency.name }}</option>
+          </select>
+          <span *ngIf="registerForm.get('agencyId')?.invalid && registerForm.get('agencyId')?.touched" class="error-text">
+            Agency is required
+          </span>
+        </div>
+
         <button
           type="submit"
           [disabled]="registerForm.invalid || isLoading"

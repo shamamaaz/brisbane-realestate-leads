@@ -11,10 +11,10 @@ export class AdminService {
     private readonly agentsService: AgentsService,
   ) {}
 
-  async getOverview() {
-    const leads = await this.leadsService.getAllLeads();
-    const agencies = this.agenciesService.getAllAgencies();
-    const agents = this.agentsService.getAllAgents();
+  async getOverview(user: any) {
+    const leads = await this.leadsService.getAllLeads(user);
+    const agencies = await this.agenciesService.getAllAgencies();
+    const agents = await this.agentsService.getAllAgents();
 
     const statusCounts = leads.reduce(
       (acc, lead) => {

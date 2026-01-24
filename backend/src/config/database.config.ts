@@ -9,9 +9,12 @@ import { Territory } from '../territories/entities/territory.entity';
 import { SellerLoginToken } from '../auth/entities/seller-login-token.entity';
 
 export const getDatabaseConfig = (): TypeOrmModuleOptions => {
+  const host = process.env.DB_HOST || 'localhost';
+  const useSsl = host !== 'localhost';
+
   return {
     type: 'postgres',
-    host: process.env.DB_HOST || 'localhost',
+    host,
     port: parseInt(process.env.DB_PORT || '5432'),
     username: process.env.DB_USERNAME || 'brisbane_user',
     password: process.env.DB_PASSWORD || 'vaseem@123',
@@ -20,5 +23,6 @@ export const getDatabaseConfig = (): TypeOrmModuleOptions => {
     synchronize: process.env.NODE_ENV !== 'production',
     logging: process.env.NODE_ENV !== 'production',
     dropSchema: false,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
   };
 };

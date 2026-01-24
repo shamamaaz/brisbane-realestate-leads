@@ -8,12 +8,12 @@
 }
 
 .agency-dashboard {
-  --teal: #1f6b6f;
   --teal-dark: #145256;
   --muted: #5a6a70;
   --border: rgba(28, 37, 41, 0.12);
   --shadow: 0 16px 40px rgba(28, 37, 41, 0.12);
-  --cream: #fffaf3;
+  --teal: var(--primary-color, #1f6b6f);
+  --cream: var(--secondary-color, #fffaf3);
 }
 
 .dashboard-nav {

@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserRole } from '../auth/entities/user.entity';
 import { LeadAssignmentsService } from '../lead-assignments/lead-assignments.service';
 import { AddLeadNoteDto } from '../shared/dto/add-lead-note.dto';
 import { CreateLeadDto } from '../shared/dto/create-lead.dto';
@@ -19,6 +20,7 @@ export class LeadsService {
     const lead = this.leadRepo.create({
       ...createLeadDto,
       status: 'New', // Default status for new leads
+      sourceType: createLeadDto.sourceType || 'public',
       createdAt: new Date(),
       updatedAt: new Date(),
       callHistory: [],
@@ -37,12 +39,14 @@ export class LeadsService {
     return savedLead;
   }
 
-  async getAllLeads(status?: string, propertyType?: string): Promise<Lead[]> {
+  async getAllLeads(user: any, status?: string, propertyType?: string): Promise<Lead[]> {
     const query = this.leadRepo.createQueryBuilder('lead')
       .leftJoinAndSelect('lead.agency', 'agency')
       .leftJoinAndSelect('lead.territory', 'territory')
       .leftJoinAndSelect('lead.offers', 'offers')
       .orderBy('lead.createdAt', 'DESC');
+
+    this.applyVisibilityFilter(query, user);
 
     if (status) {
       query.andWhere('lead.status = :status', { status });
@@ -67,7 +71,7 @@ export class LeadsService {
     });
   }
 
-  async getLeadById(id: number): Promise<Lead> {
+  async getLeadById(id: number, user?: any): Promise<Lead> {
     const lead = await this.leadRepo.findOne({
       where: { id },
       relations: ['agency', 'territory', 'offers'],
@@ -77,14 +81,19 @@ export class LeadsService {
       throw new NotFoundException(`Lead with ID ${id} not found`);
     }
 
+    if (user) {
+      this.ensureLeadAccess(lead, user);
+    }
+
     return lead;
   }
 
   async updateLead(
     id: number,
     updateLeadDto: Partial<CreateLeadDto>,
+    user?: any,
   ): Promise<Lead> {
-    const lead = await this.getLeadById(id);
+    const lead = await this.getLeadById(id, user);
     Object.assign(lead, updateLeadDto, { updatedAt: new Date() });
     return this.leadRepo.save(lead);
   }
@@ -92,13 +101,14 @@ export class LeadsService {
   async updateLeadStatus(
     id: number,
     updateStatusDto: UpdateLeadStatusDto,
+    user?: any,
   ): Promise<Lead> {
     const validStatuses = ['New', 'Contacted', 'Scheduled', 'Closed'];
     if (!validStatuses.includes(updateStatusDto.status)) {
       throw new Error(`Invalid status. Must be one of: ${validStatuses.join(', ')}`);
     }
 
-    const lead = await this.getLeadById(id);
+    const lead = await this.getLeadById(id, user);
     lead.status = updateStatusDto.status;
     lead.lastContactedDate = new Date();
     lead.updatedAt = new Date();
@@ -122,8 +132,8 @@ export class LeadsService {
   /**
    * Add a note/comment to a lead with timestamp
    */
-  async addNoteToLead(id: number, addNoteDto: AddLeadNoteDto): Promise<Lead> {
-    const lead = await this.getLeadById(id);
+  async addNoteToLead(id: number, addNoteDto: AddLeadNoteDto, user?: any): Promise<Lead> {
+    const lead = await this.getLeadById(id, user);
     
     const timestamp = new Date().toISOString();
     const noteEntry = `[${timestamp}] ${addNoteDto.note}`;
@@ -141,8 +151,8 @@ export class LeadsService {
   /**
    * Get call history for a lead
    */
-  async getCallHistory(id: number): Promise<string[]> {
-    const lead = await this.getLeadById(id);
+  async getCallHistory(id: number, user?: any): Promise<string[]> {
+    const lead = await this.getLeadById(id, user);
     return lead.callHistory || [];
   }
 
@@ -153,23 +163,27 @@ export class LeadsService {
     id: number,
     followUpDate: Date,
     notes: string,
+    user?: any,
   ): Promise<Lead> {
-    const lead = await this.getLeadById(id);
+    const lead = await this.getLeadById(id, user);
     lead.nextFollowUpDate = followUpDate;
     lead.status = 'Scheduled';
     lead.followUpNotes = notes || '';
     
-    await this.addNoteToLead(id, { note: `Follow-up scheduled: ${notes}` });
+    await this.addNoteToLead(id, { note: `Follow-up scheduled: ${notes}` }, user);
     
     return this.leadRepo.save(lead);
   }
 
-  async deleteLead(id: number): Promise<void> {
-    const lead = await this.getLeadById(id);
+  async deleteLead(id: number, user?: any): Promise<void> {
+    const lead = await this.getLeadById(id, user);
     await this.leadRepo.remove(lead);
   }
 
-  async bulkCreateFromCsv(csvContent: string): Promise<{
+  async bulkCreateFromCsv(
+    csvContent: string,
+    context: { agencyId?: number; createdByAgentId?: number; sourceType: string },
+  ): Promise<{
     successCount: number;
     errorCount: number;
     errors: Array<{ row: number; message: string }>;
@@ -222,6 +236,9 @@ export class LeadsService {
         propertyType: row[headerIndex.propertyType]?.trim() || '',
         preferredAgency: row[headerIndex.preferredAgency]?.trim() || undefined,
         preferredContactTime: row[headerIndex.preferredContactTime]?.trim() || undefined,
+        agencyId: context.agencyId,
+        createdByAgentId: context.createdByAgentId,
+        sourceType: context.sourceType,
       };
 
       if (
@@ -284,5 +301,51 @@ export class LeadsService {
 
     values.push(current);
     return values;
+  }
+
+  private applyVisibilityFilter(query: any, user: any) {
+    if (!user) {
+      throw new ForbiddenException('User not authenticated');
+    }
+
+    if (user.role === UserRole.SYSTEM_ADMIN) {
+      return;
+    }
+
+    if (user.role === UserRole.AGENCY_ADMIN) {
+      query.andWhere('lead.agencyId = :agencyId', { agencyId: user.agencyId || 0 });
+      return;
+    }
+
+    if (user.role === UserRole.AGENT) {
+      query.andWhere('(lead.agencyId = :agencyId OR lead.createdByAgentId = :agentId)', {
+        agencyId: user.agencyId || 0,
+        agentId: user.id,
+      });
+      return;
+    }
+
+    throw new ForbiddenException('Access denied');
+  }
+
+  private ensureLeadAccess(lead: Lead, user: any) {
+    if (user.role === UserRole.SYSTEM_ADMIN) {
+      return;
+    }
+
+    if (user.role === UserRole.AGENCY_ADMIN && lead.agencyId === user.agencyId) {
+      return;
+    }
+
+    if (user.role === UserRole.AGENT) {
+      if (lead.createdByAgentId === user.id) {
+        return;
+      }
+      if (lead.agencyId && lead.agencyId === user.agencyId) {
+        return;
+      }
+    }
+
+    throw new ForbiddenException('Access denied');
   }
 }

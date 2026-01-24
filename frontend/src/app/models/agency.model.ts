@@ -4,6 +4,8 @@ export interface Agency {
   email: string;
   phone: string;
   address?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -5,6 +5,7 @@ import { Lead } from '../../models/lead.model';
 import { AuthService } from '../../services/auth.service';
 import { LeadService } from '../../services/lead.service';
 import { OfferService } from '../../services/offer.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-agent-dashboard',
@@ -77,6 +78,7 @@ export class AgentDashboardComponent implements OnInit {
     private leadService: LeadService,
     private authService: AuthService,
     private offerService: OfferService,
+    private themeService: ThemeService,
     private router: Router
   ) {}
 
@@ -97,6 +99,7 @@ export class AgentDashboardComponent implements OnInit {
       (user: any) => {
         this.agentName = user.name || 'Agent';
         this.agentEmail = user.email || '';
+        this.themeService.applyAgencyTheme(user.agency);
       },
       (error) => {
         console.error('Failed to load agent info:', error);

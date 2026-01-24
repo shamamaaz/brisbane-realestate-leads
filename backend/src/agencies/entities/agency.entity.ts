@@ -10,6 +10,12 @@ export class Agency {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  primaryColor?: string;
+
+  @Column({ nullable: true })
+  secondaryColor?: string;
+
   @Column({ type: 'enum', enum: ['small', 'large'], default: 'small' })
   size: 'small' | 'large';
 

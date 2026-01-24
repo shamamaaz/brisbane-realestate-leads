@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { Repository } from 'typeorm';
+import { Agency } from '../agencies/entities/agency.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { EmailService } from '../shared/email/email.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
@@ -19,6 +20,8 @@ export class AuthService {
     private userRepo: Repository<User>,
     @InjectRepository(Lead)
     private leadRepo: Repository<Lead>,
+    @InjectRepository(Agency)
+    private agencyRepo: Repository<Agency>,
     @InjectRepository(SellerLoginToken)
     private sellerTokenRepo: Repository<SellerLoginToken>,
     private jwtService: JwtService,
@@ -26,7 +29,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
-    const { email, password, name, phone, role, agencyId } = registerDto;
+    const { email, password, name, phone, role, agencyId, agencyName, primaryColor, secondaryColor } = registerDto;
     console.log('📝 Register attempt:', { email, name, role });
 
     // Check if user already exists
@@ -41,13 +44,33 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(password, salt);
 
     // Create user
+    let resolvedAgencyId = agencyId;
+
+    if (role === UserRole.AGENCY_ADMIN) {
+      if (!agencyName) {
+        throw new BadRequestException('Agency name is required.');
+      }
+      const agency = this.agencyRepo.create({
+        name: agencyName,
+        primaryColor: primaryColor || '#1f6b6f',
+        secondaryColor: secondaryColor || '#fffaf3',
+      });
+      const savedAgency = await this.agencyRepo.save(agency);
+      resolvedAgencyId = savedAgency.id;
+    }
+
+    if (role === UserRole.AGENT && !resolvedAgencyId) {
+      throw new BadRequestException('Agent must belong to an agency.');
+    }
+
     const user = this.userRepo.create({
       email,
       passwordHash,
       name,
       phone,
       role: role || UserRole.SELLER,
-      agency: agencyId ? { id: agencyId } : undefined,
+      agency: resolvedAgencyId ? { id: resolvedAgencyId } : undefined,
+      agencyId: resolvedAgencyId,
     });
 
     const savedUser = await this.userRepo.save(user);
@@ -58,6 +81,7 @@ export class AuthService {
       id: savedUser.id,
       email: savedUser.email,
       role: savedUser.role,
+      agencyId: savedUser.agencyId,
     });
     console.log('🔑 Token generated for user:', savedUser.id);
 
@@ -100,6 +124,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       role: user.role,
+      agencyId: user.agencyId,
     });
 
     return {
@@ -139,6 +164,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       role: user.role,
+      agencyId: user.agencyId,
     });
 
     return {
@@ -159,7 +185,7 @@ export class AuthService {
   }
 
   async getUserById(id: number): Promise<User> {
-    const user = await this.userRepo.findOne({ where: { id } });
+    const user = await this.userRepo.findOne({ where: { id }, relations: ['agency'] });
     if (!user) {
       throw new BadRequestException('User not found');
     }
@@ -167,6 +193,15 @@ export class AuthService {
   }
 
   async seedDemoData() {
+    let demoAgency = await this.agencyRepo.findOne({ where: { name: 'Brisbane Demo Agency' } });
+    if (!demoAgency) {
+      demoAgency = await this.agencyRepo.save(this.agencyRepo.create({
+        name: 'Brisbane Demo Agency',
+        primaryColor: '#1f6b6f',
+        secondaryColor: '#fffaf3',
+      }));
+    }
+
     const demoUsers = [
       {
         email: 'admin@brisbaneleads.com',
@@ -179,12 +214,14 @@ export class AuthService {
         name: 'Agency Admin',
         role: UserRole.AGENCY_ADMIN,
         password: 'Agency123!',
+        agencyId: demoAgency.id,
       },
       {
         email: 'agent@brisbaneleads.com',
         name: 'Lead Agent',
         role: UserRole.AGENT,
         password: 'Agent123!',
+        agencyId: demoAgency.id,
       },
       {
         email: 'seller@brisbaneleads.com',
@@ -208,6 +245,8 @@ export class AuthService {
         role: demo.role,
         passwordHash,
         isActive: true,
+        agency: demo.agencyId ? { id: demo.agencyId } : undefined,
+        agencyId: demo.agencyId,
       });
       await this.userRepo.save(user);
     }

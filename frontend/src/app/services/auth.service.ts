@@ -17,9 +17,29 @@ export class AuthService {
   /**
    * Register a new user
    */
-  register(email: string, password: string, name: string, role: string = 'homeowner'): Observable<any> {
+  register(
+    email: string,
+    password: string,
+    name: string,
+    role: string = 'homeowner',
+    options: {
+      agencyId?: number;
+      agencyName?: string;
+      primaryColor?: string;
+      secondaryColor?: string;
+    } = {},
+  ): Observable<any> {
     return this.http
-      .post<any>(`${this.apiUrl}/register`, { email, password, name, role })
+      .post<any>(`${this.apiUrl}/register`, {
+        email,
+        password,
+        name,
+        role,
+        agencyId: options.agencyId,
+        agencyName: options.agencyName,
+        primaryColor: options.primaryColor,
+        secondaryColor: options.secondaryColor,
+      })
       .pipe(
         tap((response) => {
           if (response.accessToken) {
