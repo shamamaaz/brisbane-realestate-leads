@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Agent } from '../agents/entities/agent.entity';
+import { Agency } from '../agencies/entities/agency.entity';
 import { UserRole } from '../auth/entities/user.entity';
 import { User } from '../auth/entities/user.entity';
 import { LeadAssignmentsService } from '../lead-assignments/lead-assignments.service';
@@ -19,12 +20,16 @@ export class LeadsService {
     private readonly agentRepo: Repository<Agent>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Agency)
+    private readonly agencyRepo: Repository<Agency>,
     private readonly leadAssignmentService: LeadAssignmentsService,
   ) {}
 
   async createLead(createLeadDto: CreateLeadDto): Promise<Lead> {
+    const postcodeMatch = createLeadDto.propertyAddress?.match(/\b\d{4}\b/);
     const lead = this.leadRepo.create({
       ...createLeadDto,
+      postcode: postcodeMatch ? postcodeMatch[0] : undefined,
       status: 'New', // Default status for new leads
       sourceType: createLeadDto.sourceType || 'public',
       createdAt: new Date(),
@@ -35,11 +40,13 @@ export class LeadsService {
     const savedLead = await this.leadRepo.save(lead);
     console.log('New lead received:', savedLead);
 
-    // Auto-assign the lead
-    try {
-      await this.leadAssignmentService.assignLeadToAgents(savedLead);
-    } catch (error) {
-      console.warn('Lead assignment failed, but lead was created:', error);
+    const shouldAssign = savedLead.sourceType !== 'public' || !!savedLead.agencyId;
+    if (shouldAssign) {
+      try {
+        await this.leadAssignmentService.assignLeadToAgents(savedLead);
+      } catch (error) {
+        console.warn('Lead assignment failed, but lead was created:', error);
+      }
     }
 
     return savedLead;
@@ -52,7 +59,21 @@ export class LeadsService {
       .leftJoinAndSelect('lead.offers', 'offers')
       .orderBy('lead.createdAt', 'DESC');
 
-    this.applyVisibilityFilter(query, user);
+    let agentRecordId: number | undefined;
+    let agencyPostcodes: string[] | undefined;
+    if (user?.role === UserRole.AGENT) {
+      const agentRecord = await this.agentRepo.findOne({ where: { email: user.email } });
+      agentRecordId = agentRecord?.id;
+      if (user.agencyId) {
+        const agency = await this.agencyRepo.findOne({ where: { id: user.agencyId } });
+        agencyPostcodes = agency?.postcodes || [];
+      }
+    } else if (user?.agencyId) {
+      const agency = await this.agencyRepo.findOne({ where: { id: user.agencyId } });
+      agencyPostcodes = agency?.postcodes || [];
+    }
+
+    this.applyVisibilityFilter(query, user, agentRecordId, agencyPostcodes);
 
     if (status) {
       query.andWhere('lead.status = :status', { status });
@@ -88,7 +109,20 @@ export class LeadsService {
     }
 
     if (user) {
-      this.ensureLeadAccess(lead, user);
+      let agentRecordId: number | undefined;
+      let agencyPostcodes: string[] | undefined;
+      if (user.role === UserRole.AGENT) {
+        const agentRecord = await this.agentRepo.findOne({ where: { email: user.email } });
+        agentRecordId = agentRecord?.id;
+        if (user.agencyId) {
+          const agency = await this.agencyRepo.findOne({ where: { id: user.agencyId } });
+          agencyPostcodes = agency?.postcodes || [];
+        }
+      } else if (user.agencyId) {
+        const agency = await this.agencyRepo.findOne({ where: { id: user.agencyId } });
+        agencyPostcodes = agency?.postcodes || [];
+      }
+      this.ensureLeadAccess(lead, user, agentRecordId, agencyPostcodes);
     }
 
     return lead;
@@ -141,16 +175,29 @@ export class LeadsService {
     }
 
     const lead = await this.getLeadById(id, user);
-    if (user.role === UserRole.AGENCY_ADMIN && lead.agencyId !== user.agencyId) {
-      throw new ForbiddenException('Access denied');
+    if (user.role === UserRole.AGENCY_ADMIN) {
+      if (lead.agencyId && lead.agencyId !== user.agencyId) {
+        throw new ForbiddenException('Access denied');
+      }
+      if (!lead.agencyId) {
+        const agency = await this.agencyRepo.findOne({ where: { id: user.agencyId } });
+        const postcodes = agency?.postcodes || [];
+        if (!lead.postcode || !postcodes.includes(lead.postcode)) {
+          throw new ForbiddenException('Access denied');
+        }
+        lead.agencyId = user.agencyId;
+        if (agency) {
+          lead.agency = agency;
+        }
+      }
     }
 
     const matchedUser = await this.userRepo.findOne({ where: { id: agentId } });
     if (matchedUser) {
       const agentRecord = await this.agentRepo.findOne({ where: { email: matchedUser.email } });
-      lead.assignedAgentId = matchedUser.id;
-      lead.assignedAgentName = agentName || agentRecord?.name || lead.assignedAgentName || '';
-      lead.updatedAt = new Date();
+    lead.assignedAgentId = matchedUser.id;
+    lead.assignedAgentName = agentName || agentRecord?.name || lead.assignedAgentName || '';
+    lead.updatedAt = new Date();
       return this.leadRepo.save(lead);
     }
 
@@ -339,7 +386,12 @@ export class LeadsService {
     return values;
   }
 
-  private applyVisibilityFilter(query: any, user: any) {
+  private applyVisibilityFilter(
+    query: any,
+    user: any,
+    agentRecordId?: number,
+    agencyPostcodes: string[] = [],
+  ) {
     if (!user) {
       throw new ForbiddenException('User not authenticated');
     }
@@ -349,13 +401,25 @@ export class LeadsService {
     }
 
     if (user.role === UserRole.AGENCY_ADMIN) {
-      query.andWhere('lead.agencyId = :agencyId', { agencyId: user.agencyId || 0 });
+      if (agencyPostcodes.length) {
+        query.andWhere(
+          '(lead.agencyId = :agencyId OR (lead.agencyId IS NULL AND lead.sourceType = :publicSource AND lead.postcode IN (:...postcodes)))',
+          { agencyId: user.agencyId || 0, publicSource: 'public', postcodes: agencyPostcodes },
+        );
+      } else {
+        query.andWhere('lead.agencyId = :agencyId', { agencyId: user.agencyId || 0 });
+      }
       return;
     }
 
     if (user.role === UserRole.AGENT) {
-      query.andWhere('(lead.assignedAgentId = :agentId OR lead.createdByAgentId = :agentId)', {
-        agentId: user.id,
+      const agentIds = [user.id];
+      if (agentRecordId && agentRecordId !== user.id) {
+        agentIds.push(agentRecordId);
+      }
+      query.andWhere('(lead.assignedAgentId IN (:...agentIds) OR lead.createdByAgentId = :agentUserId)', {
+        agentIds,
+        agentUserId: user.id,
       });
       return;
     }
@@ -363,7 +427,12 @@ export class LeadsService {
     throw new ForbiddenException('Access denied');
   }
 
-  private ensureLeadAccess(lead: Lead, user: any) {
+  private ensureLeadAccess(
+    lead: Lead,
+    user: any,
+    agentRecordId?: number,
+    agencyPostcodes: string[] = [],
+  ) {
     if (user.role === UserRole.SYSTEM_ADMIN) {
       return;
     }
@@ -372,11 +441,24 @@ export class LeadsService {
       return;
     }
 
+    if (
+      user.role === UserRole.AGENCY_ADMIN &&
+      !lead.agencyId &&
+      lead.sourceType === 'public' &&
+      lead.postcode &&
+      agencyPostcodes.includes(lead.postcode)
+    ) {
+      return;
+    }
+
     if (user.role === UserRole.AGENT) {
       if (lead.createdByAgentId === user.id) {
         return;
       }
       if (lead.assignedAgentId && lead.assignedAgentId === user.id) {
+        return;
+      }
+      if (agentRecordId && lead.assignedAgentId && lead.assignedAgentId === agentRecordId) {
         return;
       }
     }

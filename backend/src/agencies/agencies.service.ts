@@ -28,6 +28,7 @@ export class AgenciesService {
     Object.assign(agency, {
       primaryColor: payload.primaryColor ?? agency.primaryColor,
       secondaryColor: payload.secondaryColor ?? agency.secondaryColor,
+      logoUrl: payload.logoUrl ?? agency.logoUrl,
       postcodes: Array.isArray(payload.postcodes) ? payload.postcodes : agency.postcodes,
       routingMode: payload.routingMode ?? agency.routingMode,
     });

@@ -1,7 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Query, Request, UseGuards, ForbiddenException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Query, Request, UploadedFile, UseGuards, UseInterceptors, ForbiddenException } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserRole } from '../auth/entities/user.entity';
 import { AgenciesService } from './agencies.service';
+import { diskStorage } from 'multer';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Controller('api/agencies')
 export class AgenciesController {
@@ -32,6 +36,45 @@ export class AgenciesController {
       throw new ForbiddenException('Access denied');
     }
     return this.agenciesService.updateAgency(Number(id), payload);
+  }
+
+  @Post(':id/logo')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: (_req, _file, cb) => {
+        const uploadDir = path.join(process.cwd(), 'uploads', 'agency-logos');
+        fs.mkdirSync(uploadDir, { recursive: true });
+        cb(null, uploadDir);
+      },
+      filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname).toLowerCase();
+        const safeExt = ext && ext.length <= 6 ? ext : '.png';
+        cb(null, `agency-logo-${Date.now()}${safeExt}`);
+      },
+    }),
+    fileFilter: (_req, file, cb) => {
+      if (!file.mimetype.startsWith('image/')) {
+        return cb(new BadRequestException('Only image files are allowed.'), false);
+      }
+      return cb(null, true);
+    },
+    limits: { fileSize: 2 * 1024 * 1024 },
+  }))
+  async uploadLogo(
+    @Request() req: any,
+    @Param('id') id: number,
+    @UploadedFile() file?: any,
+  ) {
+    const agencyId = Number(id);
+    if (req.user.role === UserRole.AGENCY_ADMIN && agencyId !== req.user.agencyId) {
+      throw new ForbiddenException('Access denied');
+    }
+    if (!file) {
+      throw new BadRequestException('Logo file is required.');
+    }
+    const logoUrl = `/uploads/agency-logos/${file.filename}`;
+    return this.agenciesService.updateAgency(agencyId, { logoUrl });
   }
 
   @Get('lookup')

@@ -6,6 +6,7 @@ export interface Agency {
   address?: string;
   primaryColor?: string;
   secondaryColor?: string;
+  logoUrl?: string;
   postcodes?: string[];
   routingMode?: string;
   createdAt?: Date;

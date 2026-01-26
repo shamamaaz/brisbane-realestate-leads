@@ -16,6 +16,9 @@ export class Agency {
   @Column({ nullable: true })
   secondaryColor?: string;
 
+  @Column({ nullable: true })
+  logoUrl?: string;
+
   @Column({ type: 'text', array: true, nullable: true })
   postcodes?: string[];
 

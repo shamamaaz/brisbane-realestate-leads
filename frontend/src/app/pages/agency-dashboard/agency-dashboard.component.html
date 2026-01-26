@@ -3,8 +3,11 @@
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-brand">
-          <span class="nav-title">Lead Exchange</span>
-          <span class="nav-subtitle">Agency admin</span>
+          <img *ngIf="agencyLogoUrl" class="nav-logo" [src]="agencyLogoUrl" alt="Agency logo" />
+          <div class="nav-brand-text">
+            <span class="nav-title">Lead Exchange</span>
+            <span class="nav-subtitle">Agency admin</span>
+          </div>
         </div>
         <nav class="nav-links">
           <a routerLink="/agency" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
@@ -30,6 +33,27 @@
       </div>
     </section>
 
+    <section class="workflow-section">
+      <div class="workflow-header">
+        <h2>How it works for agencies</h2>
+        <p>Broadcast public leads by postcode, assign agents, and track every response.</p>
+      </div>
+      <div class="workflow-track" aria-hidden="true">
+        <div class="workflow-step">
+          <span class="workflow-dot"></span>
+          <span>Public lead received</span>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-dot"></span>
+          <span>Assign to an agent</span>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-dot"></span>
+          <span>Monitor outcomes</span>
+        </div>
+      </div>
+    </section>
+
     <section class="settings-grid">
       <div class="settings-card">
         <h2>Branding</h2>
@@ -43,6 +67,18 @@
             <span>Secondary color</span>
             <input type="color" [(ngModel)]="brandingSecondary" />
           </label>
+        </div>
+        <div class="logo-upload">
+          <div class="logo-preview" *ngIf="brandingLogo">
+            <img [src]="brandingLogo" alt="Agency logo" />
+          </div>
+          <div class="logo-actions">
+            <label class="form-label">Agency logo</label>
+            <input type="file" accept="image/*" (change)="onLogoSelected($event)" />
+            <button class="btn btn-outline" type="button" (click)="uploadLogo()">Upload logo</button>
+            <div class="form-success" *ngIf="logoMessage">{{ logoMessage }}</div>
+            <div class="form-error" *ngIf="logoError">{{ logoError }}</div>
+          </div>
         </div>
         <button class="btn btn-primary" type="button" (click)="saveBranding()">Save branding</button>
         <div class="form-success" *ngIf="brandingMessage">{{ brandingMessage }}</div>

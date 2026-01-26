@@ -28,6 +28,12 @@ export class AgencyService {
     return this.http.patch<Agency>(`${this.apiUrl}/${id}`, payload);
   }
 
+  uploadLogo(id: number, file: File): Observable<Agency> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<Agency>(`${this.apiUrl}/${id}/logo`, formData);
+  }
+
   /**
    * Lookup agencies by postcode
    */

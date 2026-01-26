@@ -10,6 +10,7 @@ import { LeadService } from '../../services/lead.service';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { AgencyService } from '../../services/agency.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-agency-dashboard',
@@ -21,6 +22,7 @@ export class AgencyDashboardComponent implements OnInit {
   filteredLeads: Lead[] = [];
 
   agencyName = 'Agency';
+  agencyLogoUrl = '';
   totalLeads = 0;
   activeAgents = 0;
   monthlyRevenue = 18750;
@@ -32,6 +34,10 @@ export class AgencyDashboardComponent implements OnInit {
 
   brandingPrimary = '#1f6b6f';
   brandingSecondary = '#fffaf3';
+  brandingLogo = '';
+  logoFile: File | null = null;
+  logoMessage = '';
+  logoError = '';
   routingMode = 'postcode';
   routingPostcodes = '';
   brandingMessage = '';
@@ -98,11 +104,13 @@ export class AgencyDashboardComponent implements OnInit {
     this.authService.getCurrentUser().subscribe(
       (user: any) => {
         this.agencyName = user.agency?.name || 'Agency';
+        this.agencyLogoUrl = this.buildLogoUrl(user.agency?.logoUrl);
         this.themeService.applyAgencyTheme(user.agency);
         if (user.agency) {
           this.agencyDetails = user.agency;
           this.brandingPrimary = user.agency.primaryColor || this.brandingPrimary;
           this.brandingSecondary = user.agency.secondaryColor || this.brandingSecondary;
+          this.brandingLogo = this.buildLogoUrl(user.agency.logoUrl);
           this.routingMode = user.agency.routingMode || this.routingMode;
           this.routingPostcodes = (user.agency.postcodes || []).join(', ');
         }
@@ -119,6 +127,8 @@ export class AgencyDashboardComponent implements OnInit {
         this.agencyDetails = agency;
         this.brandingPrimary = agency.primaryColor || '#1f6b6f';
         this.brandingSecondary = agency.secondaryColor || '#fffaf3';
+        this.brandingLogo = this.buildLogoUrl(agency.logoUrl);
+        this.agencyLogoUrl = this.buildLogoUrl(agency.logoUrl);
         this.routingMode = agency.routingMode || 'postcode';
         this.routingPostcodes = (agency.postcodes || []).join(', ');
       },
@@ -185,6 +195,36 @@ export class AgencyDashboardComponent implements OnInit {
     });
   }
 
+  onLogoSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.logoFile = file;
+    this.logoMessage = '';
+    this.logoError = '';
+    this.brandingLogo = URL.createObjectURL(file);
+  }
+
+  uploadLogo() {
+    if (!this.agencyDetails?.id || !this.logoFile) {
+      this.logoError = 'Please choose a logo file first.';
+      return;
+    }
+    this.logoError = '';
+    this.logoMessage = '';
+    this.agencyService.uploadLogo(this.agencyDetails.id, this.logoFile).subscribe({
+      next: (agency) => {
+        this.agencyDetails = agency;
+        this.brandingLogo = this.buildLogoUrl(agency.logoUrl);
+        this.logoMessage = 'Logo updated.';
+        this.logoFile = null;
+      },
+      error: () => {
+        this.logoError = 'Failed to upload logo.';
+      },
+    });
+  }
+
   saveRouting() {
     if (!this.agencyDetails?.id) {
       this.routingError = 'Agency settings not loaded. Please refresh and try again.';
@@ -229,10 +269,14 @@ export class AgencyDashboardComponent implements OnInit {
   }
 
   assignLeadToAgent(lead: Lead, agentId: number) {
-    const agent = this.agents.find((item) => item.userId === agentId || item.id === agentId);
+    const resolvedId = typeof agentId === 'string' ? Number(agentId) : agentId;
+    if (!resolvedId) {
+      return;
+    }
+    const agent = this.agents.find((item) => item.userId === resolvedId || item.id === resolvedId);
     if (!lead.id || !agent) return;
 
-    this.leadService.assignLead(lead.id, agentId, agent.name).subscribe({
+    this.leadService.assignLead(lead.id, resolvedId, agent.name).subscribe({
       next: (updated) => {
         lead.assignedAgentName = updated.assignedAgentName;
         lead.assignedAgentId = updated.assignedAgentId;
@@ -261,6 +305,12 @@ export class AgencyDashboardComponent implements OnInit {
     this.statsContacted = this.leads.filter(l => l.status === 'Contacted').length;
     this.statsScheduled = this.leads.filter(l => l.status === 'Scheduled').length;
     this.statsClosed = this.leads.filter(l => l.status === 'Closed').length;
+  }
+
+  private buildLogoUrl(logoUrl?: string) {
+    if (!logoUrl) return '';
+    if (logoUrl.startsWith('http')) return logoUrl;
+    return `${environment.apiUrl}${logoUrl}`;
   }
 
   resetFilters() {

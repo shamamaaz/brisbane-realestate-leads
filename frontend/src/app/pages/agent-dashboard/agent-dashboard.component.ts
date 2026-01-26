@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { LeadService } from '../../services/lead.service';
 import { OfferService } from '../../services/offer.service';
 import { ThemeService } from '../../services/theme.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-agent-dashboard',
@@ -19,6 +20,7 @@ export class AgentDashboardComponent implements OnInit {
   agentName = 'Agent';
   agentEmail = '';
   agencyName = 'Agency';
+  agencyLogoUrl = '';
   agencyBranding = {
     logo: '',
     colors: { primary: '#2563eb', secondary: '#ffffff' }
@@ -101,12 +103,19 @@ export class AgentDashboardComponent implements OnInit {
       (user: any) => {
         this.agentName = user.name || 'Agent';
         this.agentEmail = user.email || '';
+        this.agencyLogoUrl = this.buildLogoUrl(user.agency?.logoUrl);
         this.themeService.applyAgencyTheme(user.agency);
       },
       (error) => {
         console.error('Failed to load agent info:', error);
       }
     );
+  }
+
+  private buildLogoUrl(logoUrl?: string) {
+    if (!logoUrl) return '';
+    if (logoUrl.startsWith('http')) return logoUrl;
+    return `${environment.apiUrl}${logoUrl}`;
   }
 
   loadLeads() {

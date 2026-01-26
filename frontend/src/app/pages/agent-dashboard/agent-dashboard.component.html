@@ -3,8 +3,11 @@
     <div class="nav-container">
       <div class="nav-left">
         <div class="nav-brand">
-          <span class="nav-title">Lead Exchange</span>
-          <span class="nav-subtitle">Agent workspace</span>
+          <img *ngIf="agencyLogoUrl" class="nav-logo" [src]="agencyLogoUrl" alt="Agency logo" />
+          <div class="nav-brand-text">
+            <span class="nav-title">Lead Exchange</span>
+            <span class="nav-subtitle">Agent workspace</span>
+          </div>
         </div>
         <nav class="nav-links">
           <a routerLink="/agent" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
@@ -27,6 +30,27 @@
         <p class="eyebrow">Agent workspace</p>
         <h1 class="welcome-title">Welcome back, {{ agentName }}.</h1>
         <p class="welcome-subtitle">Your leads are sorted by suburb and response priority.</p>
+      </div>
+    </section>
+
+    <section class="workflow-section">
+      <div class="workflow-header">
+        <h2>How it works for agents</h2>
+        <p>Respond fast, send a proposal, and track every follow-up.</p>
+      </div>
+      <div class="workflow-track" aria-hidden="true">
+        <div class="workflow-step">
+          <span class="workflow-dot"></span>
+          <span>New lead alert</span>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-dot"></span>
+          <span>Submit offer</span>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-dot"></span>
+          <span>Follow-up + close</span>
+        </div>
       </div>
     </section>
 

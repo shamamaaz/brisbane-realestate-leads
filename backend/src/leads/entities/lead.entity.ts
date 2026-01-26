@@ -21,6 +21,9 @@ export class Lead {
   propertyAddress: string;
 
   @Column({ nullable: true })
+  postcode: string;
+
+  @Column({ nullable: true })
   propertyType: string; // house, apartment, unit, etc.
 
   @Column({ nullable: true })
