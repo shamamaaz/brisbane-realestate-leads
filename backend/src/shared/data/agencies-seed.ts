@@ -3,7 +3,7 @@ export const AGENCIES_SEED = [
   {
     id: 1,
     name: 'Central Realty',
-    email: 'leads@brisbanecentral.com',
+    email: 'leads@leadexchange.com',
     phone: '(07) 3000 1000',
     postcodes: ['2000', '2001', '2002', '2003', '2005'],
     territory: 'CBD'
@@ -11,7 +11,7 @@ export const AGENCIES_SEED = [
   {
     id: 2,
     name: 'Southside Properties',
-    email: 'leads@southbrisbane.com',
+    email: 'leads@leadexchange.com',
     phone: '(07) 3000 2000',
     postcodes: ['4101', '4102', '4103', '4104'], // South Bank, Southside
     territory: 'Southside'
@@ -27,7 +27,7 @@ export const AGENCIES_SEED = [
   {
     id: 4,
     name: 'Eastside Agents',
-    email: 'leads@eastbrisbane.com',
+    email: 'leads@leadexchange.com',
     phone: '(07) 3000 4000',
     postcodes: ['2010', '2011', '2015', '2017'],
     territory: 'Eastside'
@@ -35,7 +35,7 @@ export const AGENCIES_SEED = [
   {
     id: 5,
     name: 'Westside Properties',
-    email: 'leads@westbrisbane.com',
+    email: 'leads@leadexchange.com',
     phone: '(07) 3000 5000',
     postcodes: ['2030', '2031', '2032'],
     territory: 'Westside'
@@ -51,7 +51,7 @@ export const AGENCIES_SEED = [
   {
     id: 7,
     name: 'Outer Suburbs Realty',
-    email: 'leads@outerbrisbane.com',
+    email: 'leads@leadexchange.com',
     phone: '(07) 3000 7000',
     postcodes: ['4018', '4019', '4020'], // Outer suburbs
     territory: 'Outer Suburbs'

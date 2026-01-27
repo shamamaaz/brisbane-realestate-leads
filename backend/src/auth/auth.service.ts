@@ -213,27 +213,27 @@ export class AuthService {
 
     const demoUsers = [
       {
-        email: 'admin@brisbaneleads.com',
+        email: 'admin@leadexchange.com',
         name: 'System Admin',
         role: UserRole.SYSTEM_ADMIN,
         password: 'Admin123!',
       },
       {
-        email: 'agency@brisbaneleads.com',
+        email: 'agency@leadexchange.com',
         name: 'Agency Admin',
         role: UserRole.AGENCY_ADMIN,
         password: 'Agency123!',
         agencyId: demoAgency.id,
       },
       {
-        email: 'agent@brisbaneleads.com',
+        email: 'agent@leadexchange.com',
         name: 'Lead Agent',
         role: UserRole.AGENT,
         password: 'Agent123!',
         agencyId: demoAgency.id,
       },
       {
-        email: 'seller@brisbaneleads.com',
+        email: 'seller@leadexchange.com',
         name: 'Seller User',
         role: UserRole.SELLER,
         password: 'Seller123!',

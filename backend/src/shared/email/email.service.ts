@@ -13,7 +13,7 @@ type Transporter = {
 @Injectable()
 export class EmailService {
   private transporter: Transporter | null = null;
-  private fromAddress = 'no-reply@brisbaneleads.com';
+  private fromAddress = 'no-reply@leadexchange.com';
 
   constructor() {
     const host = process.env.EMAIL_HOST;

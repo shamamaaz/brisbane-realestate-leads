@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.brisbane-realestate-leads.com',
+  apiUrl: 'https://api.leadexchange.com',
   googleMapsApiKey: '',
-  googleAuthUrl: 'https://api.brisbane-realestate-leads.com/api/auth/google',
-  facebookAuthUrl: 'https://api.brisbane-realestate-leads.com/api/auth/facebook',
+  googleAuthUrl: 'https://api.leadexchange.com/api/auth/google',
+  facebookAuthUrl: 'https://api.leadexchange.com/api/auth/facebook',
 };

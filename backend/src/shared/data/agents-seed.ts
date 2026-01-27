@@ -2,7 +2,7 @@ export const AGENTS_SEED = [
   {
     id: 1,
     name: 'Sarah Johnson',
-    email: 'sarah@brisbanecentral.com',
+    email: 'sarah@leadexchange.com',
     phone: '(07) 3000 1111',
     agencyId: 1,
     territory: 'North Suburbs',
@@ -11,7 +11,7 @@ export const AGENTS_SEED = [
   {
     id: 2,
     name: 'Mike Lee',
-    email: 'mike@southbrisbane.com',
+    email: 'mike@leadexchange.com',
     phone: '(07) 3000 2222',
     agencyId: 2,
     territory: 'East District',
@@ -29,7 +29,7 @@ export const AGENTS_SEED = [
   {
     id: 4,
     name: 'David Wong',
-    email: 'david@eastbrisbane.com',
+    email: 'david@leadexchange.com',
     phone: '(07) 3000 4444',
     agencyId: 4,
     territory: 'Central Area',
