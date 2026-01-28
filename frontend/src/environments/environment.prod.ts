@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.leadexchange.com',
+  apiUrl: 'http://16.176.136.194:3000',
   googleMapsApiKey: '',
-  googleAuthUrl: 'https://api.leadexchange.com/api/auth/google',
-  facebookAuthUrl: 'https://api.leadexchange.com/api/auth/facebook',
+  googleAuthUrl: 'http://16.176.136.194:3000',
+  facebookAuthUrl: 'http://16.176.136.194:3000',
 };
