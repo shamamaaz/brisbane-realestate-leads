@@ -169,15 +169,21 @@ html, body {
     display: block;
     padding: 12px 14px;
     border-bottom: 1px solid rgba(28, 37, 41, 0.08);
+    background: #fff;
+    border-radius: 14px;
+    margin-bottom: 10px;
   }
 
   .table-scroll td,
   .lead-table td {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
-    padding: 8px 0;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
     font-size: 14px;
+    white-space: normal;
+    overflow: visible;
   }
 
   .table-scroll td::before,
@@ -188,7 +194,40 @@ html, body {
     letter-spacing: 0.08em;
     color: #5a6a70;
     font-weight: 600;
-    flex: 0 0 40%;
+    flex: 0 0 45%;
+  }
+
+  .table-scroll td > *,
+  .lead-table td > * {
+    flex: 1;
+    text-align: right;
+  }
+
+  .table-scroll td .cell-actions,
+  .lead-table td .cell-actions {
+    flex: 1;
+  }
+
+  .table-scroll td .cell-actions,
+  .lead-table td .cell-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .table-scroll td .btn-small,
+  .lead-table td .btn-small,
+  .table-scroll td .btn,
+  .lead-table td .btn {
+    width: 100%;
+  }
+
+  .table-scroll td input,
+  .table-scroll td select,
+  .lead-table td input,
+  .lead-table td select {
+    width: 100%;
   }
 }
 
