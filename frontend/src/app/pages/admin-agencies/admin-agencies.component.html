@@ -50,7 +50,7 @@
       <div *ngIf="isLoading" class="state-message">Loading agencies...</div>
       <div *ngIf="!isLoading && errorMessage" class="state-message error">{{ errorMessage }}</div>
 
-      <div class="table-scroll" *ngIf="!isLoading && !errorMessage">
+      <div class="table-scroll desktop-only" *ngIf="!isLoading && !errorMessage">
         <table class="agencies-table">
           <thead>
             <tr>
@@ -69,6 +69,24 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="mobile-card-list" *ngIf="!isLoading && !errorMessage">
+        <div *ngFor="let agency of filteredAgencies" class="mobile-card">
+          <div class="mobile-card-header">
+            <div>
+              <p class="mobile-card-title">{{ agency.name }}</p>
+              <p class="mobile-card-subtitle">{{ agency.email }}</p>
+            </div>
+          </div>
+          <div class="mobile-card-row">
+            <span>Phone</span>
+            <strong>{{ agency.phone }}</strong>
+          </div>
+          <div class="mobile-card-row">
+            <span>Address</span>
+            <strong>{{ agency.address || '-' }}</strong>
+          </div>
+        </div>
       </div>
 
       <div class="state-message" *ngIf="!isLoading && !errorMessage && filteredAgencies.length === 0">

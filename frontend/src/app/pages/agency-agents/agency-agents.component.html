@@ -81,7 +81,7 @@
       <div *ngIf="isLoading" class="state-message">Loading agents...</div>
       <div *ngIf="!isLoading && errorMessage" class="state-message error">{{ errorMessage }}</div>
 
-      <div class="table-scroll" *ngIf="!isLoading && !errorMessage">
+      <div class="table-scroll desktop-only" *ngIf="!isLoading && !errorMessage">
         <table class="agents-table">
           <thead>
             <tr>
@@ -117,6 +117,36 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="mobile-card-list" *ngIf="!isLoading && !errorMessage">
+        <div *ngFor="let agent of filteredAgents; trackBy: trackByAgentId" class="mobile-card">
+          <div class="mobile-card-header">
+            <div>
+              <p class="mobile-card-title">{{ agent.name }}</p>
+              <p class="mobile-card-subtitle">{{ agent.email }}</p>
+            </div>
+            <span class="status-pill" [ngClass]="getStatusClass(getAgentStatus(agent))">
+              {{ getAgentStatus(agent) }}
+            </span>
+          </div>
+          <div class="mobile-card-row">
+            <span>Phone</span>
+            <strong>{{ agent.phone || '—' }}</strong>
+          </div>
+          <div class="mobile-card-row">
+            <span>Territory</span>
+            <strong>{{ agent.territory || '—' }}</strong>
+          </div>
+          <div class="mobile-card-row">
+            <span>Leads</span>
+            <strong>{{ agent.leadsAssigned || 0 }}</strong>
+          </div>
+          <div class="mobile-card-actions">
+            <button class="btn-small btn-view" type="button" (click)="openAgent(agent)">View</button>
+            <button class="btn-small btn-action" type="button" (click)="emailAgent(agent)">Email</button>
+            <button class="btn-small btn-action" type="button" (click)="callAgent(agent)">Call</button>
+          </div>
+        </div>
       </div>
 
       <div class="state-message" *ngIf="!isLoading && !errorMessage && filteredAgents.length === 0">

@@ -147,7 +147,7 @@
         <h2>Assigned leads</h2>
         <p>{{ filteredLeads.length }} active records</p>
       </div>
-      <div class="table-scroll">
+      <div class="table-scroll desktop-only">
         <table class="leads-table">
           <thead class="table-header">
             <tr>
@@ -160,21 +160,43 @@
           </thead>
           <tbody class="table-body">
             <tr *ngFor="let lead of filteredLeads" class="table-row">
-              <td class="cell-name" data-label="Lead name">{{ lead.homeownerName }}</td>
-              <td class="cell-address" data-label="Property address">{{ lead.propertyAddress }}</td>
-              <td class="cell-status" data-label="Status">
+              <td class="cell-name">{{ lead.homeownerName }}</td>
+              <td class="cell-address">{{ lead.propertyAddress }}</td>
+              <td class="cell-status">
                 <span [class]="'status-badge status-' + (lead.status?.toLowerCase() || 'new')">
                   {{ formatStatus(lead.status) }}
                 </span>
               </td>
-              <td class="cell-time" data-label="Callback time">{{ lead.preferredContactTime || 'Anytime' }}</td>
-              <td class="cell-actions" data-label="Actions">
+              <td class="cell-time">{{ lead.preferredContactTime || 'Anytime' }}</td>
+              <td class="cell-actions">
                 <button (click)="viewLead(lead)" class="btn-small btn-view">View</button>
                 <button (click)="selectLead(lead)" class="btn-small btn-action">Actions</button>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="mobile-card-list">
+        <div *ngFor="let lead of filteredLeads" class="mobile-card">
+          <div class="mobile-card-header">
+            <div>
+              <p class="mobile-card-title">{{ lead.homeownerName }}</p>
+              <p class="mobile-card-subtitle">{{ lead.propertyAddress }}</p>
+            </div>
+            <span [class]="'status-badge status-' + (lead.status?.toLowerCase() || 'new')">
+              {{ formatStatus(lead.status) }}
+            </span>
+          </div>
+          <div class="mobile-card-row">
+            <span>Callback</span>
+            <strong>{{ lead.preferredContactTime || 'Anytime' }}</strong>
+          </div>
+          <div class="mobile-card-actions">
+            <button (click)="viewLead(lead)" class="btn-small btn-view">View</button>
+            <button (click)="selectLead(lead)" class="btn-small btn-action">Actions</button>
+          </div>
+        </div>
       </div>
       <div *ngIf="filteredLeads.length === 0" class="no-data">
         No leads found.

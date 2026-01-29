@@ -72,7 +72,7 @@
       <div *ngIf="isLoading" class="state-message">Loading leads...</div>
       <div *ngIf="!isLoading && errorMessage" class="state-message error">{{ errorMessage }}</div>
 
-      <div class="table-scroll" *ngIf="!isLoading && !errorMessage">
+      <div class="table-scroll desktop-only" *ngIf="!isLoading && !errorMessage">
         <table class="leads-table">
           <thead>
             <tr>
@@ -105,6 +105,39 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="mobile-card-list" *ngIf="!isLoading && !errorMessage">
+        <div *ngFor="let lead of filteredLeads" class="mobile-card">
+          <div class="mobile-card-header">
+            <div>
+              <p class="mobile-card-title">{{ lead.homeownerName }}</p>
+              <p class="mobile-card-subtitle">{{ lead.propertyAddress }}</p>
+            </div>
+            <span class="status-badge status-{{ lead.status?.toLowerCase() || 'new' }}">
+              {{ formatStatus(lead.status) }}
+            </span>
+          </div>
+          <div class="mobile-card-row">
+            <span>Email</span>
+            <strong>{{ lead.homeownerEmail }}</strong>
+          </div>
+          <div class="mobile-card-row">
+            <span>Phone</span>
+            <strong>{{ lead.homeownerPhone }}</strong>
+          </div>
+          <div class="mobile-card-row">
+            <span>Agency</span>
+            <strong>{{ lead.preferredAgency || '-' }}</strong>
+          </div>
+          <div class="mobile-card-row">
+            <span>Assigned</span>
+            <strong>{{ lead.assignedAgentName || '-' }}</strong>
+          </div>
+          <div class="mobile-card-actions">
+            <button class="btn-small btn-view" type="button" (click)="viewLead(lead)">View</button>
+            <button class="btn-small btn-action" type="button" (click)="manageLead(lead)">Manage</button>
+          </div>
+        </div>
       </div>
 
       <div class="state-message" *ngIf="!isLoading && !errorMessage && filteredLeads.length === 0">

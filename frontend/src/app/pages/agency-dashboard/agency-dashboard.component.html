@@ -147,7 +147,7 @@
         <h2>Agents</h2>
         <span>{{ agents.length }} agents</span>
       </div>
-      <div class="table-scroll">
+      <div class="table-scroll desktop-only">
         <table class="agents-table">
           <thead>
             <tr>
@@ -186,6 +186,37 @@
           </tbody>
         </table>
       </div>
+      <div class="mobile-card-list">
+        <div *ngFor="let agent of agents" class="mobile-card">
+          <div class="mobile-card-header">
+            <div>
+              <p class="mobile-card-title">{{ agent.name }}</p>
+              <p class="mobile-card-subtitle">{{ agent.email }}</p>
+            </div>
+            <span class="status-pill" [ngClass]="agent.isActive ? 'status-contacted' : 'status-new'">
+              {{ agent.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div class="mobile-card-row">
+            <span>Territory</span>
+            <input class="form-input" [(ngModel)]="agent.territory" />
+          </div>
+          <div class="mobile-card-row">
+            <span>Role</span>
+            <select class="form-input" [(ngModel)]="agent.role">
+              <option value="admin">Admin</option>
+              <option value="agent">Agent</option>
+            </select>
+          </div>
+          <label class="toggle mobile-toggle">
+            <input type="checkbox" [(ngModel)]="agent.isActive" />
+            <span>Active</span>
+          </label>
+          <div class="mobile-card-actions">
+            <button class="btn btn-outline" type="button" (click)="updateAgent(agent)">Save</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="table-section">
@@ -193,7 +224,7 @@
         <h2>Recent leads</h2>
         <span>{{ filteredLeads.length }} records</span>
       </div>
-      <div class="table-scroll">
+      <div class="table-scroll desktop-only">
         <table class="agents-table">
           <thead>
             <tr>
@@ -224,6 +255,33 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="mobile-card-list">
+        <div *ngFor="let lead of filteredLeads | slice:0:5" class="mobile-card">
+          <div class="mobile-card-header">
+            <div>
+              <p class="mobile-card-title">{{ lead.homeownerName }}</p>
+              <p class="mobile-card-subtitle">{{ lead.propertyAddress }}</p>
+            </div>
+            <span class="status-pill">{{ lead.status || 'New' }}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span>Callback</span>
+            <strong>{{ lead.preferredContactTime || 'Anytime' }}</strong>
+          </div>
+          <div class="mobile-card-row">
+            <span>Assign</span>
+            <select
+              class="form-input"
+              [ngModel]="lead.assignedAgentId || ''"
+              (ngModelChange)="assignLeadToAgent(lead, $event)">
+              <option value="" disabled>Select agent</option>
+              <option *ngFor="let agent of agents" [value]="agent.userId || agent.id" [disabled]="agent.isActive === false">
+                {{ agent.name }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
     </section>
   </main>
