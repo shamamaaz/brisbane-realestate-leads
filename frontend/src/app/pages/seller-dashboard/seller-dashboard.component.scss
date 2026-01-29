@@ -393,6 +393,14 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .dashboard-container {
+    padding: 20px;
+  }
+
+  .offers-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {
@@ -406,5 +414,10 @@
     align-items: flex-start;
     gap: 12px;
     padding: 16px 20px;
+  }
+
+  .user-menu {
+    width: 100%;
+    justify-content: space-between;
   }
 }
