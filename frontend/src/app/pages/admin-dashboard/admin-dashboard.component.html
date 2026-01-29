@@ -71,12 +71,12 @@
           </thead>
           <tbody>
             <tr *ngFor="let lead of leads">
-              <td>{{ lead.homeownerName }}</td>
-              <td>{{ lead.propertyAddress }}</td>
-              <td>
+              <td data-label="Lead">{{ lead.homeownerName }}</td>
+              <td data-label="Address">{{ lead.propertyAddress }}</td>
+              <td data-label="Status">
                 <span class="status-pill">{{ lead.status || 'New' }}</span>
               </td>
-              <td>{{ lead.homeownerPhone || '-' }}</td>
+              <td data-label="Contact">{{ lead.homeownerPhone || '-' }}</td>
             </tr>
           </tbody>
         </table>

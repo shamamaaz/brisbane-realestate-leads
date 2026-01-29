@@ -152,6 +152,46 @@ html, body {
   }
 }
 
+@media (max-width: 720px) {
+  .table-scroll table,
+  .lead-table table {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .table-scroll thead,
+  .lead-table thead {
+    display: none;
+  }
+
+  .table-scroll tr,
+  .lead-table tr {
+    display: block;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(28, 37, 41, 0.08);
+  }
+
+  .table-scroll td,
+  .lead-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+  }
+
+  .table-scroll td::before,
+  .lead-table td::before {
+    content: attr(data-label);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #5a6a70;
+    font-weight: 600;
+    flex: 0 0 40%;
+  }
+}
+
 /* ==================== HEADER & NAVIGATION ==================== */
 header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

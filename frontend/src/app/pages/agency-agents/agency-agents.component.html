@@ -96,20 +96,20 @@
           </thead>
           <tbody>
             <tr *ngFor="let agent of filteredAgents; trackBy: trackByAgentId">
-              <td class="cell-name">
+              <td class="cell-name" data-label="Agent">
                 <span class="agent-name">{{ agent.name }}</span>
                 <span class="agent-id">ID {{ agent.id }}</span>
               </td>
-              <td>{{ agent.email }}</td>
-              <td>{{ agent.phone }}</td>
-              <td>{{ agent.territory || '—' }}</td>
-              <td>{{ agent.leadsAssigned || 0 }}</td>
-              <td>
+              <td data-label="Email">{{ agent.email }}</td>
+              <td data-label="Phone">{{ agent.phone }}</td>
+              <td data-label="Territory">{{ agent.territory || '—' }}</td>
+              <td data-label="Leads assigned">{{ agent.leadsAssigned || 0 }}</td>
+              <td data-label="Status">
                 <span class="status-pill" [ngClass]="getStatusClass(getAgentStatus(agent))">
                   {{ getAgentStatus(agent) }}
                 </span>
               </td>
-              <td class="cell-actions">
+              <td class="cell-actions" data-label="Actions">
                 <button class="btn-small btn-view" type="button" (click)="openAgent(agent)">View</button>
                 <button class="btn-small btn-action" type="button" (click)="emailAgent(agent)">Email</button>
                 <button class="btn-small btn-action" type="button" (click)="callAgent(agent)">Call</button>

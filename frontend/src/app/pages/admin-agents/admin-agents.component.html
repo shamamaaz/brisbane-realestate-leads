@@ -63,11 +63,11 @@
           </thead>
           <tbody>
             <tr *ngFor="let agent of filteredAgents">
-              <td class="cell-name">{{ agent.name }}</td>
-              <td>{{ agent.email }}</td>
-              <td>{{ agent.phone }}</td>
-              <td>{{ agent.territory || '-' }}</td>
-              <td>{{ agent.leadsAssigned || 0 }}</td>
+              <td class="cell-name" data-label="Agent">{{ agent.name }}</td>
+              <td data-label="Email">{{ agent.email }}</td>
+              <td data-label="Phone">{{ agent.phone }}</td>
+              <td data-label="Territory">{{ agent.territory || '-' }}</td>
+              <td data-label="Leads assigned">{{ agent.leadsAssigned || 0 }}</td>
             </tr>
           </tbody>
         </table>

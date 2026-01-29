@@ -62,10 +62,10 @@
           </thead>
           <tbody>
             <tr *ngFor="let agency of filteredAgencies">
-              <td class="cell-name">{{ agency.name }}</td>
-              <td>{{ agency.email }}</td>
-              <td>{{ agency.phone }}</td>
-              <td>{{ agency.address || '-' }}</td>
+              <td class="cell-name" data-label="Agency">{{ agency.name }}</td>
+              <td data-label="Email">{{ agency.email }}</td>
+              <td data-label="Phone">{{ agency.phone }}</td>
+              <td data-label="Address">{{ agency.address || '-' }}</td>
             </tr>
           </tbody>
         </table>

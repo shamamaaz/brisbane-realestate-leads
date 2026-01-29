@@ -160,26 +160,26 @@
           </thead>
           <tbody>
             <tr *ngFor="let agent of agents">
-              <td class="cell-name">
+              <td class="cell-name" data-label="Agent">
                 <div>{{ agent.name }}</div>
                 <small>{{ agent.email }}</small>
               </td>
-              <td>
+              <td data-label="Territory">
                 <input class="form-input" [(ngModel)]="agent.territory" />
               </td>
-              <td>
+              <td data-label="Role">
                 <select class="form-input" [(ngModel)]="agent.role">
                   <option value="admin">Admin</option>
                   <option value="agent">Agent</option>
                 </select>
               </td>
-              <td>
+              <td data-label="Status">
                 <label class="toggle">
                   <input type="checkbox" [(ngModel)]="agent.isActive" />
                   <span>Active</span>
                 </label>
               </td>
-              <td>
+              <td data-label="Actions">
                 <button class="btn btn-outline" type="button" (click)="updateAgent(agent)">Save</button>
               </td>
             </tr>
@@ -206,11 +206,11 @@
           </thead>
           <tbody>
             <tr *ngFor="let lead of filteredLeads | slice:0:5">
-              <td class="cell-name">{{ lead.homeownerName }}</td>
-              <td>{{ lead.propertyAddress }}</td>
-              <td><span class="status-pill">{{ lead.status || 'New' }}</span></td>
-              <td>{{ lead.preferredContactTime || 'Anytime' }}</td>
-              <td>
+              <td class="cell-name" data-label="Lead">{{ lead.homeownerName }}</td>
+              <td data-label="Address">{{ lead.propertyAddress }}</td>
+              <td data-label="Status"><span class="status-pill">{{ lead.status || 'New' }}</span></td>
+              <td data-label="Callback">{{ lead.preferredContactTime || 'Anytime' }}</td>
+              <td data-label="Assign">
                 <select
                   class="form-input"
                   [ngModel]="lead.assignedAgentId || ''"
