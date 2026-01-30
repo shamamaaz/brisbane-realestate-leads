@@ -22,9 +22,10 @@ import { LandingComponent } from './pages/landing/landing.component';
 import { LoginComponent } from './pages/login/login.component';
 import { LegalComponent } from './pages/legal/legal.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
-import { SellerAccessComponent } from './pages/seller-access/seller-access.component';
-import { SellerLoginComponent } from './pages/seller-login/seller-login.component';
 import { SellerDashboardComponent } from './pages/seller-dashboard/seller-dashboard.component';
+import { SellerRegisterComponent } from './pages/seller-register/seller-register.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { PropertyDetailComponent } from './pages/property-detail/property-detail.component';
 import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.component';
 import { RegisterComponent } from './pages/register/register.component';
@@ -51,8 +52,9 @@ import { AgentModule } from './agent/agent.module';
     PropertyDetailComponent,
     LegalComponent,
     PrivacyComponent,
-    SellerAccessComponent,
-    SellerLoginComponent,
+    SellerRegisterComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent,
     SellerDashboardComponent,
     AuthCallbackComponent,
     LoginComponent,

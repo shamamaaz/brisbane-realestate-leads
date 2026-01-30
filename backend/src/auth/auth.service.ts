@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
-import { randomBytes } from 'crypto';
 import { Repository } from 'typeorm';
 import { Agency } from '../agencies/entities/agency.entity';
 import { Agent } from '../agents/entities/agent.entity';
@@ -11,7 +10,6 @@ import { EmailService } from '../shared/email/email.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { SellerLoginToken } from './entities/seller-login-token.entity';
 import { User, UserRole } from './entities/user.entity';
 
 @Injectable()
@@ -25,8 +23,6 @@ export class AuthService {
     private agencyRepo: Repository<Agency>,
     @InjectRepository(Agent)
     private agentRepo: Repository<Agent>,
-    @InjectRepository(SellerLoginToken)
-    private sellerTokenRepo: Repository<SellerLoginToken>,
     private jwtService: JwtService,
     private emailService: EmailService,
   ) {}
@@ -304,78 +300,56 @@ export class AuthService {
     return demoUsers.map(({ password, ...rest }) => ({ ...rest, password }));
   }
 
-  async createSellerMagicLink(email: string) {
+  async requestPasswordReset(email: string) {
     const normalized = email.toLowerCase();
-    let user = await this.userRepo.findOne({ where: { email: normalized } });
+    const user = await this.userRepo.findOne({ where: { email: normalized } });
     if (!user) {
-      const salt = await bcrypt.genSalt();
-      const passwordHash = await bcrypt.hash(`${normalized}:${Date.now()}`, salt);
-      user = this.userRepo.create({
-        email: normalized,
-        name: normalized.split('@')[0],
-        role: UserRole.SELLER,
-        passwordHash,
-        isActive: true,
-      });
-      user = await this.userRepo.save(user);
+      return { sent: true };
     }
 
     if (!user.isActive) {
       throw new UnauthorizedException('User account is inactive');
     }
 
-    const token = randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 30);
-    const record = this.sellerTokenRepo.create({ token, user, expiresAt });
-    await this.sellerTokenRepo.save(record);
+    const token = this.jwtService.sign(
+      { id: user.id, email: user.email, action: 'reset' },
+      { expiresIn: '1h' },
+    );
 
     const webAppUrl = process.env.WEB_APP_URL || 'http://localhost:4200';
-    const link = new URL('/seller/login', webAppUrl);
+    const link = new URL('/auth/reset-password', webAppUrl);
     link.searchParams.set('token', token);
 
-    const magicLinkMode = (process.env.MAGIC_LINK_MODE || 'dev').toLowerCase();
-    if (magicLinkMode === 'email') {
-      if (!this.emailService.isConfigured()) {
-        throw new BadRequestException('Email is not configured.');
-      }
-      await this.emailService.sendMagicLink(normalized, link.toString());
-    } else {
-      console.log(`🔗 Seller magic link for ${normalized}: ${link.toString()}`);
+    if (!this.emailService.isConfigured()) {
+      throw new BadRequestException('Email is not configured.');
     }
+    await this.emailService.sendPasswordReset(normalized, link.toString());
 
     return { sent: true };
   }
 
-  async verifySellerMagicLink(token: string): Promise<AuthResponseDto> {
-    const record = await this.sellerTokenRepo.findOne({
-      where: { token },
-      relations: ['user'],
-    });
-    if (!record || record.usedAt) {
-      throw new UnauthorizedException('Invalid or used magic link.');
-    }
-    if (record.expiresAt.getTime() < Date.now()) {
-      throw new UnauthorizedException('Magic link has expired.');
+  async resetPassword(token: string, newPassword: string) {
+    let payload: any;
+    try {
+      payload = this.jwtService.verify(token);
+    } catch (error) {
+      throw new UnauthorizedException('Reset token is invalid or expired.');
     }
 
-    record.usedAt = new Date();
-    await this.sellerTokenRepo.save(record);
+    if (!payload?.id || payload.action !== 'reset') {
+      throw new UnauthorizedException('Reset token is invalid or expired.');
+    }
 
-    const user = record.user;
-    const accessToken = this.jwtService.sign({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      agencyId: user.agencyId,
-    });
+    const user = await this.userRepo.findOne({ where: { id: payload.id } });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
 
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      accessToken,
-    };
+    const salt = await bcrypt.genSalt();
+    user.passwordHash = await bcrypt.hash(newPassword, salt);
+    await this.userRepo.save(user);
+
+    return { reset: true };
   }
 
   private async syncAgentUserLink(user: User): Promise<void> {

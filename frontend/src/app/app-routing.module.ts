@@ -7,9 +7,10 @@ import { AuthCallbackComponent } from './pages/auth-callback/auth-callback.compo
 import { RegisterComponent } from './pages/register/register.component';
 import { LegalComponent } from './pages/legal/legal.component';
 import { PrivacyComponent } from './pages/privacy/privacy.component';
-import { SellerAccessComponent } from './pages/seller-access/seller-access.component';
-import { SellerLoginComponent } from './pages/seller-login/seller-login.component';
 import { SellerDashboardComponent } from './pages/seller-dashboard/seller-dashboard.component';
+import { SellerRegisterComponent } from './pages/seller-register/seller-register.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { SellComponent } from './pages/sell/sell.component';
 import { ThankYouComponent } from './pages/thank-you/thank-you.component';
 
@@ -31,8 +32,9 @@ const routes: Routes = [
   { path: 'legal', component: LegalComponent },
   { path: 'privacy', component: PrivacyComponent },
   { path: 'auth/callback', component: AuthCallbackComponent },
-  { path: 'seller/login', component: SellerLoginComponent },
-  { path: 'seller/access', component: SellerAccessComponent },
+  { path: 'seller/register', component: SellerRegisterComponent },
+  { path: 'auth/forgot', component: ForgotPasswordComponent },
+  { path: 'auth/reset-password', component: ResetPasswordComponent },
   { path: 'login', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'register', redirectTo: 'auth/register', pathMatch: 'full' },
   { path: 'submit', redirectTo: 'sell', pathMatch: 'full' },

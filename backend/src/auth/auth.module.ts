@@ -9,7 +9,6 @@ import { Lead } from '../leads/entities/lead.entity';
 import { EmailModule } from '../shared/email/email.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { SellerLoginToken } from './entities/seller-login-token.entity';
 import { User } from './entities/user.entity';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
@@ -17,7 +16,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Lead, Agency, Agent, SellerLoginToken]),
+    TypeOrmModule.forFeature([User, Lead, Agency, Agent]),
     EmailModule,
     PassportModule,
     JwtModule.registerAsync({

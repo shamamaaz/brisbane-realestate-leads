@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AgencyService } from '../../services/agency.service';
-import { AuthService } from '../../services/auth.service';
 import { LeadService } from '../../services/lead.service';
 import { environment } from '../../../environments/environment';
 
@@ -26,8 +25,7 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private leadService: LeadService,
-    private agencyService: AgencyService,
-    private authService: AuthService
+    private agencyService: AgencyService
   ) {
     this.leadForm = this.fb.group({
       homeownerName: ['', Validators.required],
@@ -165,68 +163,22 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
     this.submitError = '';
     this.submitMessage = '';
 
-    // Auto-register/login with homeowner email and a generated password
-    const email = this.leadForm.get('homeownerEmail')?.value;
-    const name = this.leadForm.get('homeownerName')?.value;
-    const generatedPassword = 'Lead_' + Math.random().toString(36).slice(-8);
+    this.leadService.createLead(this.leadForm.value).subscribe({
+      next: (res) => {
+        this.submitMessage =
+          'Thank you! Your request is submitted. Create a seller account or sign in to view agent offers.';
+        this.submitLeadEvent.emit(res);
+        this.leadForm.reset();
+        this.suggestedAgencies = [];
+        this.isSubmitting = false;
 
-    this.authService.register(email, generatedPassword, name, 'seller').subscribe({
-      next: () => {
-        // Now submit the lead with the token
-        this.leadService.createLead(this.leadForm.value).subscribe({
-          next: (res) => {
-            this.submitMessage = 'Thank you! Check your email for your private seller link to view agent offers.';
-            this.submitLeadEvent.emit(res);
-            this.authService.requestSellerMagicLink(email).subscribe({
-              next: () => {},
-              error: (magicErr) => console.warn('Magic link request failed:', magicErr),
-            });
-            this.leadForm.reset();
-            this.suggestedAgencies = [];
-            this.isSubmitting = false;
-
-            // Clear message after 3 seconds
-            setTimeout(() => {
-              this.submitMessage = '';
-            }, 3000);
-          },
-          error: (err) => {
-            console.error('Error submitting lead:', err);
-            this.submitError = err.error?.message || 'Failed to submit lead. Please try again.';
-            this.isSubmitting = false;
-          }
-        });
+        setTimeout(() => {
+          this.submitMessage = '';
+        }, 3000);
       },
       error: (err) => {
-        // If user already exists, still submit the lead and send magic link.
-        if (err.status === 400) {
-          this.leadService.createLead(this.leadForm.value).subscribe({
-            next: (res) => {
-              this.submitMessage = 'Thank you! Check your email for your private seller link to view agent offers.';
-              this.submitLeadEvent.emit(res);
-              this.authService.requestSellerMagicLink(email).subscribe({
-                next: () => {},
-                error: (magicErr) => console.warn('Magic link request failed:', magicErr),
-              });
-              this.leadForm.reset();
-              this.suggestedAgencies = [];
-              this.isSubmitting = false;
-
-              setTimeout(() => {
-                this.submitMessage = '';
-              }, 3000);
-            },
-            error: (leadErr) => {
-              console.error('Error submitting lead:', leadErr);
-              this.submitError = leadErr.error?.message || 'Failed to submit lead. Please try again.';
-              this.isSubmitting = false;
-            }
-          });
-          return;
-        }
-
-        console.error('Registration error:', err);
-        this.submitError = err.error?.message || 'Failed to process lead. Please try again.';
+        console.error('Error submitting lead:', err);
+        this.submitError = err.error?.message || 'Failed to submit lead. Please try again.';
         this.isSubmitting = false;
       }
     });

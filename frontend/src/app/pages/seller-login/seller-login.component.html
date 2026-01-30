@@ -1,8 +1,0 @@
-<div class="seller-login">
-  <div class="login-card">
-    <div class="spinner" [class.error]="hasError"></div>
-    <h1>{{ statusMessage }}</h1>
-    <p *ngIf="hasError">Return to the seller access page and request a new link.</p>
-    <a *ngIf="hasError" routerLink="/seller/access" class="btn-link">Get a new login link</a>
-  </div>
-</div>

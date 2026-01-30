@@ -14,6 +14,9 @@
 
 # Environment files
 /.env
+backend/.env
+backend/.env.*
+!backend/.env*.example
 
 # Angular CLI and build artefacts
 /.angular-cli.json

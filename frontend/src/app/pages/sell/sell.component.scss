@@ -115,6 +115,20 @@
   text-decoration: none;
 }
 
+.seller-access-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.seller-access-link.secondary {
+  color: var(--ink);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+
 .sell-image {
   margin-top: 18px;
   border-radius: 16px;

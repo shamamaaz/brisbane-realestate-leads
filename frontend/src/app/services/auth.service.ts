@@ -72,12 +72,12 @@ export class AuthService {
       );
   }
 
-  requestSellerMagicLink(email: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/seller/magic-link`, { email });
+  requestPasswordReset(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/forgot-password`, { email });
   }
 
-  verifySellerMagicLink(token: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/seller/verify?token=${encodeURIComponent(token)}`);
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/reset-password`, { token, newPassword });
   }
 
   /**

@@ -49,17 +49,38 @@ export class EmailService {
     return !!this.transporter;
   }
 
-  async sendMagicLink(to: string, link: string): Promise<void> {
+  async sendPasswordReset(to: string, link: string): Promise<void> {
     if (!this.transporter) {
       throw new Error('Email is not configured.');
     }
 
-    const subject = 'Your Lead Exchange login link';
-    const text = `Use this private link to access your seller dashboard:\n\n${link}\n\nThis link expires in 30 minutes.`;
+    const subject = 'Reset your Lead Exchange password';
+    const text = `Use this link to reset your password:\n\n${link}\n\nThis link expires in 60 minutes.`;
     const html = `
-      <p>Use this private link to access your seller dashboard:</p>
+      <p>Use this link to reset your password:</p>
       <p><a href="${link}">${link}</a></p>
-      <p>This link expires in 30 minutes.</p>
+      <p>This link expires in 60 minutes.</p>
+    `;
+
+    await this.transporter.sendMail({
+      from: this.fromAddress,
+      to,
+      subject,
+      text,
+      html,
+    });
+  }
+
+  async sendOfferNotification(to: string, link: string): Promise<void> {
+    if (!this.transporter) {
+      throw new Error('Email is not configured.');
+    }
+
+    const subject = 'An agent has sent you an appraisal offer';
+    const text = `An agent has responded to your appraisal request.\n\nSign in to view the offer:\n${link}`;
+    const html = `
+      <p>An agent has responded to your appraisal request.</p>
+      <p><a href="${link}">Sign in to view the offer</a></p>
     `;
 
     await this.transporter.sendMail({

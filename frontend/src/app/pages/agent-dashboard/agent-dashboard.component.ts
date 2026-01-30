@@ -292,12 +292,12 @@ export class AgentDashboardComponent implements OnInit {
     this.linkError = '';
     this.linkSuccess = '';
 
-    this.authService.requestSellerMagicLink(this.selectedLead.homeownerEmail).subscribe({
+    this.authService.requestPasswordReset(this.selectedLead.homeownerEmail).subscribe({
       next: () => {
-        this.linkSuccess = 'Login link sent to the seller.';
+        this.linkSuccess = 'Password reset link sent to the seller.';
       },
       error: () => {
-        this.linkError = 'Failed to send login link. Please try again.';
+        this.linkError = 'Failed to send reset link. Please try again.';
       },
     });
   }

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Lead } from '../leads/entities/lead.entity';
+import { EmailService } from '../shared/email/email.service';
 import { CreateAgentOfferDto } from './dto/create-agent-offer.dto';
 import { AgentOffer } from './entities/agent-offer.entity';
 
@@ -12,6 +13,7 @@ export class AgentOffersService {
     private readonly offerRepo: Repository<AgentOffer>,
     @InjectRepository(Lead)
     private readonly leadRepo: Repository<Lead>,
+    private readonly emailService: EmailService,
   ) {}
 
   async createOffer(dto: CreateAgentOfferDto): Promise<AgentOffer> {
@@ -32,7 +34,15 @@ export class AgentOffersService {
       message: dto.message,
     });
 
-    return this.offerRepo.save(offer);
+    const saved = await this.offerRepo.save(offer);
+
+    if (lead.homeownerEmail && this.emailService.isConfigured()) {
+      const webAppUrl = process.env.WEB_APP_URL || 'http://localhost:4200';
+      const loginUrl = new URL('/auth/login', webAppUrl);
+      await this.emailService.sendOfferNotification(lead.homeownerEmail, loginUrl.toString());
+    }
+
+    return saved;
   }
 
   async getOffersByLead(leadId: number): Promise<AgentOffer[]> {

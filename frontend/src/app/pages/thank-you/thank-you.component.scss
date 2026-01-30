@@ -60,6 +60,28 @@
   margin-bottom: 32px;
 }
 
+.account-actions {
+  background: #f9fafb;
+  border-left: 4px solid #1f6b6f;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: left;
+  margin-bottom: 24px;
+
+  h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: #1a1a1a;
+  }
+
+  p {
+    margin: 0 0 12px;
+    color: #666;
+    font-size: 13px;
+  }
+}
+
 .next-steps h3 {
   font-size: 14px;
   font-weight: 600;
