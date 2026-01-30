@@ -57,6 +57,12 @@
   color: var(--muted);
 }
 
+.form-note {
+  margin: 6px 0 0;
+  color: var(--olive);
+  font-size: 0.9rem;
+}
+
 .form-content {
   display: flex;
   flex-direction: column;

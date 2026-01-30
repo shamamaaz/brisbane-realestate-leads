@@ -10,12 +10,14 @@ export class SellComponent implements OnInit {
   submittedLeads: any[] = [];
   suggestedAgencies: any[] = [];
   isLookingUpAgencies = false;
+  showThankYou = false;
 
   constructor(private agencyService: AgencyService) {}
 
   ngOnInit(): void {
     const stored = localStorage.getItem('submittedLeads');
     this.submittedLeads = stored ? JSON.parse(stored) : [];
+    this.showThankYou = localStorage.getItem('leadSubmissionComplete') === 'true';
     if (this.submittedLeads.length > 0) {
       this.lookupAgenciesFromLead(this.submittedLeads[0]);
     }
@@ -29,6 +31,7 @@ export class SellComponent implements OnInit {
     this.submittedLeads = [lead, ...this.submittedLeads];
     localStorage.setItem('submittedLeads', JSON.stringify(this.submittedLeads));
     this.lookupAgenciesFromLead(lead);
+    this.showThankYou = true;
   }
 
   private lookupAgenciesFromLead(lead: any) {

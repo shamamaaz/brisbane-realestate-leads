@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AgencyService } from '../../services/agency.service';
+import { AuthService } from '../../services/auth.service';
 import { LeadService } from '../../services/lead.service';
 import { environment } from '../../../environments/environment';
 
@@ -25,7 +26,8 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private leadService: LeadService,
-    private agencyService: AgencyService
+    private agencyService: AgencyService,
+    private authService: AuthService
   ) {
     this.leadForm = this.fb.group({
       homeownerName: ['', Validators.required],
@@ -34,7 +36,9 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
       propertyAddress: ['', Validators.required],
       propertyType: ['', Validators.required],
       preferredAgency: [''],
-      preferredContactTime: ['']
+      preferredContactTime: [''],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required]
     });
   }
 
@@ -163,11 +167,48 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
     this.submitError = '';
     this.submitMessage = '';
 
-    this.leadService.createLead(this.leadForm.value).subscribe({
+    const password = this.leadForm.get('password')?.value;
+    const confirmPassword = this.leadForm.get('confirmPassword')?.value;
+    if (password !== confirmPassword) {
+      this.submitError = 'Passwords do not match.';
+      this.isSubmitting = false;
+      return;
+    }
+
+    const email = this.leadForm.get('homeownerEmail')?.value;
+    const name = this.leadForm.get('homeownerName')?.value;
+
+    this.authService.register(email, password, name, 'seller').subscribe({
+      next: () => {
+        this.authService.logout();
+        this.createLeadAfterRegister();
+      },
+      error: (err) => {
+        if (err.status === 400) {
+          this.createLeadAfterRegister(true);
+          return;
+        }
+        console.error('Registration error:', err);
+        this.submitError = err.error?.message || 'Failed to create your account. Please try again.';
+        this.isSubmitting = false;
+      }
+    });
+  }
+
+  private createLeadAfterRegister(existingUser = false) {
+    const payload = { ...this.leadForm.value };
+    delete payload.password;
+    delete payload.confirmPassword;
+
+    this.leadService.createLead(payload).subscribe({
       next: (res) => {
-        this.submitMessage =
-          'Thank you! Your request is submitted. Create a seller account or sign in to view agent offers.';
+        this.submitMessage = existingUser
+          ? 'Thank you! Your request is submitted. Please sign in to view agent offers.'
+          : 'Thank you! Your account is created and your request is submitted. Sign in to view agent offers.';
         this.submitLeadEvent.emit(res);
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('leadSubmissionComplete', 'true');
+        }
         this.leadForm.reset();
         this.suggestedAgencies = [];
         this.isSubmitting = false;

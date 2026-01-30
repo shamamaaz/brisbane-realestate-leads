@@ -18,7 +18,22 @@
         </div>
       </div>
       <div class="landing-form-card animate">
-        <app-lead-form class="compact" (submitLeadEvent)="handleLeadSubmitted($event)"></app-lead-form>
+        <ng-container *ngIf="!showThankYou; else landingThankYou">
+          <app-lead-form class="compact" (submitLeadEvent)="handleLeadSubmitted($event)"></app-lead-form>
+        </ng-container>
+        <ng-template #landingThankYou>
+          <div class="landing-success-card">
+            <p class="eyebrow">Submission received</p>
+            <h3>Thank you — your appraisal request is submitted</h3>
+            <p>
+              Your appraisal has been sent to local agents. You can log in anytime with your email and
+              password to view their proposed offers.
+            </p>
+            <div class="seller-access-actions">
+              <a class="seller-access-link secondary" routerLink="/auth/login">Sign in to view offers</a>
+            </div>
+          </div>
+        </ng-template>
       </div>
     </div>
   </section>

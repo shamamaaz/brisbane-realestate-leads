@@ -107,6 +107,27 @@
   box-shadow: 0 12px 24px rgba(28, 37, 41, 0.08);
 }
 
+.sell-success-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .eyebrow {
+    color: var(--teal);
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+}
+
 .seller-access-link {
   display: inline-block;
   margin-top: 12px;

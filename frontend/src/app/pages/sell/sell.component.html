@@ -9,18 +9,45 @@
       </div>
     </div>
     <div class="sell-form-card">
-      <app-lead-form (submitLeadEvent)="setLeadFromLanding($event)"></app-lead-form>
+      <ng-container *ngIf="!showThankYou; else submittedMessage">
+        <app-lead-form (submitLeadEvent)="setLeadFromLanding($event)"></app-lead-form>
+      </ng-container>
+      <ng-template #submittedMessage>
+        <div class="sell-success-card">
+          <p class="eyebrow">Submission received</p>
+          <h2>Thank you — your appraisal request is submitted</h2>
+          <p>
+            Your appraisal has been sent to local agents. You can log in anytime with your email and
+            password to view their proposed offers.
+          </p>
+          <div class="seller-access-actions">
+            <a class="seller-access-link secondary" routerLink="/auth/login">Sign in to view offers</a>
+          </div>
+        </div>
+      </ng-template>
     </div>
   </section>
 
   <section class="sell-form-section">
-    <div class="sell-form-placeholder">
-      <h2>Already submitted?</h2>
-      <p>Create your seller account or sign in to view offers and updates.</p>
+    <div class="sell-form-placeholder" *ngIf="showThankYou; else sellerAccess">
+      <h2>Thank you — your appraisal request is submitted</h2>
+      <p>
+        Your appraisal has been sent to local agents. You can log in anytime with your email and
+        password to view their proposed offers.
+      </p>
       <div class="seller-access-actions">
-        <a class="seller-access-link" routerLink="/seller/register">Create account</a>
-        <a class="seller-access-link secondary" routerLink="/auth/login">Sign in</a>
+        <a class="seller-access-link secondary" routerLink="/auth/login">Sign in to view offers</a>
       </div>
     </div>
+    <ng-template #sellerAccess>
+      <div class="sell-form-placeholder">
+        <h2>Already submitted?</h2>
+        <p>Create your seller account or sign in to view offers and updates.</p>
+        <div class="seller-access-actions">
+          <a class="seller-access-link" routerLink="/seller/register">Create account</a>
+          <a class="seller-access-link secondary" routerLink="/auth/login">Sign in</a>
+        </div>
+      </div>
+    </ng-template>
   </section>
 </div>

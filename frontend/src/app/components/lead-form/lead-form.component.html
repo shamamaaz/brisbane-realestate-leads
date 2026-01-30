@@ -3,6 +3,9 @@
     <div class="form-header">
       <h2 class="form-title">Get your free appraisal</h2>
       <p class="form-subtitle">Tell us a little about your home.</p>
+      <p class="form-note">
+        After you submit, you can log in anytime to view agent offers.
+      </p>
     </div>
 
       <!-- Success Message -->
@@ -153,6 +156,42 @@
             placeholder="e.g., Evenings 5-8pm"
             class="form-input"
           />
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label">Create a password <span>*</span></label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="At least 8 characters"
+            class="form-input"
+            required
+          />
+          <span
+            *ngIf="leadForm.get('password')?.invalid && leadForm.get('password')?.touched"
+            class="form-error"
+          >
+            Password must be at least 8 characters
+          </span>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label class="form-label">Confirm password <span>*</span></label>
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Re-enter your password"
+            class="form-input"
+            required
+          />
+          <span
+            *ngIf="leadForm.get('confirmPassword')?.invalid && leadForm.get('confirmPassword')?.touched"
+            class="form-error"
+          >
+            Please confirm your password
+          </span>
         </div>
 
         <!-- Submit Button -->
