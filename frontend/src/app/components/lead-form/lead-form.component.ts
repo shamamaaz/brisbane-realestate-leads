@@ -200,6 +200,7 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
     const payload = { ...this.leadForm.value };
     delete payload.password;
     delete payload.confirmPassword;
+    delete payload.notes;
 
     this.leadService.createLead(payload).subscribe({
       next: (res) => {
