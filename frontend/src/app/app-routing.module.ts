@@ -11,7 +11,6 @@ import { SellerDashboardComponent } from './pages/seller-dashboard/seller-dashbo
 import { SellerRegisterComponent } from './pages/seller-register/seller-register.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
-import { SellComponent } from './pages/sell/sell.component';
 import { ThankYouComponent } from './pages/thank-you/thank-you.component';
 
 // Guards
@@ -21,9 +20,8 @@ import { RoleGuard } from './guards/role.guard';
 const routes: Routes = [
   // 🌍 Public / Landing
   { path: '', component: LandingComponent },
-  { path: 'sell', component: SellComponent },
-  { path: 'sell/thank-you', component: ThankYouComponent },
-  { path: 'thank-you', redirectTo: 'sell/thank-you', pathMatch: 'full' },
+  { path: 'sell', redirectTo: '', pathMatch: 'full' },
+  { path: 'thank-you', component: ThankYouComponent },
   { path: 'for-agents', component: ForAgentsComponent },
 
   // 🔐 Auth
@@ -37,7 +35,7 @@ const routes: Routes = [
   { path: 'auth/reset-password', component: ResetPasswordComponent },
   { path: 'login', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'register', redirectTo: 'auth/register', pathMatch: 'full' },
-  { path: 'submit', redirectTo: 'sell', pathMatch: 'full' },
+  { path: 'submit', redirectTo: '', pathMatch: 'full' },
 
   // 🏠 Seller Portal
   {

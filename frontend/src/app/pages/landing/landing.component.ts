@@ -23,13 +23,7 @@ import { Router } from '@angular/router';
   ],
 })
 export class LandingComponent {
-  showThankYou = false;
-
   constructor(private router: Router) {}
-
-  ngOnInit(): void {
-    this.showThankYou = localStorage.getItem('leadSubmissionComplete') === 'true';
-  }
 
   handleLeadSubmitted(lead: any) {
     if (lead) {
@@ -38,7 +32,7 @@ export class LandingComponent {
       leads.unshift(lead);
       localStorage.setItem('submittedLeads', JSON.stringify(leads));
     }
-    this.showThankYou = true;
+    this.router.navigate(['/thank-you']);
   }
 
   goToSell() {

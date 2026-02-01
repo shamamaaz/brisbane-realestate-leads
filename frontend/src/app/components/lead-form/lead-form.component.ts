@@ -37,6 +37,7 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
       propertyType: ['', Validators.required],
       preferredAgency: [''],
       preferredContactTime: [''],
+      notes: [''],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required]
     });
@@ -206,9 +207,6 @@ export class LeadFormComponent implements AfterViewInit, OnDestroy {
           ? 'Thank you! Your request is submitted. Please sign in to view agent offers.'
           : 'Thank you! Your account is created and your request is submitted. Sign in to view agent offers.';
         this.submitLeadEvent.emit(res);
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem('leadSubmissionComplete', 'true');
-        }
         this.leadForm.reset();
         this.suggestedAgencies = [];
         this.isSubmitting = false;

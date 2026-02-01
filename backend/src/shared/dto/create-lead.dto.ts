@@ -31,6 +31,10 @@ export class CreateLeadDto {
   preferredContactTime?: string;
 
   @IsOptional()
+  @IsString()
+  notes?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   territoryId?: number;

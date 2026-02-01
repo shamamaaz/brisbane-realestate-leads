@@ -17,7 +17,12 @@ import { UploadBatchesModule } from './upload-batches/upload-batches.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: [
+        `.env.${process.env.NODE_ENV || 'local'}`,
+        '.env.local',
+        '.env.production',
+        '.env',
+      ],
     }),
     TypeOrmModule.forRoot(getDatabaseConfig()),
     AuthModule,

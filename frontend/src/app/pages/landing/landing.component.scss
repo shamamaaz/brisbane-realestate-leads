@@ -533,26 +533,6 @@
   padding: 18px;
 }
 
-.landing-success-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  .eyebrow {
-    color: var(--teal);
-  }
-
-  h3 {
-    margin: 0;
-    font-family: 'Fraunces', serif;
-  }
-
-  p {
-    margin: 0;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-}
 
 .landing-image-card {
   margin-top: 18px;
