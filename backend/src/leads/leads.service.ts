@@ -27,9 +27,10 @@ export class LeadsService {
 
   async createLead(createLeadDto: CreateLeadDto): Promise<Lead> {
     const postcodeMatch = createLeadDto.propertyAddress?.match(/\b\d{4}\b/);
+    const resolvedPostcode = createLeadDto.postcode || (postcodeMatch ? postcodeMatch[0] : undefined);
     const lead = this.leadRepo.create({
       ...createLeadDto,
-      postcode: postcodeMatch ? postcodeMatch[0] : undefined,
+      postcode: resolvedPostcode,
       status: 'New', // Default status for new leads
       sourceType: createLeadDto.sourceType || 'public',
       createdAt: new Date(),

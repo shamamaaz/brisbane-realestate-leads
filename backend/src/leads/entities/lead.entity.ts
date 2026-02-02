@@ -21,6 +21,15 @@ export class Lead {
   propertyAddress: string;
 
   @Column({ nullable: true })
+  streetAddress?: string;
+
+  @Column({ nullable: true })
+  suburb?: string;
+
+  @Column({ nullable: true })
+  state?: string;
+
+  @Column({ nullable: true })
   postcode: string;
 
   @Column({ nullable: true })
@@ -40,6 +49,15 @@ export class Lead {
 
   @Column({ type: 'decimal', nullable: true })
   estimatedValue: number;
+
+  @Column({ type: 'decimal', nullable: true })
+  latitude?: number;
+
+  @Column({ type: 'decimal', nullable: true })
+  longitude?: number;
+
+  @Column({ nullable: true })
+  addressPlaceId?: string;
 
   @Column({ type: 'text', nullable: true })
   notes: string; // Internal notes about the lead

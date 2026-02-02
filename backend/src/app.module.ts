@@ -7,6 +7,7 @@ import { AdminModule } from './admin/admin.module';
 import { AgentOffersModule } from './agent-offers/agent-offers.module';
 import { AuthModule } from './auth/auth.module';
 import { getDatabaseConfig } from './config/database.config';
+import { AddressModule } from './address/address.module';
 import { LeadAssignmentsModule } from './lead-assignments/lead-assignments.module';
 import { LeadScoresModule } from './lead-scores/lead-scores.module';
 import { LeadsModule } from './leads/leads.module';
@@ -27,6 +28,7 @@ import { UploadBatchesModule } from './upload-batches/upload-batches.module';
     TypeOrmModule.forRoot(getDatabaseConfig()),
     AuthModule,
     LeadsModule,
+    AddressModule,
     AgentOffersModule,
     AgenciesModule,
     AgentsModule,

@@ -32,6 +32,7 @@ aws s3 sync dist/frontend s3://lead-exchange-frontend --delete
 ### Notes
 - Edit `backend/.env.local` for local DB credentials.
 - Edit `backend/.env.production` for your RDS credentials.
+- Set `GEOAPIFY_API_KEY` in both env files for address lookup.
 
 ## Production deployment (step by step)
 

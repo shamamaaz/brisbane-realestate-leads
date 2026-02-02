@@ -6,6 +6,13 @@ export interface Lead {
   homeownerEmail: string;
   homeownerPhone: string;
   propertyAddress: string;
+  streetAddress?: string;
+  suburb?: string;
+  state?: string;
+  postcode?: string;
+  latitude?: number;
+  longitude?: number;
+  addressPlaceId?: string;
   propertyType?: string; // house, apartment, unit, etc.
   preferredAgency?: string;
   preferredContactTime?: string;

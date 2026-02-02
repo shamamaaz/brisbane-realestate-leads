@@ -76,23 +76,57 @@
         <!-- Property Address Field -->
         <div class="form-group">
           <label class="form-label">Property address <span>*</span></label>
-          <input
-            type="text"
-            formControlName="propertyAddress"
-            placeholder="Enter property address with postcode"
-            (change)="onPropertyAddressChange()"
-            (blur)="onPropertyAddressChange()"
-            #propertyAddressInput
-            autocomplete="off"
-            class="form-input"
-            required
-          />
+          <div class="input-with-action">
+            <input
+              type="text"
+              formControlName="propertyAddress"
+              placeholder="Start typing your address, suburb, or postcode"
+              (input)="onAddressInput($event.target.value)"
+              (focus)="onAddressInput($event.target.value)"
+              autocomplete="off"
+              class="form-input"
+              required
+            />
+            <button
+              type="button"
+              class="clear-input"
+              (click)="clearAddressSelection()"
+              *ngIf="leadForm.get('propertyAddress')?.value"
+              aria-label="Clear address"
+            >
+              ×
+            </button>
+          </div>
           <span
             *ngIf="leadForm.get('propertyAddress')?.invalid && leadForm.get('propertyAddress')?.touched"
             class="form-error"
           >
             Property address is required
           </span>
+          <span *ngIf="submitError && !addressSelected" class="form-error">
+            Please select a valid address from the suggestions.
+          </span>
+
+          <!-- Address lookup status -->
+          <div *ngIf="isSearchingAddress" class="agency-loading">
+            Searching addresses in Australia...
+          </div>
+
+          <!-- Address Suggestions -->
+          <div *ngIf="addressSuggestions.length > 0" class="agencies-suggestion">
+            <p class="agencies-title">Select an address</p>
+            <div class="agencies-list">
+              <button
+                *ngFor="let address of addressSuggestions"
+                type="button"
+                (click)="selectAddress(address)"
+                class="agency-button"
+              >
+                <span class="agency-name">{{ address.formatted }}</span>
+                <span class="agency-details">{{ address.suburb }} {{ address.state }} {{ address.postcode }}</span>
+              </button>
+            </div>
+          </div>
 
           <!-- Loading indicator for agency lookup -->
           <div *ngIf="isLookingUpAgencies" class="agency-loading">

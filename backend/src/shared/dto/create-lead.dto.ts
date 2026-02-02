@@ -31,6 +31,36 @@ export class CreateLeadDto {
   preferredContactTime?: string;
 
   @IsOptional()
+  @IsString()
+  streetAddress?: string;
+
+  @IsOptional()
+  @IsString()
+  suburb?: string;
+
+  @IsOptional()
+  @IsString()
+  state?: string;
+
+  @IsOptional()
+  @IsString()
+  postcode?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  latitude?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  longitude?: number;
+
+  @IsOptional()
+  @IsString()
+  addressPlaceId?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   territoryId?: number;

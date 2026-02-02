@@ -100,6 +100,40 @@
   }
 }
 
+.input-with-action {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .form-input {
+    width: 100%;
+    padding-right: 44px;
+  }
+}
+
+.clear-input {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(28, 37, 41, 0.12);
+  background: #fff;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: var(--teal);
+    color: var(--teal);
+    box-shadow: 0 6px 12px rgba(31, 107, 111, 0.15);
+  }
+}
+
 .form-error {
   font-size: 0.8rem;
   color: #b02424;
