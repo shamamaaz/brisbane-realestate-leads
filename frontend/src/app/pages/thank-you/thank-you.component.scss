@@ -3,91 +3,100 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 20px;
+  background: #f6f2eb;
+  padding: 24px;
+  font-family: 'Manrope', sans-serif;
+  color: #1c2529;
 }
 
 .thank-you-card {
-  background: white;
-  border-radius: 12px;
-  padding: 60px 40px;
-  max-width: 600px;
+  background: #fffaf3;
+  border-radius: 24px;
+  padding: 44px 36px;
+  max-width: 720px;
+  width: 100%;
   text-align: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(28, 37, 41, 0.12);
+  box-shadow: 0 20px 48px rgba(28, 37, 41, 0.16);
 }
 
 .success-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #34a853 0%, #2d8659 100%);
-  color: white;
-  font-size: 48px;
+  width: 72px;
+  height: 72px;
+  background: rgba(31, 107, 111, 0.14);
+  color: #1f6b6f;
+  font-size: 34px;
   border-radius: 50%;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   font-weight: 700;
 }
 
 .thank-you-title {
-  font-size: 40px;
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 3vw, 2.6rem);
   font-weight: 700;
-  color: #1a1a1a;
+  color: #1c2529;
   margin-bottom: 12px;
 }
 
 .thank-you-message {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 12px;
+  font-size: 1rem;
+  color: #55605b;
+  margin-bottom: 8px;
   line-height: 1.6;
 }
 
 .thank-you-subtitle {
-  font-size: 14px;
-  color: #999;
-  margin-bottom: 32px;
+  font-size: 0.95rem;
+  color: #5a6a70;
+  margin-bottom: 28px;
   line-height: 1.6;
 }
 
 .next-steps {
-  background: #f9fafb;
-  border-left: 4px solid #34a853;
-  padding: 24px;
-  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(28, 37, 41, 0.1);
+  padding: 18px 20px;
+  border-radius: 16px;
   text-align: left;
-  margin-bottom: 32px;
+  margin-bottom: 22px;
 }
 
 .account-actions {
-  background: #f9fafb;
-  border-left: 4px solid #1f6b6f;
-  padding: 20px;
-  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(28, 37, 41, 0.1);
+  padding: 18px 20px;
+  border-radius: 16px;
   text-align: left;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 
   h3 {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
     margin: 0 0 8px;
-    color: #1a1a1a;
+    color: #1c2529;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
   }
 
   p {
     margin: 0 0 12px;
-    color: #666;
-    font-size: 13px;
+    color: #55605b;
+    font-size: 0.9rem;
   }
 }
 
 .next-steps h3 {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1c2529;
+  margin-bottom: 10px;
   margin-top: 0;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
 }
 
 .next-steps ul {
@@ -97,21 +106,21 @@
 }
 
 .next-steps li {
-  font-size: 13px;
-  color: #666;
+  font-size: 0.9rem;
+  color: #55605b;
   padding: 6px 0;
   line-height: 1.5;
 }
 
 .contact-info {
-  font-size: 13px;
-  color: #666;
-  margin-bottom: 32px;
+  font-size: 0.85rem;
+  color: #55605b;
+  margin-bottom: 22px;
 
   a {
-    color: #34a853;
+    color: #1f6b6f;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
 
     &:hover {
       text-decoration: underline;
@@ -131,31 +140,33 @@
 
 .btn-primary,
 .btn-secondary {
-  padding: 12px 28px;
+  padding: 12px 26px;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #34a853 0%, #2d8659 100%);
-  color: white;
+  background: #1f6b6f;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(31, 107, 111, 0.25);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(52, 168, 83, 0.3);
+    transform: translateY(-1px);
+    background: #145256;
   }
 }
 
 .btn-secondary {
-  background: #f0f0f0;
-  color: #333;
-  border: 1px solid #ddd;
+  background: transparent;
+  color: #1c2529;
+  border: 1px solid rgba(28, 37, 41, 0.2);
 
   &:hover {
-    background: #e8e8e8;
+    border-color: #1f6b6f;
+    color: #1f6b6f;
   }
 }
