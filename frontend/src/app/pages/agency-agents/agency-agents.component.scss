@@ -290,6 +290,11 @@
   color: #1a5a45;
 }
 
+.status-inactive {
+  background: rgba(90, 106, 112, 0.18);
+  color: #3f4d52;
+}
+
 .cell-actions {
   display: flex;
   gap: 8px;
@@ -312,6 +317,22 @@
 
 .btn-view {
   background: rgba(31, 107, 111, 0.08);
+}
+
+.btn-toggle {
+  border-color: rgba(31, 107, 111, 0.3);
+  color: #1c2529;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  .btn-toggle {
+    padding: 6px 12px;
+  }
 }
 
 .state-message {

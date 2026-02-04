@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateAgentDto {
   @IsString()
@@ -24,6 +24,10 @@ export class CreateAgentDto {
 
   @IsOptional()
   isActive?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  sendInvite?: boolean;
 
   @IsOptional()
   @Type(() => Number)

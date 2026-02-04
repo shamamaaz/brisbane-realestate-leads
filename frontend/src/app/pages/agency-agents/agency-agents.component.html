@@ -111,8 +111,16 @@
               </td>
               <td class="cell-actions" data-label="Actions">
                 <button class="btn-small btn-view" type="button" (click)="openAgent(agent)">View</button>
+                <button class="btn-small btn-action" type="button" (click)="openEdit(agent)">Edit</button>
                 <button class="btn-small btn-action" type="button" (click)="emailAgent(agent)">Email</button>
                 <button class="btn-small btn-action" type="button" (click)="callAgent(agent)">Call</button>
+                <button
+                  class="btn-small btn-toggle"
+                  type="button"
+                  (click)="toggleAgentActive(agent)"
+                >
+                  {{ agent.isActive === false ? 'Activate' : 'Deactivate' }}
+                </button>
               </td>
             </tr>
           </tbody>
@@ -143,8 +151,12 @@
           </div>
           <div class="mobile-card-actions">
             <button class="btn-small btn-view" type="button" (click)="openAgent(agent)">View</button>
+            <button class="btn-small btn-action" type="button" (click)="openEdit(agent)">Edit</button>
             <button class="btn-small btn-action" type="button" (click)="emailAgent(agent)">Email</button>
             <button class="btn-small btn-action" type="button" (click)="callAgent(agent)">Call</button>
+            <button class="btn-small btn-toggle" type="button" (click)="toggleAgentActive(agent)">
+              {{ agent.isActive === false ? 'Activate' : 'Deactivate' }}
+            </button>
           </div>
         </div>
       </div>
@@ -217,6 +229,18 @@
               <span>Territory</span>
               <input type="text" [(ngModel)]="newAgent.territory" placeholder="e.g., North Suburbs" />
             </label>
+            <label class="toggle-row">
+              <span>Status</span>
+              <button type="button" class="btn-toggle" (click)="newAgent.isActive = !newAgent.isActive">
+                {{ newAgent.isActive ? 'Active' : 'Inactive' }}
+              </button>
+            </label>
+            <label class="toggle-row">
+              <span>Send invite email</span>
+              <button type="button" class="btn-toggle" (click)="newAgent.sendInvite = !newAgent.sendInvite">
+                {{ newAgent.sendInvite ? 'Yes' : 'No' }}
+              </button>
+            </label>
           </div>
           <p class="state-message error" *ngIf="formError">{{ formError }}</p>
         </div>
@@ -224,6 +248,51 @@
           <button class="btn btn-outline" type="button" (click)="closeCreate()">Cancel</button>
           <button class="btn btn-primary" type="button" (click)="createAgent()" [disabled]="isSaving">
             {{ isSaving ? 'Saving...' : 'Create agent' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" *ngIf="isEditOpen" (click)="closeEdit()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <h2>Edit agent</h2>
+            <p>Update details or deactivate this agent.</p>
+          </div>
+          <button class="close-btn" type="button" (click)="closeEdit()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <label>
+              <span>Name</span>
+              <input type="text" [(ngModel)]="editAgent.name" placeholder="Agent name" />
+            </label>
+            <label>
+              <span>Email</span>
+              <input type="email" [(ngModel)]="editAgent.email" placeholder="name@agency.com" />
+            </label>
+            <label>
+              <span>Phone</span>
+              <input type="text" [(ngModel)]="editAgent.phone" placeholder="(07) 3000 0000" />
+            </label>
+            <label>
+              <span>Territory</span>
+              <input type="text" [(ngModel)]="editAgent.territory" placeholder="e.g., North Suburbs" />
+            </label>
+            <label class="toggle-row">
+              <span>Status</span>
+              <button type="button" class="btn-toggle" (click)="editAgent.isActive = !editAgent.isActive">
+                {{ editAgent.isActive ? 'Active' : 'Inactive' }}
+              </button>
+            </label>
+          </div>
+          <p class="state-message error" *ngIf="formError">{{ formError }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" type="button" (click)="closeEdit()">Cancel</button>
+          <button class="btn btn-primary" type="button" (click)="saveAgentEdits()" [disabled]="isSaving">
+            {{ isSaving ? 'Saving...' : 'Save changes' }}
           </button>
         </div>
       </div>

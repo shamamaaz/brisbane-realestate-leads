@@ -25,6 +25,7 @@ export class AgencyAgentsComponent implements OnInit {
   selectedAgent: Agent | null = null;
   isModalOpen = false;
   isCreateOpen = false;
+  isEditOpen = false;
 
   newAgent: Partial<Agent> = {
     name: '',
@@ -32,6 +33,16 @@ export class AgencyAgentsComponent implements OnInit {
     phone: '',
     territory: '',
     agencyId: 1,
+    isActive: true,
+    sendInvite: true,
+  };
+
+  editAgent: Partial<Agent> = {
+    name: '',
+    email: '',
+    phone: '',
+    territory: '',
+    isActive: true,
   };
 
   totalAgents = 0;
@@ -116,7 +127,36 @@ export class AgencyAgentsComponent implements OnInit {
       phone: '',
       territory: '',
       agencyId: 1,
+      isActive: true,
+      sendInvite: true,
     };
+  }
+
+  openEdit(agent: Agent) {
+    this.formError = '';
+    this.selectedAgent = agent;
+    this.editAgent = {
+      name: agent.name,
+      email: agent.email,
+      phone: agent.phone,
+      territory: agent.territory,
+      isActive: agent.isActive ?? true,
+    };
+    this.isEditOpen = true;
+  }
+
+  closeEdit() {
+    this.isEditOpen = false;
+    this.isSaving = false;
+    this.formError = '';
+    this.editAgent = {
+      name: '',
+      email: '',
+      phone: '',
+      territory: '',
+      isActive: true,
+    };
+    this.selectedAgent = null;
   }
 
   closeModal() {
@@ -167,7 +207,61 @@ export class AgencyAgentsComponent implements OnInit {
     });
   }
 
+  saveAgentEdits() {
+    if (!this.selectedAgent?.id) return;
+    if (!this.editAgent.name || !this.editAgent.email || !this.editAgent.phone) {
+      this.formError = 'Name, email, and phone are required.';
+      return;
+    }
+
+    this.formError = '';
+    this.isSaving = true;
+
+    this.agentService.updateAgent(this.selectedAgent.id, this.editAgent).subscribe({
+      next: (updated) => {
+        this.agents = this.agents.map((agent) =>
+          agent.id === updated.id ? { ...agent, ...updated } : agent
+        );
+        this.territories = this.buildTerritoryList(this.agents);
+        this.applyFilters();
+        this.calculateStats();
+        this.isSaving = false;
+        this.closeEdit();
+      },
+      error: (err) => {
+        console.error('Failed to update agent:', err);
+        this.formError = 'Failed to update agent. Please try again.';
+        this.isSaving = false;
+      },
+    });
+  }
+
+  toggleAgentActive(agent: Agent) {
+    if (!agent.id) return;
+    if (agent.isActive !== false) {
+      const confirmed = window.confirm('Deactivate this agent? They will stop receiving new leads.');
+      if (!confirmed) {
+        return;
+      }
+    }
+    const nextStatus = !(agent.isActive ?? true);
+    this.agentService.updateAgent(agent.id, { isActive: nextStatus }).subscribe({
+      next: (updated) => {
+        this.agents = this.agents.map((a) =>
+          a.id === updated.id ? { ...a, ...updated } : a
+        );
+        this.applyFilters();
+      },
+      error: (err) => {
+        console.error('Failed to update agent status:', err);
+      },
+    });
+  }
+
   getAgentStatus(agent: Agent): string {
+    if (agent.isActive === false) {
+      return 'Inactive';
+    }
     if ((agent.leadsAssigned || 0) >= 20) {
       return 'High Load';
     }
@@ -183,6 +277,8 @@ export class AgencyAgentsComponent implements OnInit {
         return 'status-high';
       case 'Active':
         return 'status-active';
+      case 'Inactive':
+        return 'status-inactive';
       default:
         return 'status-available';
     }

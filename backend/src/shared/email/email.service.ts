@@ -91,4 +91,28 @@ export class EmailService {
       html,
     });
   }
+
+  async sendAgentInvite(to: string, tempPassword: string, link: string): Promise<void> {
+    if (!this.transporter) {
+      throw new Error('Email is not configured.');
+    }
+
+    const subject = 'You have been invited to Lead Exchange';
+    const text = `You have been invited to Lead Exchange.\n\nSign in with:\nEmail: ${to}\nTemporary password: ${tempPassword}\n\nLogin here:\n${link}\n\nPlease change your password after signing in.`;
+    const html = `
+      <p>You have been invited to Lead Exchange.</p>
+      <p><strong>Email:</strong> ${to}<br/>
+      <strong>Temporary password:</strong> ${tempPassword}</p>
+      <p><a href="${link}">Sign in to Lead Exchange</a></p>
+      <p>Please change your password after signing in.</p>
+    `;
+
+    await this.transporter.sendMail({
+      from: this.fromAddress,
+      to,
+      subject,
+      text,
+      html,
+    });
+  }
 }

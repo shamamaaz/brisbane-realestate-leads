@@ -9,6 +9,7 @@ export interface Agent {
   leadsAssigned?: number;
   role?: string;
   isActive?: boolean;
+  sendInvite?: boolean;
   userId?: number;
   createdAt?: Date;
   updatedAt?: Date;

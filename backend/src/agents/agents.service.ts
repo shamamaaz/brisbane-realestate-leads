@@ -1,8 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
 import { User, UserRole } from '../auth/entities/user.entity';
 import { Agency } from '../agencies/entities/agency.entity';
+import { EmailService } from '../shared/email/email.service';
 import { Agent } from './entities/agent.entity';
 import { CreateAgentDto } from './dto/create-agent.dto';
 
@@ -15,6 +17,7 @@ export class AgentsService {
     private agencyRepo: Repository<Agency>,
     @InjectRepository(User)
     private userRepo: Repository<User>,
+    private emailService: EmailService,
   ) {}
 
   async getAllAgents(user: any): Promise<Agent[]> {
@@ -59,6 +62,35 @@ export class AgentsService {
     }
 
     const existingUser = await this.userRepo.findOne({ where: { email: createAgentDto.email } });
+    let createdUserId = existingUser?.id;
+
+    if (!existingUser && createAgentDto.sendInvite) {
+      const tempPassword = `Agent${Math.random().toString(36).slice(-8)}`;
+      const salt = await bcrypt.genSalt();
+      const passwordHash = await bcrypt.hash(tempPassword, salt);
+      const newUser = this.userRepo.create({
+        email: createAgentDto.email,
+        name: createAgentDto.name,
+        phone: createAgentDto.phone,
+        role: UserRole.AGENT,
+        passwordHash,
+        agencyId: agency.id,
+        agency: { id: agency.id },
+        isActive: true,
+      });
+      const savedUser = await this.userRepo.save(newUser);
+      createdUserId = savedUser.id;
+
+      if (this.emailService.isConfigured()) {
+        const webAppUrl = process.env.WEB_APP_URL || 'http://localhost:4200';
+        const loginUrl = new URL('/auth/login', webAppUrl);
+        try {
+          await this.emailService.sendAgentInvite(createAgentDto.email, tempPassword, loginUrl.toString());
+        } catch (error) {
+          console.warn('Failed to send invite email:', error);
+        }
+      }
+    }
     const newAgent = this.agentRepo.create({
       name: createAgentDto.name,
       email: createAgentDto.email,
@@ -69,7 +101,7 @@ export class AgentsService {
       leadsAssigned: 0,
       agency,
       agencyId: agency.id,
-      userId: existingUser?.id,
+      userId: createdUserId,
     });
 
     return this.agentRepo.save(newAgent);
@@ -86,6 +118,9 @@ export class AgentsService {
     }
 
     Object.assign(agent, {
+      name: payload.name ?? agent.name,
+      email: payload.email ?? agent.email,
+      phone: payload.phone ?? agent.phone,
       territory: payload.territory ?? agent.territory,
       role: payload.role ?? agent.role,
       isActive: payload.isActive ?? agent.isActive,

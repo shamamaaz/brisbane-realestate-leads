@@ -89,3 +89,28 @@ Allow EC2 to access RDS on port 5432:
   - Type: PostgreSQL
   - Port: 5432
   - Source: your EC2 security group OR EC2 private IP /32
+
+
+
+ssh -i ~/Downloads/LeadExchange.pem ec2-user@16.176.136.194
+    cd ~/brisbane-realestate-leads/backend
+npm install
+npm run build
+NODE_ENV=production pm2 restart lead-exchange-api --update-env
+
+
+ssh -i ~/Downloads/LeadExchange.pem ec2-user@16.176.136.194
+
+pm2 list
+pm2 show lead-exchange-api
+
+pwd
+ls -la
+ls -la ~/brisbane-realestate-leads/backend/dist
+
+# confirm the route exists in compiled JS
+rg "AddressController" ~/brisbane-realestate-leads/backend/dist -n
+rg "api/address" ~/brisbane-realestate-leads/backend/dist -n
+
+# test locally on EC2
+curl -i "http://localhost:3000/api/address/search?q=moorooka"
